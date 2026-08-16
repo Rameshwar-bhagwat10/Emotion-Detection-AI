@@ -1,2 +1,59 @@
-# Configuration for models.yaml
-version: '1.0'
+# Model Architectures Configuration for Emotion Detection AI
+# Primary Baseline: 4-Stage Convolutional Neural Network
+
+version: "1.0"
+
+models:
+  baseline_cnn:
+    name: "baseline_cnn"
+    version: "baseline_cnn_v1"
+    description: "4-stage Convolutional Neural Network with BatchNorm, MaxPool, AdaptiveAvgPool and Dropout for 48x48 grayscale FER"
+    
+    # Input Specification
+    input_channels: 1
+    input_size: [48, 48]
+    num_classes: 7
+    
+    # Feature Extractor Stages
+    stages:
+      - in_channels: 1
+        out_channels: 32
+        kernel_size: 3
+        stride: 1
+        padding: 1
+        pool: true
+        pool_kernel: 2
+        pool_stride: 2
+      - in_channels: 32
+        out_channels: 64
+        kernel_size: 3
+        stride: 1
+        padding: 1
+        pool: true
+        pool_kernel: 2
+        pool_stride: 2
+      - in_channels: 64
+        out_channels: 128
+        kernel_size: 3
+        stride: 1
+        padding: 1
+        pool: true
+        pool_kernel: 2
+        pool_stride: 2
+      - in_channels: 128
+        out_channels: 256
+        kernel_size: 3
+        stride: 1
+        padding: 1
+        pool: true
+        pool_kernel: 2
+        pool_stride: 2
+        
+    # Spatial Pooling & Classifier Head
+    adaptive_pool_size: [1, 1]
+    classifier_hidden: 128
+    dropout: 0.3
+    activation: "relu"
+    
+    # Initialization
+    initialization: "kaiming_normal"
