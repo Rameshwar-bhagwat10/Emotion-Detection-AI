@@ -1,0 +1,56 @@
+# ==============================================================================
+# Emotion Detection AI — Preprocessing & Augmentation Configuration
+# ==============================================================================
+
+dataset:
+  name: "FER2013"
+  version: "1.0.0"
+  paths:
+    raw_csv: "data/raw/fer2013/fer2013.csv"
+    metadata_file: "data/raw/fer2013/metadata.json"
+    interim_dir: "data/interim/fer2013/preprocessing"
+    processed_dir: "data/processed/fer2013"
+
+image:
+  width: 48
+  height: 48
+  channels: 1
+  color_mode: "grayscale"
+  scale: 255.0
+  dtype: "float32"
+
+normalization:
+  # Calculated strictly from the 28,709 samples in the TRAIN split only
+  calculated_on: "train_split_only"
+  train_samples: 28709
+  mean: [0.507743]
+  std: [0.255009]
+  raw_mean_255: 129.474340
+  raw_std_255: 65.027273
+
+augmentation:
+  horizontal_flip:
+    enabled: true
+    probability: 0.5
+  rotation:
+    enabled: true
+    degrees: 12
+  affine:
+    enabled: true
+    translate: [0.05, 0.05]
+    scale: [0.95, 1.05]
+  color_jitter:
+    enabled: false
+    brightness: 0.1
+    contrast: 0.1
+
+dataloader:
+  batch_size: 64
+  num_workers: 0
+  pin_memory: true
+  drop_last_train: false
+  drop_last_eval: false
+
+reproducibility:
+  seed: 42
+  deterministic: true
