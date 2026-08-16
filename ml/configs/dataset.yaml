@@ -1,2 +1,52 @@
-# Configuration for dataset.yaml
-version: '1.0'
+# Dataset Configuration for Emotion Detection AI
+# Primary Dataset: FER2013 (Facial Expression Recognition 2013)
+
+dataset:
+  name: "FER2013"
+  version: "1.0.0"
+  description: "Facial Expression Recognition 2013 Dataset for 7-class emotion classification"
+  source: "Kaggle Facial Expression Recognition Challenge / HuggingFace Mirror (AutumnQiu/fer2013)"
+  license: "Open Database License / Research and Educational Use"
+  
+  urls:
+    huggingface_repo: "AutumnQiu/fer2013"
+    train_parquet: "https://huggingface.co/api/datasets/AutumnQiu/fer2013/parquet/default/train/0.parquet"
+    valid_parquet: "https://huggingface.co/api/datasets/AutumnQiu/fer2013/parquet/default/valid/0.parquet"
+    test_parquet: "https://huggingface.co/api/datasets/AutumnQiu/fer2013/parquet/default/test/0.parquet"
+  
+  paths:
+    raw_dir: "data/raw/fer2013"
+    csv_file: "data/raw/fer2013/fer2013.csv"
+    metadata_file: "data/raw/fer2013/metadata.json"
+    interim_dir: "data/interim/fer2013"
+    eda_dir: "data/interim/fer2013/eda"
+    charts_dir: "data/interim/fer2013/eda/charts"
+    samples_dir: "data/interim/fer2013/eda/samples"
+    reports_dir: "data/interim/fer2013/eda/reports"
+    processed_dir: "data/processed/fer2013"
+  
+  image:
+    width: 48
+    height: 48
+    channels: 1
+    color_mode: "grayscale"
+    pixel_min: 0
+    pixel_max: 255
+    total_pixels: 2304
+  
+  classes:
+    0: "angry"
+    1: "disgust"
+    2: "fear"
+    3: "happy"
+    4: "sad"
+    5: "surprise"
+    6: "neutral"
+  
+  splits:
+    Training: "train"
+    PublicTest: "val"
+    PrivateTest: "test"
+  
+  reproducibility:
+    seed: 42
