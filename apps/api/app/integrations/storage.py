@@ -1,0 +1,3 @@
+"""Module: storage"""
+
+# Placeholder implementation

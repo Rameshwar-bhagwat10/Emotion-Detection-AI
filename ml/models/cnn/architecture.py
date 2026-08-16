@@ -1,0 +1,3 @@
+"""Module: architecture"""
+
+# Placeholder implementation

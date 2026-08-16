@@ -1,0 +1,3 @@
+"""Module: logging"""
+
+# Placeholder implementation

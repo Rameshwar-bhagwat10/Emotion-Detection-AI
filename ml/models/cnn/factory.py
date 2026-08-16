@@ -1,0 +1,3 @@
+"""Module: factory"""
+
+# Placeholder implementation

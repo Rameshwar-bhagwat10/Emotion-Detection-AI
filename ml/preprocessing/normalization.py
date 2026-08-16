@@ -1,0 +1,3 @@
+"""Module: normalization"""
+
+# Placeholder implementation

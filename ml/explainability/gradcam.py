@@ -1,0 +1,3 @@
+"""Module: gradcam"""
+
+# Placeholder implementation

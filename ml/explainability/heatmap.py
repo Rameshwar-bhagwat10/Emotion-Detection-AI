@@ -1,0 +1,3 @@
+"""Module: heatmap"""
+
+# Placeholder implementation

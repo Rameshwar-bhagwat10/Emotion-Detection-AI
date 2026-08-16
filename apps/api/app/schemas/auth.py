@@ -1,0 +1,3 @@
+"""Module: auth"""
+
+# Placeholder implementation

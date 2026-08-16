@@ -1,0 +1,3 @@
+"""Module: benchmark"""
+
+# Placeholder implementation

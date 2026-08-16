@@ -1,0 +1,3 @@
+"""Module: prediction"""
+
+# Placeholder implementation

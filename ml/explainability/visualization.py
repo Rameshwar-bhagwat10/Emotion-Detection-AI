@@ -1,0 +1,3 @@
+"""Module: visualization"""
+
+# Placeholder implementation

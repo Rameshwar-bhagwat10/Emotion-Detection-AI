@@ -1,0 +1,3 @@
+"""Module: losses"""
+
+# Placeholder implementation

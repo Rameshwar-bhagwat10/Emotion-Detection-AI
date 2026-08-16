@@ -1,0 +1,3 @@
+"""Module: models"""
+
+# Placeholder implementation

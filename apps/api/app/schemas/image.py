@@ -1,0 +1,3 @@
+"""Module: image"""
+
+# Placeholder implementation

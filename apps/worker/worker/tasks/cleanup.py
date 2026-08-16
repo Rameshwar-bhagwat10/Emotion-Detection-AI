@@ -1,0 +1,3 @@
+"""Module: cleanup"""
+
+# Placeholder implementation

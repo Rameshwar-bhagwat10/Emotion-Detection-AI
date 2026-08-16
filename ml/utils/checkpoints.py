@@ -1,0 +1,3 @@
+"""Module: checkpoints"""
+
+# Placeholder implementation

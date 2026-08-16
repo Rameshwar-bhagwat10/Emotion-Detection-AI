@@ -1,0 +1,3 @@
+"""Module: callbacks"""
+
+# Placeholder implementation

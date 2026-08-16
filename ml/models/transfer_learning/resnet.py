@@ -1,0 +1,3 @@
+"""Module: resnet"""
+
+# Placeholder implementation

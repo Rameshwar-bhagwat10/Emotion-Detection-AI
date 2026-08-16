@@ -1,0 +1,3 @@
+"""Module: reports"""
+
+# Placeholder implementation

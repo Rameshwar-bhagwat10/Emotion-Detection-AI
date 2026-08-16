@@ -1,0 +1,3 @@
+"""Module: mobilenet"""
+
+# Placeholder implementation

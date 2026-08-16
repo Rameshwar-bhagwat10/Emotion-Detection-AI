@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "emotion-detection-worker"
+version = "0.1.0"
+description = "Celery background worker for Emotion Detection AI"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "celery>=5.3.6",
+    "redis>=5.0.3",
+    "pydantic>=2.6.0",
+    "pydantic-settings>=2.2.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.1.0"
+]

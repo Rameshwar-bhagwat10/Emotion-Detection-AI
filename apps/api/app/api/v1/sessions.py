@@ -1,0 +1,3 @@
+"""Module: sessions"""
+
+# Placeholder implementation

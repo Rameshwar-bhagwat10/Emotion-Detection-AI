@@ -1,0 +1,3 @@
+"""Module: user"""
+
+# Placeholder implementation

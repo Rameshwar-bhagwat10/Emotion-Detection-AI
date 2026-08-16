@@ -1,0 +1,3 @@
+"""Module: common"""
+
+# Placeholder implementation

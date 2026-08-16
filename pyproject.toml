@@ -1,0 +1,118 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "emotion-detection-ai"
+version = "0.1.0"
+description = "AI-Based Facial Expression Emotion Detection & Analytics System"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Emotion Detection Team" }
+]
+dependencies = [
+    "torch>=2.2.0",
+    "torchvision>=0.17.0",
+    "numpy>=1.26.0",
+    "pandas>=2.2.0",
+    "pillow>=10.2.0",
+    "opencv-python-headless>=4.9.0",
+    "mediapipe>=0.10.11",
+    "scikit-learn>=1.4.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "timm>=0.9.16",
+    "grad-cam>=1.5.0",
+    "pyyaml>=6.0.1",
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.28.0",
+    "pydantic>=2.6.0",
+    "pydantic-settings>=2.2.0",
+    "sqlalchemy>=2.0.28",
+    "asyncpg>=0.29.0",
+    "alembic>=1.13.1",
+    "redis>=5.0.3",
+    "celery>=5.3.6",
+    "python-multipart>=0.0.9",
+    "pyjwt[crypto]>=2.8.0",
+    "argon2-cffi>=23.1.0",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.1.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.3.0",
+    "black>=24.2.0",
+    "mypy>=1.9.0",
+    "pre-commit>=3.6.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["apps*", "ml*", "packages*"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "apps/api/alembic/versions"
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line length handled by black/formatter
+    "B008",  # do not perform function calls in argument defaults (needed for FastAPI Depends)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "worker", "ml"]
+
+[tool.black]
+target-version = ["py312"]
+line-length = 100
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | \.next
+  | node_modules
+  | apps/api/alembic/versions
+)/
+'''
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests", "apps/api/tests", "apps/worker/tests"]
+pythonpath = [".", "apps/api", "apps/worker"]
+python_files = ["test_*.py", "*_test.py"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true

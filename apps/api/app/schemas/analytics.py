@@ -1,0 +1,3 @@
+"""Module: analytics"""
+
+# Placeholder implementation

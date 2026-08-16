@@ -1,0 +1,3 @@
+"""Module: videos"""
+
+# Placeholder implementation

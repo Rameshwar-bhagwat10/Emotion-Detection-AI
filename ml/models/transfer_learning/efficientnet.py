@@ -1,0 +1,3 @@
+"""Module: efficientnet"""
+
+# Placeholder implementation

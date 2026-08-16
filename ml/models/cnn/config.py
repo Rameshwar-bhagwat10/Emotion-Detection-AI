@@ -1,0 +1,3 @@
+"""Module: config"""
+
+# Placeholder implementation

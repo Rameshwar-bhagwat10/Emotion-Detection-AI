@@ -1,0 +1,3 @@
+"""Module: confidence"""
+
+# Placeholder implementation

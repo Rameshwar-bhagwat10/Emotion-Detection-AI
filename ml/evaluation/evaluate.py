@@ -1,0 +1,3 @@
+"""Module: evaluate"""
+
+# Placeholder implementation
