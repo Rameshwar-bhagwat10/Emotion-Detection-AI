@@ -1,0 +1,52 @@
+# ============================================================
+# Baseline CNN Evaluation Configuration
+# Facial Expression Emotion Detection & Analytics System
+# ============================================================
+
+experiment:
+  name: baseline_cnn_eval
+  version: v1
+  description: Evaluation and benchmarking of Baseline CNN on FER2013 test dataset
+
+model:
+  name: baseline_cnn
+
+checkpoint:
+  path: artifacts/training/baseline_cnn/smoke_test_20260817_055905/best.pt
+  type: best
+
+data:
+  raw_path: data/raw/fer2013/fer2013.csv
+  split: test
+  batch_size: 64
+  num_workers: 0
+  pin_memory: false
+
+metrics:
+  accuracy: true
+  precision: true
+  recall: true
+  f1: true
+  confusion_matrix: true
+  classification_report: true
+
+confidence:
+  enabled: true
+  high_confidence_threshold: 0.90
+  num_bins: 10
+
+error_analysis:
+  enabled: true
+  save_incorrect: true
+  max_samples_recorded: null
+
+benchmark:
+  enabled: true
+  warmup_iterations: 10
+  benchmark_iterations: 50
+  batch_size: 64
+  single_sample: true
+
+artifacts:
+  save_dir: artifacts/evaluation/baseline_cnn
+  save_visualizations: true

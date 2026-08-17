@@ -1,0 +1,19 @@
+{
+  "device": "cpu",
+  "warmup_iterations": 10,
+  "benchmark_iterations": 50,
+  "batch_benchmark": {
+    "batch_size": 64,
+    "mean_latency_ms": 26.1739,
+    "median_latency_ms": 26.1434,
+    "p95_latency_ms": 29.5835,
+    "throughput_samples_per_sec": 2445.19
+  },
+  "single_sample_benchmark": {
+    "batch_size": 1,
+    "mean_latency_ms": 0.8589,
+    "median_latency_ms": 0.791,
+    "p95_latency_ms": 1.1092,
+    "throughput_samples_per_sec": 1164.28
+  }
+}

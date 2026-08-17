@@ -1,0 +1,172 @@
+[
+  {
+    "actual_class": "neutral",
+    "predicted_class": "happy",
+    "count": 448
+  },
+  {
+    "actual_class": "sad",
+    "predicted_class": "happy",
+    "count": 400
+  },
+  {
+    "actual_class": "fear",
+    "predicted_class": "happy",
+    "count": 328
+  },
+  {
+    "actual_class": "angry",
+    "predicted_class": "happy",
+    "count": 306
+  },
+  {
+    "actual_class": "surprise",
+    "predicted_class": "happy",
+    "count": 176
+  },
+  {
+    "actual_class": "sad",
+    "predicted_class": "neutral",
+    "count": 126
+  },
+  {
+    "actual_class": "fear",
+    "predicted_class": "surprise",
+    "count": 112
+  },
+  {
+    "actual_class": "angry",
+    "predicted_class": "surprise",
+    "count": 80
+  },
+  {
+    "actual_class": "happy",
+    "predicted_class": "neutral",
+    "count": 78
+  },
+  {
+    "actual_class": "angry",
+    "predicted_class": "neutral",
+    "count": 72
+  },
+  {
+    "actual_class": "happy",
+    "predicted_class": "surprise",
+    "count": 56
+  },
+  {
+    "actual_class": "fear",
+    "predicted_class": "neutral",
+    "count": 52
+  },
+  {
+    "actual_class": "disgust",
+    "predicted_class": "happy",
+    "count": 42
+  },
+  {
+    "actual_class": "neutral",
+    "predicted_class": "sad",
+    "count": 36
+  },
+  {
+    "actual_class": "neutral",
+    "predicted_class": "surprise",
+    "count": 35
+  },
+  {
+    "actual_class": "sad",
+    "predicted_class": "surprise",
+    "count": 34
+  },
+  {
+    "actual_class": "surprise",
+    "predicted_class": "neutral",
+    "count": 33
+  },
+  {
+    "actual_class": "fear",
+    "predicted_class": "sad",
+    "count": 24
+  },
+  {
+    "actual_class": "angry",
+    "predicted_class": "sad",
+    "count": 23
+  },
+  {
+    "actual_class": "happy",
+    "predicted_class": "sad",
+    "count": 18
+  },
+  {
+    "actual_class": "fear",
+    "predicted_class": "angry",
+    "count": 10
+  },
+  {
+    "actual_class": "surprise",
+    "predicted_class": "sad",
+    "count": 9
+  },
+  {
+    "actual_class": "disgust",
+    "predicted_class": "surprise",
+    "count": 8
+  },
+  {
+    "actual_class": "sad",
+    "predicted_class": "angry",
+    "count": 5
+  },
+  {
+    "actual_class": "surprise",
+    "predicted_class": "fear",
+    "count": 5
+  },
+  {
+    "actual_class": "neutral",
+    "predicted_class": "angry",
+    "count": 5
+  },
+  {
+    "actual_class": "angry",
+    "predicted_class": "fear",
+    "count": 4
+  },
+  {
+    "actual_class": "disgust",
+    "predicted_class": "neutral",
+    "count": 4
+  },
+  {
+    "actual_class": "surprise",
+    "predicted_class": "angry",
+    "count": 4
+  },
+  {
+    "actual_class": "happy",
+    "predicted_class": "angry",
+    "count": 3
+  },
+  {
+    "actual_class": "sad",
+    "predicted_class": "fear",
+    "count": 2
+  },
+  {
+    "actual_class": "disgust",
+    "predicted_class": "sad",
+    "count": 1
+  },
+  {
+    "actual_class": "happy",
+    "predicted_class": "fear",
+    "count": 1
+  },
+  {
+    "actual_class": "neutral",
+    "predicted_class": "fear",
+    "count": 1
+  }
+]

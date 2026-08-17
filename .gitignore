@@ -36,13 +36,16 @@ data/raw/*
 data/interim/*
 data/processed/*
 
-# Models & Checkpoints (Do not commit binary weights)
+# Models, Artifacts & Checkpoints (Do not commit binary weights/runs)
+artifacts/training/*
+!artifacts/training/.gitkeep
 models/checkpoints/*
 models/experiments/*
 models/production/*
 
 # Preserve .gitkeep and documentation files
 !.gitkeep
+!artifacts/**/.gitkeep
 !data/**/README.md
 !models/**/README.md
 
