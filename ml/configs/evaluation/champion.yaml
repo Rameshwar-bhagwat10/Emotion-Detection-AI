@@ -1,0 +1,44 @@
+# Champion Model Evaluation Configuration (ResNet-18)
+experiment:
+  name: champion_model_eval
+
+model:
+  name: resnet18
+
+checkpoint:
+  path: artifacts/training/resnet18/resnet18_training_20260817_203647/best.pt
+  type: best
+
+data:
+  raw_path: data/raw/fer2013/fer2013.csv
+  split: test
+  batch_size: 64
+  num_workers: 0
+
+metrics:
+  class_names:
+    - angry
+    - disgust
+    - fear
+    - happy
+    - sad
+    - surprise
+    - neutral
+
+confidence:
+  high_confidence_threshold: 0.90
+  num_bins: 10
+
+error_analysis:
+  save_incorrect: true
+  export_visuals: true
+
+benchmark:
+  enabled: true
+  warmup_iterations: 10
+  benchmark_iterations: 50
+  batch_size: 64
+
+artifacts:
+  save_dir: artifacts/evaluation/champion_model
+  save_visualizations: true

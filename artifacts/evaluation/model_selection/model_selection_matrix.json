@@ -1,0 +1,62 @@
+{
+  "champion_model": {
+    "model_name": "resnet18",
+    "checkpoint_path": "D:\\projects\\emotion-detection-ai\\artifacts\\training\\resnet18\\resnet18_training_20260817_203647\\best.pt",
+    "val_accuracy": 0.51825,
+    "val_macro_f1": 0.427887,
+    "val_weighted_f1": 0.4949,
+    "val_loss": 0.0,
+    "batch_latency_ms": 44.7406,
+    "single_sample_latency_ms": 3.1331,
+    "throughput_fps": 1430.47,
+    "total_parameters": 11180103,
+    "model_size_mb": 128.0575
+  },
+  "rankings": [
+    {
+      "model_name": "resnet18",
+      "checkpoint_path": "D:\\projects\\emotion-detection-ai\\artifacts\\training\\resnet18\\resnet18_training_20260817_203647\\best.pt",
+      "val_accuracy": 0.51825,
+      "val_macro_f1": 0.427887,
+      "val_weighted_f1": 0.4949,
+      "val_loss": 0.0,
+      "batch_latency_ms": 44.7406,
+      "single_sample_latency_ms": 3.1331,
+      "throughput_fps": 1430.47,
+      "total_parameters": 11180103,
+      "model_size_mb": 128.0575,
+      "composite_score": 0.7203,
+      "rank": 1
+    },
+    {
+      "model_name": "mobilenet_v3_small",
+      "checkpoint_path": "D:\\projects\\emotion-detection-ai\\artifacts\\training\\mobilenet_v3_small\\mobilenet_v3_small_training_20260817_204340\\best.pt",
+      "val_accuracy": 0.359432,
+      "val_macro_f1": 0.263404,
+      "val_weighted_f1": 0.313849,
+      "val_loss": 0.0,
+      "batch_latency_ms": 10.7654,
+      "single_sample_latency_ms": 3.5003,
+      "throughput_fps": 5944.98,
+      "total_parameters": 1525031,
+      "model_size_mb": 17.6662,
+      "composite_score": 0.3664,
+      "rank": 2
+    },
+    {
+      "model_name": "baseline_cnn",
+      "checkpoint_path": "artifacts\\training\\baseline_cnn\\smoke_test_20260817_055905\\best.pt",
+      "val_accuracy": 0.295068,
+      "val_macro_f1": 0.164935,
+      "val_weighted_f1": 0.206765,
+      "val_loss": 0.0,
+      "batch_latency_ms": 25.356,
+      "single_sample_latency_ms": 0.7918,
+      "throughput_fps": 2524.06,
+      "total_parameters": 422119,
+      "model_size_mb": 4.8549,
+      "composite_score": 0.3,
+      "rank": 3
+    }
+  ]
+}

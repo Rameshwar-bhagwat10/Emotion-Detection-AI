@@ -1,0 +1,378 @@
+{
+  "overall": {
+    "total_samples": 3589,
+    "mean_confidence": 0.585222,
+    "median_confidence": 0.526146,
+    "std_confidence": 0.235673
+  },
+  "correct_predictions": {
+    "count": 1837,
+    "mean_confidence": 0.68538,
+    "median_confidence": 0.674572,
+    "std_confidence": 0.244491
+  },
+  "incorrect_predictions": {
+    "count": 1752,
+    "mean_confidence": 0.480205,
+    "median_confidence": 0.43842,
+    "std_confidence": 0.171919
+  },
+  "high_confidence_errors": {
+    "threshold": 0.9,
+    "count": 42,
+    "percentage_of_errors": 2.4,
+    "samples": [
+      {
+        "sample_id": 10,
+        "actual_class": "surprise",
+        "predicted_class": "happy",
+        "confidence": 0.91163
+      },
+      {
+        "sample_id": 80,
+        "actual_class": "fear",
+        "predicted_class": "surprise",
+        "confidence": 0.997292
+      },
+      {
+        "sample_id": 207,
+        "actual_class": "fear",
+        "predicted_class": "surprise",
+        "confidence": 0.999992
+      },
+      {
+        "sample_id": 233,
+        "actual_class": "disgust",
+        "predicted_class": "happy",
+        "confidence": 0.913308
+      },
+      {
+        "sample_id": 272,
+        "actual_class": "happy",
+        "predicted_class": "surprise",
+        "confidence": 0.993208
+      },
+      {
+        "sample_id": 283,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.932175
+      },
+      {
+        "sample_id": 391,
+        "actual_class": "fear",
+        "predicted_class": "surprise",
+        "confidence": 0.978809
+      },
+      {
+        "sample_id": 622,
+        "actual_class": "sad",
+        "predicted_class": "happy",
+        "confidence": 0.932712
+      },
+      {
+        "sample_id": 707,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.937231
+      },
+      {
+        "sample_id": 766,
+        "actual_class": "angry",
+        "predicted_class": "happy",
+        "confidence": 0.920357
+      },
+      {
+        "sample_id": 894,
+        "actual_class": "fear",
+        "predicted_class": "surprise",
+        "confidence": 0.925902
+      },
+      {
+        "sample_id": 1091,
+        "actual_class": "fear",
+        "predicted_class": "surprise",
+        "confidence": 0.978812
+      },
+      {
+        "sample_id": 1190,
+        "actual_class": "fear",
+        "predicted_class": "surprise",
+        "confidence": 0.987541
+      },
+      {
+        "sample_id": 1200,
+        "actual_class": "fear",
+        "predicted_class": "happy",
+        "confidence": 0.905412
+      },
+      {
+        "sample_id": 1213,
+        "actual_class": "surprise",
+        "predicted_class": "happy",
+        "confidence": 0.903116
+      },
+      {
+        "sample_id": 1257,
+        "actual_class": "sad",
+        "predicted_class": "happy",
+        "confidence": 0.98266
+      },
+      {
+        "sample_id": 1269,
+        "actual_class": "fear",
+        "predicted_class": "surprise",
+        "confidence": 0.988975
+      },
+      {
+        "sample_id": 1321,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.932922
+      },
+      {
+        "sample_id": 1666,
+        "actual_class": "surprise",
+        "predicted_class": "happy",
+        "confidence": 0.984305
+      },
+      {
+        "sample_id": 1701,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.928653
+      },
+      {
+        "sample_id": 1877,
+        "actual_class": "angry",
+        "predicted_class": "happy",
+        "confidence": 0.936471
+      },
+      {
+        "sample_id": 1971,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.968724
+      },
+      {
+        "sample_id": 2037,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.928603
+      },
+      {
+        "sample_id": 2045,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.950792
+      },
+      {
+        "sample_id": 2083,
+        "actual_class": "angry",
+        "predicted_class": "happy",
+        "confidence": 0.94634
+      },
+      {
+        "sample_id": 2143,
+        "actual_class": "fear",
+        "predicted_class": "happy",
+        "confidence": 0.902826
+      },
+      {
+        "sample_id": 2274,
+        "actual_class": "sad",
+        "predicted_class": "happy",
+        "confidence": 0.939861
+      },
+      {
+        "sample_id": 2411,
+        "actual_class": "surprise",
+        "predicted_class": "happy",
+        "confidence": 0.996964
+      },
+      {
+        "sample_id": 2670,
+        "actual_class": "fear",
+        "predicted_class": "happy",
+        "confidence": 0.915611
+      },
+      {
+        "sample_id": 2732,
+        "actual_class": "sad",
+        "predicted_class": "surprise",
+        "confidence": 0.964591
+      },
+      {
+        "sample_id": 2788,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.931354
+      },
+      {
+        "sample_id": 2898,
+        "actual_class": "sad",
+        "predicted_class": "surprise",
+        "confidence": 0.921496
+      },
+      {
+        "sample_id": 3022,
+        "actual_class": "sad",
+        "predicted_class": "happy",
+        "confidence": 0.934361
+      },
+      {
+        "sample_id": 3130,
+        "actual_class": "surprise",
+        "predicted_class": "happy",
+        "confidence": 0.97919
+      },
+      {
+        "sample_id": 3175,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.974319
+      },
+      {
+        "sample_id": 3346,
+        "actual_class": "surprise",
+        "predicted_class": "happy",
+        "confidence": 0.973983
+      },
+      {
+        "sample_id": 3362,
+        "actual_class": "fear",
+        "predicted_class": "happy",
+        "confidence": 0.974664
+      },
+      {
+        "sample_id": 3378,
+        "actual_class": "sad",
+        "predicted_class": "happy",
+        "confidence": 0.942333
+      },
+      {
+        "sample_id": 3404,
+        "actual_class": "fear",
+        "predicted_class": "happy",
+        "confidence": 0.944286
+      },
+      {
+        "sample_id": 3408,
+        "actual_class": "sad",
+        "predicted_class": "happy",
+        "confidence": 0.927321
+      },
+      {
+        "sample_id": 3438,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.932529
+      },
+      {
+        "sample_id": 3578,
+        "actual_class": "neutral",
+        "predicted_class": "happy",
+        "confidence": 0.969908
+      }
+    ]
+  },
+  "confidence_distribution": [
+    {
+      "bin_range": "0.00-0.10",
+      "total_count": 0,
+      "correct_count": 0,
+      "incorrect_count": 0
+    },
+    {
+      "bin_range": "0.10-0.20",
+      "total_count": 0,
+      "correct_count": 0,
+      "incorrect_count": 0
+    },
+    {
+      "bin_range": "0.20-0.30",
+      "total_count": 268,
+      "correct_count": 59,
+      "incorrect_count": 209
+    },
+    {
+      "bin_range": "0.30-0.40",
+      "total_count": 754,
+      "correct_count": 246,
+      "incorrect_count": 508
+    },
+    {
+      "bin_range": "0.40-0.50",
+      "total_count": 638,
+      "correct_count": 258,
+      "incorrect_count": 380
+    },
+    {
+      "bin_range": "0.50-0.60",
+      "total_count": 470,
+      "correct_count": 213,
+      "incorrect_count": 257
+    },
+    {
+      "bin_range": "0.60-0.70",
+      "total_count": 361,
+      "correct_count": 182,
+      "incorrect_count": 179
+    },
+    {
+      "bin_range": "0.70-0.80",
+      "total_count": 243,
+      "correct_count": 138,
+      "incorrect_count": 105
+    },
+    {
+      "bin_range": "0.80-0.90",
+      "total_count": 218,
+      "correct_count": 146,
+      "incorrect_count": 72
+    },
+    {
+      "bin_range": "0.90-1.00",
+      "total_count": 637,
+      "correct_count": 595,
+      "incorrect_count": 42
+    }
+  ],
+  "class_confidence": {
+    "angry": {
+      "mean_confidence": 0.474913,
+      "median_confidence": 0.43833,
+      "std_confidence": 0.155451
+    },
+    "disgust": {
+      "mean_confidence": 0.481155,
+      "median_confidence": 0.469105,
+      "std_confidence": 0.16877
+    },
+    "fear": {
+      "mean_confidence": 0.487228,
+      "median_confidence": 0.45162,
+      "std_confidence": 0.170734
+    },
+    "happy": {
+      "mean_confidence": 0.813342,
+      "median_confidence": 0.924501,
+      "std_confidence": 0.219209
+    },
+    "sad": {
+      "mean_confidence": 0.460295,
+      "median_confidence": 0.424635,
+      "std_confidence": 0.151097
+    },
+    "surprise": {
+      "mean_confidence": 0.649881,
+      "median_confidence": 0.626866,
+      "std_confidence": 0.248674
+    },
+    "neutral": {
+      "mean_confidence": 0.518797,
+      "median_confidence": 0.495339,
+      "std_confidence": 0.168809
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# MobileNetV3-Small Transfer Learning Model Configuration
+model_name: mobilenet_v3_small
+num_classes: 7
+in_channels: 1
+pretrained: true
+freeze_backbone: false
+dropout_rate: 0.2

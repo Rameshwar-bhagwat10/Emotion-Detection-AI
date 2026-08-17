@@ -1,0 +1,125 @@
+{
+  "overall": {
+    "total_samples": 3589,
+    "mean_confidence": 0.301423,
+    "median_confidence": 0.26565,
+    "std_confidence": 0.107505
+  },
+  "correct_predictions": {
+    "count": 1059,
+    "mean_confidence": 0.351056,
+    "median_confidence": 0.317024,
+    "std_confidence": 0.133624
+  },
+  "incorrect_predictions": {
+    "count": 2530,
+    "mean_confidence": 0.280647,
+    "median_confidence": 0.252085,
+    "std_confidence": 0.086361
+  },
+  "high_confidence_errors": {
+    "threshold": 0.9,
+    "count": 0,
+    "percentage_of_errors": 0.0,
+    "samples": []
+  },
+  "confidence_distribution": [
+    {
+      "bin_range": "0.00-0.10",
+      "total_count": 0,
+      "correct_count": 0,
+      "incorrect_count": 0
+    },
+    {
+      "bin_range": "0.10-0.20",
+      "total_count": 209,
+      "correct_count": 30,
+      "incorrect_count": 179
+    },
+    {
+      "bin_range": "0.20-0.30",
+      "total_count": 2074,
+      "correct_count": 455,
+      "incorrect_count": 1619
+    },
+    {
+      "bin_range": "0.30-0.40",
+      "total_count": 768,
+      "correct_count": 279,
+      "incorrect_count": 489
+    },
+    {
+      "bin_range": "0.40-0.50",
+      "total_count": 290,
+      "correct_count": 135,
+      "incorrect_count": 155
+    },
+    {
+      "bin_range": "0.50-0.60",
+      "total_count": 154,
+      "correct_count": 85,
+      "incorrect_count": 69
+    },
+    {
+      "bin_range": "0.60-0.70",
+      "total_count": 67,
+      "correct_count": 54,
+      "incorrect_count": 13
+    },
+    {
+      "bin_range": "0.70-0.80",
+      "total_count": 26,
+      "correct_count": 20,
+      "incorrect_count": 6
+    },
+    {
+      "bin_range": "0.80-0.90",
+      "total_count": 1,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    {
+      "bin_range": "0.90-1.00",
+      "total_count": 0,
+      "correct_count": 0,
+      "incorrect_count": 0
+    }
+  ],
+  "class_confidence": {
+    "angry": {
+      "mean_confidence": 0.283325,
+      "median_confidence": 0.245953,
+      "std_confidence": 0.093838
+    },
+    "disgust": {
+      "mean_confidence": 0.306672,
+      "median_confidence": 0.273529,
+      "std_confidence": 0.093103
+    },
+    "fear": {
+      "mean_confidence": 0.278617,
+      "median_confidence": 0.25882,
+      "std_confidence": 0.079029
+    },
+    "happy": {
+      "mean_confidence": 0.35466,
+      "median_confidence": 0.317024,
+      "std_confidence": 0.137666
+    },
+    "sad": {
+      "mean_confidence": 0.28255,
+      "median_confidence": 0.249424,
+      "std_confidence": 0.08861
+    },
+    "surprise": {
+      "mean_confidence": 0.298283,
+      "median_confidence": 0.26341,
+      "std_confidence": 0.098014
+    },
+    "neutral": {
+      "mean_confidence": 0.27745,
+      "median_confidence": 0.24996,
+      "std_confidence": 0.082913
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "experiment": "baseline_cnn_eval",
+  "model": "baseline_cnn",
+  "checkpoint": "D:\\projects\\emotion-detection-ai\\artifacts\\training\\mobilenet_v3_small\\mobilenet_v3_small_training_20260817_204340\\best.pt",
+  "split": "test",
+  "total_samples": 3589,
+  "accuracy": 0.359432,
+  "macro_precision": 0.312922,
+  "macro_recall": 0.283798,
+  "macro_f1": 0.263404,
+  "weighted_precision": 0.360333,
+  "weighted_recall": 0.359432,
+  "weighted_f1": 0.313849,
+  "high_confidence_error_count": 44,
+  "mean_confidence": 0.438047,
+  "batch_latency_ms": 10.7654,
+  "batch_throughput_samples_per_sec": 5944.98,
+  "single_sample_latency_ms": 3.5003,
+  "total_parameters": 1525031,
+  "checkpoint_size_mb": 17.6662
+}

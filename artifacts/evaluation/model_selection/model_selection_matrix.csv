@@ -1,0 +1,4 @@
+model_name,checkpoint_path,val_accuracy,val_macro_f1,val_weighted_f1,val_loss,batch_latency_ms,single_sample_latency_ms,throughput_fps,total_parameters,model_size_mb,composite_score,rank
+resnet18,D:\projects\emotion-detection-ai\artifacts\training\resnet18\resnet18_training_20260817_203647\best.pt,0.51825,0.427887,0.4949,0.0,44.7406,3.1331,1430.47,11180103,128.0575,0.7203,1
+mobilenet_v3_small,D:\projects\emotion-detection-ai\artifacts\training\mobilenet_v3_small\mobilenet_v3_small_training_20260817_204340\best.pt,0.359432,0.263404,0.313849,0.0,10.7654,3.5003,5944.98,1525031,17.6662,0.3664,2
+baseline_cnn,artifacts\training\baseline_cnn\smoke_test_20260817_055905\best.pt,0.295068,0.164935,0.206765,0.0,25.356,0.7918,2524.06,422119,4.8549,0.3,3

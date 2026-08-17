@@ -47,18 +47,27 @@ from ml.evaluation.metrics import (
     calculate_per_class_metrics,
     calculate_weighted_metrics,
 )
+from ml.evaluation.selection import (
+    DecisionWeights,
+    ModelCandidate,
+    compare_candidates,
+    save_model_selection_artifacts,
+    select_champion_model,
+)
 
 __all__ = [
     "ArtifactsConfig",
     "BenchmarkConfig",
     "CheckpointEvaluationConfig",
     "ConfidenceConfig",
+    "DecisionWeights",
     "ErrorAnalysisConfig",
     "EvaluationDataConfig",
     "EvaluationPipelineConfig",
     "Evaluator",
     "ExperimentConfig",
     "MetricsEvaluationConfig",
+    "ModelCandidate",
     "analyze_confidence",
     "benchmark_model_inference",
     "calculate_accuracy",
@@ -66,6 +75,7 @@ __all__ = [
     "calculate_macro_metrics",
     "calculate_per_class_metrics",
     "calculate_weighted_metrics",
+    "compare_candidates",
     "compute_confusion_matrix",
     "compute_model_statistics",
     "compute_normalized_confusion_matrix",
@@ -81,5 +91,7 @@ __all__ = [
     "save_confidence_analysis_json",
     "save_confusion_matrix_csv",
     "save_incorrect_predictions_csv",
+    "save_model_selection_artifacts",
     "save_model_stats_json",
+    "select_champion_model",
 ]

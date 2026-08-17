@@ -1,0 +1,7 @@
+# ResNet-18 Transfer Learning Model Configuration
+model_name: resnet18
+num_classes: 7
+in_channels: 1
+pretrained: true
+freeze_backbone: false
+dropout_rate: 0.2

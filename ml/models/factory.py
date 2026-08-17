@@ -10,22 +10,29 @@ from torch import nn
 from ml.models.cnn.baseline_cnn import BaselineCNN
 from ml.models.cnn.config import BaselineCNNConfig
 from ml.models.registry import get_model_class, register_model
+from ml.models.transfer_learning.config import TransferLearningConfig
+from ml.models.transfer_learning.mobilenet import MobileNetV3SmallTransfer
+from ml.models.transfer_learning.resnet import ResNet18Transfer
 
-# Explicitly register known architectures
+# Register known architectures
 register_model("baseline_cnn")(BaselineCNN)
 register_model("baseline_cnn_v1")(BaselineCNN)
+register_model("resnet18")(ResNet18Transfer)
+register_model("resnet18_v1")(ResNet18Transfer)
+register_model("mobilenet_v3_small")(MobileNetV3SmallTransfer)
+register_model("mobilenet_v3_small_v1")(MobileNetV3SmallTransfer)
 
 
 def create_model(
     model_name: str = "baseline_cnn",
-    config: BaselineCNNConfig | dict[str, Any] | None = None,
+    config: BaselineCNNConfig | TransferLearningConfig | dict[str, Any] | None = None,
     config_path: str | Path = "ml/configs/models.yaml",
     **kwargs: Any,
 ) -> nn.Module:
     """Create and initialize a model instance based on name and configuration.
 
     Args:
-        model_name: Identifier of the model to create (e.g. 'baseline_cnn').
+        model_name: Identifier of the model to create (e.g. 'baseline_cnn', 'resnet18', 'mobilenet_v3_small').
         config: Optional configuration object or dictionary.
         config_path: Path to models.yaml configuration file if config is not provided.
         **kwargs: Overrides for configuration arguments.
@@ -42,19 +49,25 @@ def create_model(
         if model_cls is BaselineCNN:
             p = Path(config_path)
             if p.exists():
-                cfg = BaselineCNNConfig.from_yaml(p)
+                b_cfg = BaselineCNNConfig.from_yaml(p)
             else:
-                cfg = BaselineCNNConfig(**kwargs)
-            return BaselineCNN(config=cfg, **kwargs)
+                b_cfg = BaselineCNNConfig(**kwargs)
+            return BaselineCNN(config=b_cfg, **kwargs)
+        elif model_cls in (ResNet18Transfer, MobileNetV3SmallTransfer):
+            t_cfg = TransferLearningConfig(model_name=model_name, **kwargs)
+            return model_cls(config=t_cfg, **kwargs)
         return model_cls(**kwargs)
 
-    if isinstance(config, BaselineCNNConfig):
+    if isinstance(config, (BaselineCNNConfig, TransferLearningConfig)):
         return model_cls(config=config, **kwargs)
 
     if isinstance(config, dict):
         if model_cls is BaselineCNN:
-            cfg = BaselineCNNConfig.from_dict(config)
-            return BaselineCNN(config=cfg, **kwargs)
+            b_cfg = BaselineCNNConfig.from_dict(config)
+            return BaselineCNN(config=b_cfg, **kwargs)
+        elif model_cls in (ResNet18Transfer, MobileNetV3SmallTransfer):
+            t_cfg = TransferLearningConfig.from_dict(config)
+            return model_cls(config=t_cfg, **kwargs)
         return model_cls(config=config, **kwargs)
 
     return model_cls(config=config, **kwargs)
