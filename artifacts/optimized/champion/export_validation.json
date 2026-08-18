@@ -1,0 +1,9 @@
+{
+  "onnx_path": "D:\\projects\\emotion-detection-ai\\artifacts\\optimized\\champion\\model.onnx",
+  "total_verification_samples": 8,
+  "max_absolute_error": 1e-06,
+  "mean_absolute_error": 0.0,
+  "prediction_match_rate": 1.0,
+  "numerical_tolerance": 0.001,
+  "is_valid": true
+}

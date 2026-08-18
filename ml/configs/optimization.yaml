@@ -1,0 +1,49 @@
+# Phase 08 Model Optimization Configuration
+experiment_name: champion_optimization
+seed: 42
+reference_model: resnet18
+reference_checkpoint: artifacts/training/resnet18/resnet18_training_20260817_203647/best.pt
+data_path: data/raw/fer2013/fer2013.csv
+output_dir: artifacts/optimized
+
+fp16:
+  enabled: true
+  device: cpu
+
+quantization:
+  enabled: true
+  backend: fbgemm
+  calibration_samples: 512
+  calibration_batch_size: 64
+
+pruning:
+  enabled: true
+  sparsity_levels:
+    - 0.10
+    - 0.20
+    - 0.30
+  method: l1_unstructured
+  fine_tune_epochs: 1
+  learning_rate: 0.0001
+
+distillation:
+  enabled: true
+  student_model_name: mobilenet_v3_small
+  temperature: 4.0
+  alpha: 0.5
+  epochs: 1
+  learning_rate: 0.0003
+  batch_size: 64
+
+quality_gate:
+  max_macro_f1_drop: 0.03
+  max_accuracy_drop: 0.03
+  min_latency_reduction_pct: 5.0
+  min_size_reduction_pct: 10.0
+
+export:
+  enabled: true
+  format: onnx
+  opset_version: 17
+  dynamic_axes: true
+  atol: 0.001

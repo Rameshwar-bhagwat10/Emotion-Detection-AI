@@ -1,0 +1,32 @@
+{
+  "model_name": "champion-pruning-30",
+  "base_model": "resnet18",
+  "optimization_technique": "pruning_30pct",
+  "validation_metrics": {
+    "accuracy": 0.582892,
+    "macro_f1": 0.503157,
+    "weighted_f1": 0.573362
+  },
+  "test_metrics": {
+    "accuracy": 0.585957,
+    "macro_f1": 0.49571,
+    "weighted_f1": 0.576624,
+    "expected_calibration_error": 0.012827
+  },
+  "efficiency": {
+    "latency_ms": 3.4902,
+    "throughput_fps": 1033.84,
+    "model_size_mb": 42.65,
+    "total_parameters": 11180103
+  },
+  "export": {
+    "onnx_path": "D:\\projects\\emotion-detection-ai\\artifacts\\optimized\\champion\\model.onnx",
+    "total_verification_samples": 8,
+    "max_absolute_error": 1e-06,
+    "mean_absolute_error": 0.0,
+    "prediction_match_rate": 1.0,
+    "numerical_tolerance": 0.001,
+    "is_valid": true
+  },
+  "timestamp": "2026-08-18T07:06:37.194933"
+}

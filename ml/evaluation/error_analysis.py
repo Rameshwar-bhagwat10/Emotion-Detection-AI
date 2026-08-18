@@ -261,3 +261,55 @@ def plot_and_save_confidence_distribution(
 
     plt.savefig(output_path, dpi=300)
     plt.close()
+
+
+def compute_expected_calibration_error(
+    y_true: np.ndarray | torch.Tensor | list[int],
+    probabilities: np.ndarray | torch.Tensor,
+    num_bins: int = 10,
+) -> float:
+    """Compute Expected Calibration Error (ECE) across confidence bins.
+
+    Args:
+        y_true: True class labels (1D).
+        probabilities: Softmax probabilities (2D, shape [N, num_classes]).
+        num_bins: Number of confidence bins (default: 10).
+
+    Returns:
+        ECE value in range [0.0, 1.0].
+    """
+    if isinstance(y_true, torch.Tensor):
+        y_true = y_true.detach().cpu().numpy()
+    if isinstance(probabilities, torch.Tensor):
+        probabilities = probabilities.detach().cpu().numpy()
+
+    y_t = np.asarray(y_true, dtype=np.int64).flatten()
+    probs = np.asarray(probabilities, dtype=np.float64)
+
+    confidences = np.max(probs, axis=-1)
+    predictions = np.argmax(probs, axis=-1)
+    accuracies = predictions == y_t
+
+    bins = np.linspace(0.0, 1.0, num_bins + 1)
+    ece = 0.0
+    total_samples = len(y_t)
+
+    if total_samples == 0:
+        return 0.0
+
+    for i in range(num_bins):
+        bin_lower = bins[i]
+        bin_upper = bins[i + 1]
+        in_bin = (
+            (confidences > bin_lower) & (confidences <= bin_upper)
+            if i > 0
+            else (confidences >= bin_lower) & (confidences <= bin_upper)
+        )
+        bin_count = int(np.sum(in_bin))
+
+        if bin_count > 0:
+            bin_acc = float(np.mean(accuracies[in_bin]))
+            bin_conf = float(np.mean(confidences[in_bin]))
+            ece += (bin_count / total_samples) * np.abs(bin_acc - bin_conf)
+
+    return float(round(ece, 6))

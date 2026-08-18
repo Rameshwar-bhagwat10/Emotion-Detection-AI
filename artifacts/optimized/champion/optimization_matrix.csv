@@ -1,0 +1,8 @@
+candidate_id,base_model,optimization_type,val_accuracy,val_macro_f1,val_weighted_f1,latency_ms,throughput_fps,model_size_mb,total_parameters,sparsity_pct,is_accepted,rejection_reason,composite_score,rank
+champion-fp32,resnet18,fp32_reference,0.51825,0.427887,0.4949,3.6832,1202.49,42.65,11180103,0.0,True,FP32 Champion Reference Baseline,0.5049,1
+champion-fp16,resnet18,fp16,0.51825,0.427887,0.4949,3.6237,1193.15,42.65,11180103,0.0,False,"Efficiency gain insufficient (latency reduction: 1.6%, size reduction: 0.0%)",0.5258,2
+champion-int8-ptq,resnet18,int8_ptq,0.517972,0.427248,0.494558,3.8828,1145.4,42.64,11176512,0.0,False,"Efficiency gain insufficient (latency reduction: -5.4%, size reduction: 0.0%)",0.4333,3
+champion-pruning-10,resnet18,pruning_10pct,0.593759,0.509936,0.578876,4.1999,987.38,42.65,11180103,10.0,False,"Efficiency gain insufficient (latency reduction: -14.0%, size reduction: 0.0%)",0.4914,4
+champion-pruning-20,resnet18,pruning_20pct,0.588743,0.514111,0.575793,3.7772,977.25,42.65,11180103,20.0,False,"Efficiency gain insufficient (latency reduction: -2.6%, size reduction: 0.0%)",0.6489,5
+champion-pruning-30,resnet18,pruning_30pct,0.582892,0.503157,0.573362,3.4902,1033.84,42.65,11180103,30.0,True,Passed all quality and efficiency thresholds,0.7275,6
+champion-distillation-student,resnet18,knowledge_distillation,0.364447,0.270761,0.326128,3.7189,4310.23,5.82,1525031,0.0,False,Macro F1 drop 0.1571 exceeds max allowed threshold 0.0300,0.4194,7

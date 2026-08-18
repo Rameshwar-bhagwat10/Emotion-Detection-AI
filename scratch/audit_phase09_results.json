@@ -1,0 +1,22 @@
+{
+  "champion_model_name": "champion-pruning-30",
+  "champion_base_model": "resnet18",
+  "champion_optimization": "pruning_30pct",
+  "weights_size_bytes": 44792971,
+  "onnx_size_bytes": 44712791,
+  "model_forward_shape": [
+    2,
+    7
+  ],
+  "model_loading_verified": true,
+  "hardcoded_paths_found": [],
+  "immutability_verified": true,
+  "image_validation_verified": true,
+  "face_detection_verified": true,
+  "preprocessing_consistency_verified": true,
+  "postprocessing_verified": true,
+  "e2e_pipeline_verified": true,
+  "onnx_max_absolute_error": 7.152557373046875e-07,
+  "onnx_fidelity_verified": true,
+  "scope_clean": true
+}

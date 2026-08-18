@@ -1,2 +1,49 @@
-# Configuration for inference.yaml
-version: '1.0'
+# ==============================================================================
+# Emotion Detection AI — Inference & Prediction Pipeline Configuration
+# ==============================================================================
+
+version: "1.0.0"
+
+device:
+  strategy: "auto"  # "auto" | "cpu" | "cuda"
+  allow_fallback_to_cpu: true
+
+model:
+  champion_dir: "artifacts/optimized/champion"
+  metadata_file: "artifacts/optimized/champion/metadata.json"
+  weights_file: "artifacts/optimized/champion/model.pt"
+  onnx_file: "artifacts/optimized/champion/model.onnx"
+  model_format: "pytorch"  # "pytorch" | "onnx"
+  expected_architecture: "resnet18"
+  input_size: [48, 48]
+  input_channels: 1
+  normalization:
+    mean: [0.507743]
+    std: [0.255009]
+
+face_detection:
+  detector_type: "yunet"  # "yunet" | "haar" | "passthrough"
+  haar_scale_factor: 1.1
+  haar_min_neighbors: 5
+  min_face_size: [20, 20]
+  confidence_threshold: 0.50
+  nms_threshold: 0.30
+  face_padding: 0.15  # Expand bounding box by 15% before cropping
+  max_faces: 20
+
+inference:
+  batch_size: 16
+  warmup_iterations: 3
+  confidence_threshold: 0.40
+  uncertain_label: "uncertain"
+  enable_timing: true
+  max_image_dimension: 4096
+
+classes:
+  - "angry"
+  - "disgust"
+  - "fear"
+  - "happy"
+  - "sad"
+  - "surprise"
+  - "neutral"

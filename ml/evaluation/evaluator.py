@@ -245,6 +245,11 @@ class Evaluator:
             "confidence_analysis": {
                 k: v for k, v in conf_analysis.items() if k != "all_incorrect_samples"
             },
+            "raw_predictions": {
+                "y_true": y_true,
+                "y_pred": y_pred,
+                "probabilities": probs,
+            },
             "benchmark": benchmark_results,
             "model_stats": model_stats,
             "run_dir": str(self.run_dir),

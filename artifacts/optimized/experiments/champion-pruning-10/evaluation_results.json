@@ -1,0 +1,21 @@
+{
+  "experiment": "baseline_cnn_eval",
+  "model": "baseline_cnn",
+  "checkpoint": "None",
+  "split": "test",
+  "total_samples": 3589,
+  "accuracy": 0.593759,
+  "macro_precision": 0.567431,
+  "macro_recall": 0.510449,
+  "macro_f1": 0.509936,
+  "weighted_precision": 0.591523,
+  "weighted_recall": 0.593758,
+  "weighted_f1": 0.578876,
+  "high_confidence_error_count": 37,
+  "mean_confidence": 0.61119,
+  "batch_latency_ms": 64.8179,
+  "batch_throughput_samples_per_sec": 987.38,
+  "single_sample_latency_ms": 4.1999,
+  "total_parameters": 11180103,
+  "checkpoint_size_mb": 0.0
+}

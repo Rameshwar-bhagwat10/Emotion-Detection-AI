@@ -1,0 +1,24 @@
+{
+  "model_name": "champion-pruning-30",
+  "architecture": "resnet18",
+  "optimization_type": "pruning_30pct",
+  "device": "cpu",
+  "detector": "yunet",
+  "image_size": "640x480",
+  "iterations": 30,
+  "warmup": 5,
+  "latency_ms": {
+    "image_loading_avg": 0.12,
+    "face_detection_avg": 8.54,
+    "preprocessing_avg": 0.4,
+    "inference_avg": 4.31,
+    "postprocessing_avg": 0.15,
+    "total_mean": 13.53,
+    "total_median": 13.46,
+    "total_p95": 15.31
+  },
+  "throughput": {
+    "images_per_second": 73.82,
+    "faces_per_second": 73.82
+  }
+}

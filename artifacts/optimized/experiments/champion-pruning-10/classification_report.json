@@ -1,0 +1,59 @@
+{
+  "accuracy": 0.593759,
+  "macro_avg": {
+    "precision": 0.567431,
+    "recall": 0.510449,
+    "f1-score": 0.509936,
+    "support": 3589
+  },
+  "weighted_avg": {
+    "precision": 0.591523,
+    "recall": 0.593758,
+    "f1-score": 0.578876,
+    "support": 3589
+  },
+  "classes": {
+    "angry": {
+      "precision": 0.498943,
+      "recall": 0.505353,
+      "f1": 0.502128,
+      "support": 467
+    },
+    "disgust": {
+      "precision": 0.5,
+      "recall": 0.107143,
+      "f1": 0.176471,
+      "support": 56
+    },
+    "fear": {
+      "precision": 0.501976,
+      "recall": 0.256048,
+      "f1": 0.339119,
+      "support": 496
+    },
+    "happy": {
+      "precision": 0.786157,
+      "recall": 0.850279,
+      "f1": 0.816962,
+      "support": 895
+    },
+    "sad": {
+      "precision": 0.51378,
+      "recall": 0.399694,
+      "f1": 0.449612,
+      "support": 653
+    },
+    "surprise": {
+      "precision": 0.713626,
+      "recall": 0.744578,
+      "f1": 0.728774,
+      "support": 415
+    },
+    "neutral": {
+      "precision": 0.457537,
+      "recall": 0.710049,
+      "f1": 0.556488,
+      "support": 607
+    }
+  }
+}

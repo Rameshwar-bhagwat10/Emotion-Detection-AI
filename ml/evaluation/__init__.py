@@ -35,6 +35,7 @@ from ml.evaluation.confusion_matrix import (
 )
 from ml.evaluation.error_analysis import (
     analyze_confidence,
+    compute_expected_calibration_error,
     plot_and_save_confidence_distribution,
     save_confidence_analysis_json,
     save_incorrect_predictions_csv,
@@ -77,6 +78,7 @@ __all__ = [
     "calculate_weighted_metrics",
     "compare_candidates",
     "compute_confusion_matrix",
+    "compute_expected_calibration_error",
     "compute_model_statistics",
     "compute_normalized_confusion_matrix",
     "extract_confusion_pairs",
