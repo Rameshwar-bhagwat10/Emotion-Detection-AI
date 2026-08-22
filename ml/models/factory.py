@@ -11,7 +11,14 @@ from ml.models.cnn.baseline_cnn import BaselineCNN
 from ml.models.cnn.config import BaselineCNNConfig
 from ml.models.registry import get_model_class, register_model
 from ml.models.transfer_learning.config import TransferLearningConfig
+from ml.models.transfer_learning.efficientnet import EfficientNetB0Transfer
 from ml.models.transfer_learning.mobilenet import MobileNetV3SmallTransfer
+from ml.models.transfer_learning.models_v2 import (
+    ConvNeXtTinyTransfer,
+    EfficientNetV2Transfer,
+    MobileNetV3Transfer,
+    ResNetV2Transfer,
+)
 from ml.models.transfer_learning.resnet import ResNet18Transfer
 
 # Register known architectures
@@ -19,8 +26,14 @@ register_model("baseline_cnn")(BaselineCNN)
 register_model("baseline_cnn_v1")(BaselineCNN)
 register_model("resnet18")(ResNet18Transfer)
 register_model("resnet18_v1")(ResNet18Transfer)
+register_model("resnet18_se")(ResNet18Transfer)
+register_model("resnet18_cbam")(lambda **kwargs: ResNetV2Transfer(architecture="resnet18", attention_type="cbam", **kwargs))
+register_model("resnet18_v2")(lambda **kwargs: ResNetV2Transfer(architecture="resnet18", attention_type="cbam", **kwargs))
 register_model("mobilenet_v3_small")(MobileNetV3SmallTransfer)
 register_model("mobilenet_v3_small_v1")(MobileNetV3SmallTransfer)
+register_model("efficientnet_b0")(EfficientNetB0Transfer)
+register_model("efficientnet_b0_v1")(EfficientNetB0Transfer)
+register_model("convnext_tiny")(ConvNeXtTinyTransfer)
 
 
 def create_model(

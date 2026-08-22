@@ -1,0 +1,7 @@
+{
+  "total_parameters": 11180103,
+  "trainable_parameters": 11180103,
+  "non_trainable_parameters": 0,
+  "checkpoint_size_bytes": 44792971,
+  "checkpoint_size_mb": 42.7179
+}

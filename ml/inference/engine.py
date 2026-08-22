@@ -83,6 +83,14 @@ class EmotionInferenceEngine:
         if self.config.warmup_iterations > 0:
             self.model_manager.warmup(self.config.warmup_iterations)
 
+    def warmup(self, num_warmup_passes: int = 3) -> None:
+        """Execute non-gradient warm-up passes."""
+        self.model_manager.warmup(num_warmup_passes)
+
+    def warm_up(self, num_warmup_passes: int = 3) -> None:
+        """Alias for warmup."""
+        self.warmup(num_warmup_passes)
+
     def _get_model_info(self) -> ModelInfo:
         """Construct ModelInfo descriptor."""
         return ModelInfo(

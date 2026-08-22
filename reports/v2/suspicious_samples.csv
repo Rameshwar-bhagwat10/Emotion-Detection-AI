@@ -1,0 +1,15 @@
+split,sample_id,label,reason,model_prediction,confidence
+train,2171,neutral,"Near-zero contrast / flat image (std=0.64, mean=128.30)",N/A,0.0
+train,6458,angry,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,7629,happy,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,10423,sad,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,11286,angry,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,13148,angry,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,13402,angry,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,13988,surprise,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,15894,angry,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,22198,angry,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,22927,neutral,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+train,28601,angry,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0
+val,29447,happy,"Near-zero contrast / flat image (std=4.09, mean=5.08)",N/A,0.0
+val,30002,angry,"Near-zero contrast / flat image (std=0.00, mean=0.00)",N/A,0.0

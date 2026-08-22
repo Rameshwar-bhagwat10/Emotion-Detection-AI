@@ -19,6 +19,8 @@ class TransferLearningConfig:
     pretrained: bool = True
     freeze_backbone: bool = False
     dropout_rate: float = 0.2
+    use_attention: bool = False
+    attention_type: str = "se"
     extra_params: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -40,6 +42,8 @@ class TransferLearningConfig:
             "pretrained",
             "freeze_backbone",
             "dropout_rate",
+            "use_attention",
+            "attention_type",
             "extra_params",
         }
         filtered = {k: v for k, v in data.items() if k in valid_fields}

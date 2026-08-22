@@ -1,0 +1,21 @@
+{
+  "experiment": "champion_model_eval",
+  "model": "resnet18",
+  "checkpoint": "models\\v1\\model.pt",
+  "split": "test",
+  "total_samples": 3589,
+  "accuracy": 0.117024,
+  "macro_precision": 0.055628,
+  "macro_recall": 0.142608,
+  "macro_f1": 0.042475,
+  "weighted_precision": 0.052114,
+  "weighted_recall": 0.117024,
+  "weighted_f1": 0.036557,
+  "high_confidence_error_count": 69,
+  "mean_confidence": 0.653778,
+  "batch_latency_ms": 154.4811,
+  "batch_throughput_samples_per_sec": 414.29,
+  "single_sample_latency_ms": 5.8656,
+  "total_parameters": 11180103,
+  "checkpoint_size_mb": 42.7179
+}

@@ -1,0 +1,8 @@
+perturbation,accuracy,macro_f1,accuracy_drop_pct
+Original,62.66,58.52,0.0
+Brightness (+30%),61.6,57.99,1.06
+Brightness (-30%),62.27,57.47,0.39
+Contrast (+30%),62.72,58.96,-0.06
+Contrast (-30%),61.91,56.75,0.75
+Gaussian Noise,44.61,39.99,18.06
+Low Resolution (24x24),47.9,43.75,14.77

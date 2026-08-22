@@ -20,6 +20,7 @@ def create_train_loader(
     dataset: Dataset[dict[str, Any]],
     batch_size: int = 64,
     shuffle: bool = True,
+    sampler: torch.utils.data.Sampler[Any] | None = None,
     num_workers: int = 0,
     pin_memory: bool = True,
     drop_last: bool = False,
@@ -30,7 +31,8 @@ def create_train_loader(
     Args:
         dataset: Training dataset instance.
         batch_size: Mini-batch size.
-        shuffle: Whether to shuffle samples each epoch (default: True).
+        shuffle: Whether to shuffle samples each epoch (default: True, ignored if sampler is provided).
+        sampler: Optional custom Sampler (e.g. WeightedRandomSampler).
         num_workers: Subprocess workers for data loading (default: 0 for cross-platform stability).
         pin_memory: If True, pins memory for faster GPU transfer.
         drop_last: If True, drops the last incomplete batch.
@@ -46,11 +48,13 @@ def create_train_loader(
 
     # Pin memory only if CUDA is available or explicitly requested on GPU systems
     pin_mem = pin_memory and torch.cuda.is_available()
+    do_shuffle = shuffle if sampler is None else False
 
     return DataLoader(
         dataset=dataset,
         batch_size=batch_size,
-        shuffle=shuffle,
+        shuffle=do_shuffle,
+        sampler=sampler,
         num_workers=num_workers,
         pin_memory=pin_mem,
         drop_last=drop_last,

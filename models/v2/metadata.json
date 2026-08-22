@@ -1,0 +1,52 @@
+{
+  "model_name": "emotion-resnet18-cbam-v2",
+  "version": "2.0",
+  "architecture": "resnet18_cbam",
+  "checkpoint": "models/v2/model.pt",
+  "onnx_path": "models/v2/model.onnx",
+  "dataset": "FER2013-Preprocessed",
+  "input_size": [
+    112,
+    112
+  ],
+  "in_channels": 3,
+  "normalization": {
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "class_mapping": {
+    "0": "angry",
+    "1": "disgust",
+    "2": "fear",
+    "3": "happy",
+    "4": "sad",
+    "5": "surprise",
+    "6": "neutral"
+  },
+  "validation_metrics": {
+    "accuracy": 0.6135413764279743,
+    "macro_f1": 0.5668439572798323,
+    "balanced_accuracy": 0.6160293494645449
+  },
+  "test_metrics": {
+    "accuracy": 0.6266369462245751,
+    "macro_f1": 0.585173525294309,
+    "balanced_accuracy": 0.6463261115597457,
+    "weighted_f1": 0.6159086465758618,
+    "expected_calibration_error": 0.027048330099079802
+  },
+  "efficiency": {
+    "latency_ms": 21.051215631095374,
+    "model_size_mb": 42.75,
+    "total_parameters": 11212969
+  },
+  "status": "production"
+}

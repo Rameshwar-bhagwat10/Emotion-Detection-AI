@@ -1,0 +1,58 @@
+[
+  {
+    "condition": "Original Test Set",
+    "accuracy": 0.5859570911117303,
+    "macro_f1": 0.49571024241884476,
+    "mean_confidence": 0.5869289040565491,
+    "performance_drop_pct": 0.0
+  },
+  {
+    "condition": "Brightness (+30%)",
+    "accuracy": 0.5572582892170521,
+    "macro_f1": 0.4724436963923954,
+    "mean_confidence": 0.5606973171234131,
+    "performance_drop_pct": 2.8698801894678216
+  },
+  {
+    "condition": "Brightness (-30%)",
+    "accuracy": 0.5845639453886876,
+    "macro_f1": 0.4826209746814308,
+    "mean_confidence": 0.599748432636261,
+    "performance_drop_pct": 0.13931457230427213
+  },
+  {
+    "condition": "Contrast (+30%)",
+    "accuracy": 0.5703538590136529,
+    "macro_f1": 0.4701294318314137,
+    "mean_confidence": 0.5777043104171753,
+    "performance_drop_pct": 1.5603232098077457
+  },
+  {
+    "condition": "Contrast (-30%)",
+    "accuracy": 0.5862357202563389,
+    "macro_f1": 0.49724790625310306,
+    "mean_confidence": 0.5858954191207886,
+    "performance_drop_pct": -0.027862914460852206
+  },
+  {
+    "condition": "Gaussian Blur (sigma=1.0)",
+    "accuracy": 0.5550292560601839,
+    "macro_f1": 0.46920554054809827,
+    "mean_confidence": 0.5635085105895996,
+    "performance_drop_pct": 3.0927835051546393
+  },
+  {
+    "condition": "JPEG Compression (Q=30)",
+    "accuracy": 0.5553078852047925,
+    "macro_f1": 0.46975671099272365,
+    "mean_confidence": 0.5400405526161194,
+    "performance_drop_pct": 3.064920590693787
+  },
+  {
+    "condition": "Rotation (+10 deg)",
+    "accuracy": 0.5923655614377263,
+    "macro_f1": 0.49796120760123486,
+    "mean_confidence": 0.5820820927619934,
+    "performance_drop_pct": -0.6408470325996007
+  }
+]

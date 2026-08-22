@@ -1,0 +1,305 @@
+{
+  "model_name": "emotion-resnet18-cbam-v2",
+  "version": "2.0",
+  "timestamp": "2026-08-22T07:00:37Z",
+  "v1_comparison": [
+    {
+      "metric": "accuracy",
+      "v1": 58.6,
+      "v2": 62.66,
+      "absolute_change": 4.06,
+      "percentage_change": 6.93
+    },
+    {
+      "metric": "balanced_accuracy",
+      "v1": 49.96,
+      "v2": 64.63,
+      "absolute_change": 14.67,
+      "percentage_change": 29.36
+    },
+    {
+      "metric": "macro_f1",
+      "v1": 49.57,
+      "v2": 58.52,
+      "absolute_change": 8.95,
+      "percentage_change": 18.06
+    },
+    {
+      "metric": "weighted_f1",
+      "v1": 57.66,
+      "v2": 61.59,
+      "absolute_change": 3.93,
+      "percentage_change": 6.82
+    },
+    {
+      "metric": "angry_f1",
+      "v1": 48.2,
+      "v2": 54.69,
+      "absolute_change": 6.49,
+      "percentage_change": 13.46
+    },
+    {
+      "metric": "disgust_f1",
+      "v1": 9.52,
+      "v2": 50.0,
+      "absolute_change": 40.48,
+      "percentage_change": 425.21
+    },
+    {
+      "metric": "fear_f1",
+      "v1": 33.98,
+      "v2": 43.63,
+      "absolute_change": 9.65,
+      "percentage_change": 28.4
+    },
+    {
+      "metric": "happy_f1",
+      "v1": 82.82,
+      "v2": 85.82,
+      "absolute_change": 3.0,
+      "percentage_change": 3.62
+    },
+    {
+      "metric": "sad_f1",
+      "v1": 44.23,
+      "v2": 37.76,
+      "absolute_change": -6.47,
+      "percentage_change": -14.63
+    },
+    {
+      "metric": "surprise_f1",
+      "v1": 69.2,
+      "v2": 74.6,
+      "absolute_change": 5.4,
+      "percentage_change": 7.8
+    },
+    {
+      "metric": "neutral_f1",
+      "v1": 59.04,
+      "v2": 63.12,
+      "absolute_change": 4.08,
+      "percentage_change": 6.91
+    },
+    {
+      "metric": "latency_ms",
+      "v1": 3.49,
+      "v2": 21.05,
+      "absolute_change": 17.56,
+      "percentage_change": 503.15
+    },
+    {
+      "metric": "model_size_mb",
+      "v1": 42.65,
+      "v2": 42.75,
+      "absolute_change": 0.1,
+      "percentage_change": 0.23
+    }
+  ],
+  "test_metrics": {
+    "accuracy": 0.6266369462245751,
+    "balanced_accuracy": 0.6463261115597457,
+    "macro_f1": 0.585173525294309,
+    "weighted_f1": 0.6159086465758618,
+    "expected_calibration_error": 0.027048330099079802,
+    "per_class": {
+      "angry": {
+        "precision": 0.6240208877284595,
+        "recall": 0.48676171079429736,
+        "f1": 0.5469107551487414
+      },
+      "disgust": {
+        "precision": 0.35036496350364965,
+        "recall": 0.8727272727272727,
+        "f1": 0.5
+      },
+      "fear": {
+        "precision": 0.4556701030927835,
+        "recall": 0.4185606060606061,
+        "f1": 0.43632773938795655
+      },
+      "happy": {
+        "precision": 0.8890243902439025,
+        "recall": 0.8293515358361775,
+        "f1": 0.8581518540317834
+      },
+      "sad": {
+        "precision": 0.5425867507886435,
+        "recall": 0.2895622895622896,
+        "f1": 0.37760702524698136
+      },
+      "surprise": {
+        "precision": 0.6641651031894934,
+        "recall": 0.8509615384615384,
+        "f1": 0.7460484720758693
+      },
+      "neutral": {
+        "precision": 0.5317286652078774,
+        "recall": 0.7763578274760383,
+        "f1": 0.6311688311688312
+      }
+    }
+  },
+  "robustness": [
+    {
+      "perturbation": "Original",
+      "accuracy": 62.66,
+      "macro_f1": 58.52,
+      "accuracy_drop_pct": 0.0
+    },
+    {
+      "perturbation": "Brightness (+30%)",
+      "accuracy": 61.6,
+      "macro_f1": 57.99,
+      "accuracy_drop_pct": 1.06
+    },
+    {
+      "perturbation": "Brightness (-30%)",
+      "accuracy": 62.27,
+      "macro_f1": 57.47,
+      "accuracy_drop_pct": 0.39
+    },
+    {
+      "perturbation": "Contrast (+30%)",
+      "accuracy": 62.72,
+      "macro_f1": 58.96,
+      "accuracy_drop_pct": -0.06
+    },
+    {
+      "perturbation": "Contrast (-30%)",
+      "accuracy": 61.91,
+      "macro_f1": 56.75,
+      "accuracy_drop_pct": 0.75
+    },
+    {
+      "perturbation": "Gaussian Noise",
+      "accuracy": 44.61,
+      "macro_f1": 39.99,
+      "accuracy_drop_pct": 18.06
+    },
+    {
+      "perturbation": "Low Resolution (24x24)",
+      "accuracy": 47.9,
+      "macro_f1": 43.75,
+      "accuracy_drop_pct": 14.77
+    }
+  ],
+  "selective_classification": [
+    {
+      "threshold": 0.3,
+      "coverage": 95.51,
+      "accepted_samples": 3428,
+      "rejected_samples": 161,
+      "accepted_accuracy": 64.41,
+      "accepted_macro_f1": 59.97,
+      "accepted_precision": 59.63
+    },
+    {
+      "threshold": 0.35,
+      "coverage": 89.8,
+      "accepted_samples": 3223,
+      "rejected_samples": 366,
+      "accepted_accuracy": 66.18,
+      "accepted_macro_f1": 61.1,
+      "accepted_precision": 61.1
+    },
+    {
+      "threshold": 0.4,
+      "coverage": 82.31,
+      "accepted_samples": 2954,
+      "rejected_samples": 635,
+      "accepted_accuracy": 68.99,
+      "accepted_macro_f1": 63.15,
+      "accepted_precision": 63.88
+    },
+    {
+      "threshold": 0.45,
+      "coverage": 74.25,
+      "accepted_samples": 2665,
+      "rejected_samples": 924,
+      "accepted_accuracy": 71.82,
+      "accepted_macro_f1": 64.25,
+      "accepted_precision": 66.12
+    },
+    {
+      "threshold": 0.5,
+      "coverage": 67.32,
+      "accepted_samples": 2416,
+      "rejected_samples": 1173,
+      "accepted_accuracy": 74.79,
+      "accepted_macro_f1": 66.19,
+      "accepted_precision": 68.76
+    },
+    {
+      "threshold": 0.55,
+      "coverage": 60.04,
+      "accepted_samples": 2155,
+      "rejected_samples": 1434,
+      "accepted_accuracy": 77.73,
+      "accepted_macro_f1": 67.44,
+      "accepted_precision": 71.24
+    },
+    {
+      "threshold": 0.6,
+      "coverage": 53.41,
+      "accepted_samples": 1917,
+      "rejected_samples": 1672,
+      "accepted_accuracy": 80.49,
+      "accepted_macro_f1": 69.06,
+      "accepted_precision": 74.74
+    },
+    {
+      "threshold": 0.65,
+      "coverage": 46.45,
+      "accepted_samples": 1667,
+      "rejected_samples": 1922,
+      "accepted_accuracy": 82.96,
+      "accepted_macro_f1": 70.14,
+      "accepted_precision": 76.77
+    },
+    {
+      "threshold": 0.7,
+      "coverage": 40.12,
+      "accepted_samples": 1440,
+      "rejected_samples": 2149,
+      "accepted_accuracy": 85.42,
+      "accepted_macro_f1": 69.84,
+      "accepted_precision": 78.62
+    },
+    {
+      "threshold": 0.75,
+      "coverage": 33.94,
+      "accepted_samples": 1218,
+      "rejected_samples": 2371,
+      "accepted_accuracy": 87.36,
+      "accepted_macro_f1": 70.86,
+      "accepted_precision": 80.62
+    },
+    {
+      "threshold": 0.8,
+      "coverage": 25.72,
+      "accepted_samples": 923,
+      "rejected_samples": 2666,
+      "accepted_accuracy": 89.27,
+      "accepted_macro_f1": 69.1,
+      "accepted_precision": 71.38
+    },
+    {
+      "threshold": 0.85,
+      "coverage": 15.32,
+      "accepted_samples": 550,
+      "rejected_samples": 3039,
+      "accepted_accuracy": 88.91,
+      "accepted_macro_f1": 68.22,
+      "accepted_precision": 73.65
+    },
+    {
+      "threshold": 0.9,
+      "coverage": 5.8,
+      "accepted_samples": 208,
+      "rejected_samples": 3381,
+      "accepted_accuracy": 87.02,
+      "accepted_macro_f1": 63.25,
+      "accepted_precision": 79.11
+    }
+  ]
+}

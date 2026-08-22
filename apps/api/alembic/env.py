@@ -4,13 +4,14 @@ import sys
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # Append current directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
+import app.db.models  # noqa: F401
 from app.core.config import settings
 from app.db.base import Base
 
@@ -21,8 +22,9 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-# Use DATABASE_URL from settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Use DATABASE_URL from settings if not explicitly provided
+if not config.get_main_option("sqlalchemy.url"):
+    config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 
 def run_migrations_offline() -> None:
@@ -62,7 +64,18 @@ async def run_async_migrations() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
-    asyncio.run(run_async_migrations())
+    url = config.get_main_option("sqlalchemy.url") or ""
+    if "+asyncpg" in url or "+aiosqlite" in url:
+        asyncio.run(run_async_migrations())
+    else:
+        connectable = engine_from_config(
+            config.get_section(config.config_ini_section, {}),
+            prefix="sqlalchemy.",
+            poolclass=pool.NullPool,
+        )
+        with connectable.connect() as connection:
+            do_run_migrations(connection)
+        connectable.dispose()
 
 
 if context.is_offline_mode():
