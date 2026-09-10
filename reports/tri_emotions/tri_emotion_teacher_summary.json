@@ -1,0 +1,11 @@
+{
+  "total_evaluated": 4456,
+  "total_accepted": 1507,
+  "acceptance_rate_pct": 33.82,
+  "class_counts": {
+    "angry": 752,
+    "fear": 387,
+    "sad": 368
+  },
+  "saved_path": "D:\\projects\\emotion-detection-ai\\data\\processed\\tri_emotions_curated.npz"
+}

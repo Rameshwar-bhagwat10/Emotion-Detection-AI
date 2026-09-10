@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from app.api.v1 import health, predictions, realtime, sessions
+from app.api.v1 import analytics, health, history, predictions, realtime, sessions, video
 
 api_v1_router = APIRouter()
 
@@ -11,3 +11,6 @@ api_v1_router.include_router(health.router)
 api_v1_router.include_router(predictions.router)
 api_v1_router.include_router(sessions.router)
 api_v1_router.include_router(realtime.router)
+api_v1_router.include_router(analytics.router)
+api_v1_router.include_router(history.router)
+api_v1_router.include_router(video.router)

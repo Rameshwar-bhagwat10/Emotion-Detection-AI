@@ -1,0 +1,148 @@
+{
+  "model_evaluated": "Model V2 (ResNet-18 + CBAM Production)",
+  "num_samples_evaluated": 7,
+  "correct_predictions": 4,
+  "sample_accuracy_pct": 57.14,
+  "production_test_benchmark": {
+    "overall_accuracy_pct": 62.66,
+    "balanced_accuracy_pct": 64.63,
+    "macro_f1_pct": 58.52,
+    "weighted_f1_pct": 61.59,
+    "total_test_images": 3589
+  },
+  "samples": [
+    {
+      "sample_num": 1,
+      "test_dataset_index": 1699,
+      "saved_image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_samples\\sample_1_surprise.png",
+      "true_expression": "SURPRISE",
+      "predicted_expression": "SURPRISE",
+      "confidence_pct": 96.14,
+      "is_correct": true,
+      "status": "PASS",
+      "probabilities_pct": {
+        "angry": 0.21,
+        "disgust": 1.84,
+        "fear": 0.68,
+        "happy": 0.06,
+        "sad": 0.12,
+        "surprise": 96.14,
+        "neutral": 0.95
+      }
+    },
+    {
+      "sample_num": 2,
+      "test_dataset_index": 746,
+      "saved_image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_samples\\sample_2_angry.png",
+      "true_expression": "ANGRY",
+      "predicted_expression": "DISGUST",
+      "confidence_pct": 61.05,
+      "is_correct": false,
+      "status": "FAIL",
+      "probabilities_pct": {
+        "angry": 34.43,
+        "disgust": 61.05,
+        "fear": 2.03,
+        "happy": 0.1,
+        "sad": 0.63,
+        "surprise": 1.57,
+        "neutral": 0.19
+      }
+    },
+    {
+      "sample_num": 3,
+      "test_dataset_index": 465,
+      "saved_image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_samples\\sample_3_happy.png",
+      "true_expression": "HAPPY",
+      "predicted_expression": "HAPPY",
+      "confidence_pct": 69.5,
+      "is_correct": true,
+      "status": "PASS",
+      "probabilities_pct": {
+        "angry": 2.94,
+        "disgust": 20.76,
+        "fear": 0.94,
+        "happy": 69.5,
+        "sad": 1.37,
+        "surprise": 0.86,
+        "neutral": 3.63
+      }
+    },
+    {
+      "sample_num": 4,
+      "test_dataset_index": 456,
+      "saved_image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_samples\\sample_4_sad.png",
+      "true_expression": "SAD",
+      "predicted_expression": "NEUTRAL",
+      "confidence_pct": 39.52,
+      "is_correct": false,
+      "status": "FAIL",
+      "probabilities_pct": {
+        "angry": 13.76,
+        "disgust": 6.36,
+        "fear": 12.07,
+        "happy": 0.73,
+        "sad": 26.27,
+        "surprise": 1.28,
+        "neutral": 39.52
+      }
+    },
+    {
+      "sample_num": 5,
+      "test_dataset_index": 1802,
+      "saved_image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_samples\\sample_5_fear.png",
+      "true_expression": "FEAR",
+      "predicted_expression": "NEUTRAL",
+      "confidence_pct": 50.16,
+      "is_correct": false,
+      "status": "FAIL",
+      "probabilities_pct": {
+        "angry": 4.59,
+        "disgust": 5.97,
+        "fear": 10.06,
+        "happy": 5.09,
+        "sad": 17.68,
+        "surprise": 6.46,
+        "neutral": 50.16
+      }
+    },
+    {
+      "sample_num": 6,
+      "test_dataset_index": 3111,
+      "saved_image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_samples\\sample_6_disgust.png",
+      "true_expression": "DISGUST",
+      "predicted_expression": "DISGUST",
+      "confidence_pct": 97.67,
+      "is_correct": true,
+      "status": "PASS",
+      "probabilities_pct": {
+        "angry": 1.16,
+        "disgust": 97.67,
+        "fear": 0.48,
+        "happy": 0.12,
+        "sad": 0.2,
+        "surprise": 0.33,
+        "neutral": 0.05
+      }
+    },
+    {
+      "sample_num": 7,
+      "test_dataset_index": 94,
+      "saved_image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_samples\\sample_7_neutral.png",
+      "true_expression": "NEUTRAL",
+      "predicted_expression": "NEUTRAL",
+      "confidence_pct": 85.16,
+      "is_correct": true,
+      "status": "PASS",
+      "probabilities_pct": {
+        "angry": 2.23,
+        "disgust": 3.4,
+        "fear": 1.63,
+        "happy": 2.0,
+        "sad": 4.6,
+        "surprise": 0.97,
+        "neutral": 85.16
+      }
+    }
+  ]
+}

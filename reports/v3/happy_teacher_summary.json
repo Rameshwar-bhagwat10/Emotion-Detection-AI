@@ -1,0 +1,8 @@
+{
+  "evaluated_candidates": 2984,
+  "retained_high_confidence_happy": 997,
+  "acceptance_rate_pct": 33.41,
+  "min_happy_prob_threshold": 0.7,
+  "mean_retained_confidence": 0.7890717151454364,
+  "output_npz_path": "D:\\projects\\emotion-detection-ai\\data\\processed\\happy_v3_curated.npz"
+}

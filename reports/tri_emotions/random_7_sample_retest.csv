@@ -1,0 +1,8 @@
+Sample,True Expression,Predicted Expression,Confidence,Result,Top Probabilities
+1,SURPRISE,SURPRISE,97.1%,CORRECT,"surprise: 97.1%, disgust: 1.4%, fear: 0.6%"
+2,ANGRY,ANGRY,50.9%,CORRECT,"angry: 50.9%, disgust: 44.3%, fear: 1.9%"
+3,HAPPY,HAPPY,79.4%,CORRECT,"happy: 79.4%, disgust: 8.7%, neutral: 5.2%"
+4,SAD,SAD,40.9%,CORRECT,"sad: 40.9%, neutral: 27.6%, fear: 13.4%"
+5,FEAR,NEUTRAL,46.7%,INCORRECT,"neutral: 46.7%, sad: 22.5%, fear: 12.5%"
+6,DISGUST,DISGUST,84.5%,CORRECT,"disgust: 84.5%, angry: 8.5%, sad: 3.2%"
+7,NEUTRAL,NEUTRAL,87.0%,CORRECT,"neutral: 87.0%, sad: 4.5%, disgust: 2.2%"

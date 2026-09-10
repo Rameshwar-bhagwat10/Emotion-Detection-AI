@@ -58,6 +58,17 @@ models/production/*
 *.tflite
 *.joblib
 *.pkl
+*.data
+
+# Databases & Local Upload Storage
+*.db
+*.sqlite
+*.sqlite3
+apps/api/storage/*
+!apps/api/storage/.gitkeep
+storage/*
+!storage/.gitkeep
+
 
 # IDEs & Operating System
 .DS_Store

@@ -1,0 +1,8 @@
+{
+  "total_evaluated_candidates": 4500,
+  "clean_accepted_candidates": 4456,
+  "total_rejected": 44,
+  "test_sha_collisions": 0,
+  "test_perceptual_collisions": 12,
+  "test_leakage_status": "ZERO_LEAKAGE_VERIFIED"
+}

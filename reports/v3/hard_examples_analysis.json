@@ -1,0 +1,24 @@
+{
+  "total_train_samples": 28709,
+  "total_happy_samples": 7215,
+  "positive_hard_happy_count": 1611,
+  "positive_hard_confusions": {
+    "sad": 66,
+    "happy": 466,
+    "surprise": 302,
+    "neutral": 498,
+    "disgust": 58,
+    "fear": 102,
+    "angry": 119
+  },
+  "negative_hard_count": 911,
+  "negative_hard_confusions": {
+    "surprise": 122,
+    "angry": 140,
+    "sad": 177,
+    "neutral": 333,
+    "fear": 137,
+    "disgust": 2
+  },
+  "hard_weights_file": "D:\\projects\\emotion-detection-ai\\data\\processed\\fer2013_hard_weights.npz"
+}

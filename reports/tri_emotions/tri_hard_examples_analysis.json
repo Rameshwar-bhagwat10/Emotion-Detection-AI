@@ -1,0 +1,10 @@
+{
+  "total_train_samples": 28709,
+  "hard_samples_stats": {
+    "hard_angry_fn": 1796,
+    "hard_fear_fn": 1986,
+    "hard_sad_fn": 2995,
+    "hard_fp_on_neutral": 598
+  },
+  "saved_path": "D:\\projects\\emotion-detection-ai\\data\\processed\\fer2013_tri_hard_weights.npz"
+}

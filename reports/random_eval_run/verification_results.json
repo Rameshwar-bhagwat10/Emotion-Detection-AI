@@ -1,0 +1,160 @@
+{
+  "dataset_evaluation": {
+    "samples": [
+      {
+        "Sample": "Dataset #1",
+        "True Emotion": "HAPPY",
+        "Predicted Emotion": "HAPPY",
+        "Confidence": "86.9%",
+        "Result": "CORRECT",
+        "Top Probabilities": "happy: 86.89%, disgust: 5.52%, neutral: 2.9%",
+        "Full Probabilities": {
+          "angry": 0.48,
+          "disgust": 5.52,
+          "fear": 0.8,
+          "happy": 86.89,
+          "sad": 0.81,
+          "surprise": 2.6,
+          "neutral": 2.9
+        },
+        "Saved Image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_run\\dataset_random_1_happy.png"
+      },
+      {
+        "Sample": "Dataset #2",
+        "True Emotion": "SAD",
+        "Predicted Emotion": "SAD",
+        "Confidence": "58.2%",
+        "Result": "CORRECT",
+        "Top Probabilities": "sad: 58.21%, fear: 11.76%, neutral: 8.42%",
+        "Full Probabilities": {
+          "angry": 7.06,
+          "disgust": 5.9,
+          "fear": 11.76,
+          "happy": 6.48,
+          "sad": 58.21,
+          "surprise": 2.18,
+          "neutral": 8.42
+        },
+        "Saved Image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_run\\dataset_random_2_sad.png"
+      },
+      {
+        "Sample": "Dataset #3",
+        "True Emotion": "SURPRISE",
+        "Predicted Emotion": "SURPRISE",
+        "Confidence": "88.8%",
+        "Result": "CORRECT",
+        "Top Probabilities": "surprise: 88.75%, fear: 6.05%, disgust: 3.2%",
+        "Full Probabilities": {
+          "angry": 1.01,
+          "disgust": 3.2,
+          "fear": 6.05,
+          "happy": 0.33,
+          "sad": 0.29,
+          "surprise": 88.75,
+          "neutral": 0.37
+        },
+        "Saved Image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_run\\dataset_random_3_surprise.png"
+      },
+      {
+        "Sample": "Dataset #4",
+        "True Emotion": "ANGRY",
+        "Predicted Emotion": "HAPPY",
+        "Confidence": "43.0%",
+        "Result": "INCORRECT",
+        "Top Probabilities": "happy: 43.0%, fear: 31.98%, surprise: 13.79%",
+        "Full Probabilities": {
+          "angry": 5.75,
+          "disgust": 3.05,
+          "fear": 31.98,
+          "happy": 43.0,
+          "sad": 1.38,
+          "surprise": 13.79,
+          "neutral": 1.04
+        },
+        "Saved Image": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_run\\dataset_random_4_angry.png"
+      }
+    ],
+    "accuracy": "3/4 (75.0%)"
+  },
+  "internet_evaluation": {
+    "samples": [
+      {
+        "Image Name": "internet_1_happy",
+        "Expected Emotion": "HAPPY",
+        "Predicted Emotion": "HAPPY",
+        "Confidence": "30.2%",
+        "Result": "CORRECT",
+        "Top Probabilities": "happy: 30.19%, neutral: 26.29%, angry: 17.61%",
+        "Full Probabilities": {
+          "angry": 17.61,
+          "disgust": 10.03,
+          "fear": 3.0,
+          "happy": 30.19,
+          "sad": 11.8,
+          "surprise": 1.08,
+          "neutral": 26.29
+        },
+        "Description": "Joyful smiling woman portrait with authentic beaming smile",
+        "Saved Crop": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_run\\internet_1_happy_face_crop.png"
+      },
+      {
+        "Image Name": "internet_2_surprise",
+        "Expected Emotion": "SURPRISE",
+        "Predicted Emotion": "SAD",
+        "Confidence": "33.9%",
+        "Result": "INCORRECT",
+        "Top Probabilities": "sad: 33.87%, fear: 32.66%, surprise: 16.51%",
+        "Full Probabilities": {
+          "angry": 2.44,
+          "disgust": 3.35,
+          "fear": 32.66,
+          "happy": 4.48,
+          "sad": 33.87,
+          "surprise": 16.51,
+          "neutral": 6.69
+        },
+        "Description": "Person with wide open eyes and dropped mouth expressing shock/surprise",
+        "Saved Crop": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_run\\internet_2_surprise_face_crop.png"
+      },
+      {
+        "Image Name": "internet_3_sad",
+        "Expected Emotion": "SAD",
+        "Predicted Emotion": "NEUTRAL",
+        "Confidence": "71.4%",
+        "Result": "INCORRECT",
+        "Top Probabilities": "neutral: 71.37%, sad: 13.5%, angry: 5.15%",
+        "Full Probabilities": {
+          "angry": 5.15,
+          "disgust": 2.32,
+          "fear": 4.24,
+          "happy": 3.02,
+          "sad": 13.5,
+          "surprise": 0.4,
+          "neutral": 71.37
+        },
+        "Description": "Somber melancholic portrait with downcast eyes and sorrowful expression",
+        "Saved Crop": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_run\\internet_3_sad_face_crop.png"
+      },
+      {
+        "Image Name": "internet_4_angry",
+        "Expected Emotion": "ANGRY",
+        "Predicted Emotion": "HAPPY",
+        "Confidence": "91.6%",
+        "Result": "INCORRECT",
+        "Top Probabilities": "happy: 91.62%, disgust: 4.5%, surprise: 1.48%",
+        "Full Probabilities": {
+          "angry": 0.69,
+          "disgust": 4.5,
+          "fear": 0.5,
+          "happy": 91.62,
+          "sad": 0.56,
+          "surprise": 1.48,
+          "neutral": 0.65
+        },
+        "Description": "Intense furrowed-brow glare with fierce scowl (Angry)",
+        "Saved Crop": "D:\\projects\\emotion-detection-ai\\reports\\random_eval_run\\internet_4_angry_face_crop.png"
+      }
+    ],
+    "accuracy": "1/4 (25.0%)"
+  }
+}

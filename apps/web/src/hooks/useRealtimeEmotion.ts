@@ -9,6 +9,15 @@ import {
   ServerRealtimeMessage,
   WebSocketConnectionState,
 } from "@/types/realtime";
+import { createSession, endSession } from "@/lib/api/endpoints";
+
+export type SessionLifecycleState =
+  | "NOT_STARTED"
+  | "STARTING"
+  | "ACTIVE"
+  | "STOPPING"
+  | "COMPLETED"
+  | "ERROR";
 
 const DEFAULT_CONFIG: RealtimeStreamConfig = {
   targetFps: 10,
@@ -26,14 +35,21 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
     ...initialConfig,
   });
 
+  // State Machines
   const [cameraState, setCameraState] = useState<CameraPermissionState>("idle");
   const [connectionState, setConnectionState] = useState<WebSocketConnectionState>("idle");
+  const [sessionState, setSessionState] = useState<SessionLifecycleState>("NOT_STARTED");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
+
+  // Predictions & Session Data
   const [latestResponse, setLatestResponse] = useState<RealtimePredictionResponse | null>(null);
   const [predictions, setPredictions] = useState<DetectedFaceRealtime[]>([]);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionDuration, setSessionDuration] = useState<number>(0);
+  const [totalPredictions, setTotalPredictions] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
-  // Performance Telemetry State
+  // Telemetry Metrics
   const [metrics, setMetrics] = useState({
     cameraFps: 0,
     inferenceFps: 0,
@@ -41,23 +57,25 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
     droppedFrames: 0,
   });
 
-  // DOM & Media Refs
+  // DOM & Hardware Refs
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
 
-  // Internal Loop Refs
+  // Timers and counters
   const frameIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const cameraFpsTrackerRef = useRef<{ count: number; lastTime: number }>({ count: 0, lastTime: 0 });
   const frameIdCounterRef = useRef<number>(0);
   const isStreamingRef = useRef<boolean>(false);
+  const activeSessionIdRef = useRef<string | null>(null);
 
-  // Synchronize ref with state
   isStreamingRef.current = isStreaming;
+  activeSessionIdRef.current = sessionId;
 
-  // Initialize offscreen canvas once
+  // Offscreen canvas setup
   useEffect(() => {
     if (typeof window !== "undefined" && !offscreenCanvasRef.current) {
       offscreenCanvasRef.current = document.createElement("canvas");
@@ -65,7 +83,7 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
   }, []);
 
   /**
-   * Capture and transmit a single video frame over WebSocket.
+   * Capture and transmit single video frame over binary WebSocket.
    */
   const captureAndSendFrame = useCallback(() => {
     const video = videoRef.current;
@@ -87,7 +105,7 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
     const ctx = offscreen.getContext("2d");
     if (!ctx) return;
 
-    // Draw video frame to offscreen canvas
+    // Draw current video frame to offscreen canvas
     ctx.drawImage(video, 0, 0, processingWidth, processingHeight);
 
     // Track camera capture FPS
@@ -103,9 +121,8 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
       tracker.lastTime = now;
     }
 
-    // Capture as Blob and transmit binary frame
+    // Binary transmission of JPEG frame
     frameIdCounterRef.current += 1;
-
     offscreen.toBlob(
       (blob) => {
         if (!blob || socket.readyState !== WebSocket.OPEN) return;
@@ -121,15 +138,22 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
   }, [config]);
 
   /**
-   * Connect to WebSocket backend endpoint.
+   * Connect to WebSocket backend endpoint with session correlation.
    */
-  const connectWebSocket = useCallback((): Promise<WebSocket> => {
+  const connectWebSocket = useCallback((activeSessionUUID?: string): Promise<WebSocket> => {
     return new Promise((resolve, reject) => {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const host = process.env.NEXT_PUBLIC_WS_URL || `${protocol}//${window.location.hostname}:8000/api/v1/realtime/emotion`;
+      const defaultHost = `${protocol}//${window.location.hostname}:8000/api/v1/realtime/emotion`;
+      const baseWsUrl = process.env.NEXT_PUBLIC_WS_URL || defaultHost;
+
+      const url = new URL(baseWsUrl);
+      if (activeSessionUUID) {
+        url.searchParams.set("session_id", activeSessionUUID);
+      }
+      url.searchParams.set("session_name", "Webcam Detection Session");
 
       setConnectionState("connecting");
-      const socket = new WebSocket(host);
+      const socket = new WebSocket(url.toString());
       socket.binaryType = "arraybuffer";
 
       socket.onopen = () => {
@@ -144,10 +168,14 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
 
           if (data.type === "prediction") {
             const now = Date.now();
-            const latency = data.client_timestamp ? Math.max(0, now - data.client_timestamp) : data.metrics.total_processing_time_ms;
+            const latency = data.client_timestamp
+              ? Math.max(0, now - data.client_timestamp)
+              : data.metrics.total_processing_time_ms;
 
             setLatestResponse(data);
             setPredictions(data.faces);
+            setTotalPredictions((prev) => prev + 1);
+
             setMetrics((prev) => ({
               ...prev,
               inferenceFps: data.metrics.fps,
@@ -155,7 +183,10 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
               droppedFrames: data.metrics.dropped_frames,
             }));
           } else if (data.type === "status") {
-            // Status update
+            if (data.session_id) {
+              setSessionId(data.session_id);
+              activeSessionIdRef.current = data.session_id;
+            }
           } else if (data.type === "error") {
             setError(`${data.code}: ${data.message}`);
           }
@@ -166,16 +197,12 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
 
       socket.onerror = (event) => {
         setConnectionState("error");
-        setError("WebSocket connection error.");
+        setError("WebSocket connection error. Verify FastAPI server is running.");
         reject(event);
       };
 
       socket.onclose = () => {
         setConnectionState("disconnected");
-        if (isStreamingRef.current) {
-          // Attempt graceful reconnect if stream is still meant to be active
-          setConnectionState("reconnecting");
-        }
       };
 
       socketRef.current = socket;
@@ -183,14 +210,15 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
   }, []);
 
   /**
-   * Start camera feed and begin real-time analysis stream.
+   * Start camera feed and initialize real-time analysis stream.
    */
   const start = useCallback(async () => {
     setError(null);
     setCameraState("requesting");
+    setSessionState("STARTING");
 
     try {
-      // 1. Request Browser Camera Permission
+      // 1. Request Hardware Camera Permission
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: config.processingWidth },
@@ -208,46 +236,76 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
         await videoRef.current.play();
       }
 
-      // 2. Connect to WebSocket
-      await connectWebSocket();
+      // 2. Initialize or connect backend session
+      let initialSessionId: string | undefined;
+      try {
+        const sessionRecord = await createSession(
+          `Webcam Session ${new Date().toLocaleTimeString()}`
+        );
+        initialSessionId = sessionRecord.id;
+        setSessionId(sessionRecord.id);
+        activeSessionIdRef.current = sessionRecord.id;
+      } catch (sessErr) {
+        console.warn("Backend session creation warning (continuing with auto-session):", sessErr);
+      }
 
-      // 3. Start Frame Sampling Timer Loop
+      // 3. Connect to WebSocket
+      await connectWebSocket(initialSessionId);
+
+      // 4. Start Frame Sampling Loop
       setIsStreaming(true);
+      setSessionState("ACTIVE");
+      setSessionDuration(0);
+      setTotalPredictions(0);
       cameraFpsTrackerRef.current = { count: 0, lastTime: performance.now() };
 
       const intervalMs = Math.round(1000 / config.targetFps);
       frameIntervalRef.current = setInterval(() => {
         captureAndSendFrame();
       }, intervalMs);
+
+      // 5. Start Session Duration Timer
+      sessionTimerRef.current = setInterval(() => {
+        setSessionDuration((prev) => prev + 1);
+      }, 1000);
     } catch (err: unknown) {
       const mediaError = err as Error;
       if (mediaError.name === "NotAllowedError" || mediaError.name === "PermissionDeniedError") {
         setCameraState("denied");
-        setError("Camera permission was denied. Please allow camera access in browser settings.");
-      } else if (mediaError.name === "NotFoundError" || mediaError.name === "DevicesNotFoundError") {
+        setError("Camera access denied. Please allow camera permissions in your browser settings.");
+      } else if (
+        mediaError.name === "NotFoundError" ||
+        mediaError.name === "DevicesNotFoundError"
+      ) {
         setCameraState("unavailable");
         setError("No camera device was detected on this system.");
       } else {
         setCameraState("error");
-        setError(`Failed to start camera: ${mediaError.message || "Unknown error"}`);
+        setError(`Failed to initialize camera: ${mediaError.message || "Unknown error"}`);
       }
       setIsStreaming(false);
+      setSessionState("ERROR");
     }
   }, [config, connectWebSocket, captureAndSendFrame]);
 
   /**
-   * Stop camera feed, release hardware tracks, and terminate WebSocket connection.
+   * Stop camera feed, release hardware tracks, finalize session, and clean up.
    */
-  const stop = useCallback(() => {
+  const stop = useCallback(async () => {
+    setSessionState("STOPPING");
     setIsStreaming(false);
 
-    // 1. Clear frame sampling interval
+    // 1. Clear frame sampling interval & session timer
     if (frameIntervalRef.current) {
       clearInterval(frameIntervalRef.current);
       frameIntervalRef.current = null;
     }
+    if (sessionTimerRef.current) {
+      clearInterval(sessionTimerRef.current);
+      sessionTimerRef.current = null;
+    }
 
-    // 2. Stop all MediaStream tracks and release camera hardware
+    // 2. Stop all MediaStream hardware tracks
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
@@ -257,7 +315,17 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
       videoRef.current.srcObject = null;
     }
 
-    // 3. Close WebSocket cleanly
+    // 3. Finalize backend session if ID is known
+    const currentSessId = activeSessionIdRef.current;
+    if (currentSessId) {
+      try {
+        await endSession(currentSessId);
+      } catch (endErr) {
+        console.warn("Session finalize notice:", endErr);
+      }
+    }
+
+    // 4. Close WebSocket cleanly
     if (socketRef.current) {
       socketRef.current.close(1000, "User stopped stream");
       socketRef.current = null;
@@ -265,26 +333,38 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
 
     setCameraState("idle");
     setConnectionState("disconnected");
+    setSessionState("COMPLETED");
     setPredictions([]);
     setLatestResponse(null);
     setMetrics({ cameraFps: 0, inferenceFps: 0, latencyMs: 0, droppedFrames: 0 });
   }, []);
 
-  // Cleanup on component unmount
+  // Guarantee resource cleanup on unmount
   useEffect(() => {
     return () => {
-      stop();
+      if (frameIntervalRef.current) clearInterval(frameIntervalRef.current);
+      if (sessionTimerRef.current) clearInterval(sessionTimerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      if (socketRef.current) {
+        socketRef.current.close(1000, "Component unmounted");
+      }
     };
-  }, [stop]);
+  }, []);
 
   return {
     videoRef,
     canvasRef,
     cameraState,
     connectionState,
+    sessionState,
     isStreaming,
     predictions,
     latestResponse,
+    sessionId,
+    sessionDuration,
+    totalPredictions,
     metrics,
     error,
     config,

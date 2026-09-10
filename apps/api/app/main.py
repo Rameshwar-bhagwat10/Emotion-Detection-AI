@@ -70,6 +70,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         app.state.inference_engine = None
         app.state.is_ready = False
 
+    # 2. Verify Database Connection / Initialize Local Fallback
+    try:
+        from app.db.session import init_db
+        await init_db()
+    except Exception as exc:
+        logger.warning(f"Database startup initialization notice: {exc}")
+
     yield
 
     # Teardown
@@ -99,6 +106,7 @@ def create_application() -> FastAPI:
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+        expose_headers=["Content-Range", "Accept-Ranges", "Content-Length", "X-Request-ID", "X-Process-Time-Ms"],
     )
 
     # Register custom exception handlers
@@ -106,6 +114,19 @@ def create_application() -> FastAPI:
 
     # Mount API v1 router
     app.include_router(api_v1_router, prefix="/api/v1")
+
+    # Direct video stream alias for clients calling /video/{id}/stream without /api/v1
+    from app.api.dependencies import get_video_service
+    from app.api.v1.video import stream_video_file
+    from app.services.video_service import VideoService
+    from fastapi import Depends
+
+    @app.get("/video/{video_id}/stream", include_in_schema=False)
+    async def direct_video_stream(
+        video_id: uuid.UUID,
+        video_service: VideoService = Depends(get_video_service),
+    ):
+        return await stream_video_file(video_id=video_id, video_service=video_service)
 
     # Root redirect / metadata endpoint
     @app.get("/", tags=["Root"])

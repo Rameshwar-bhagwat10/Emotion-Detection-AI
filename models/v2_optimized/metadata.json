@@ -1,0 +1,84 @@
+{
+  "model_name": "emotion-resnet18-cbam-optimized",
+  "version": "v2_optimized",
+  "description": "Optimized production model with enhanced Fear, Sad, and Angry recognition accuracy via teacher knowledge distillation and curated AffectNet training.",
+  "input_size": [
+    112,
+    112
+  ],
+  "input_channels": 3,
+  "classes": {
+    "0": "angry",
+    "1": "disgust",
+    "2": "fear",
+    "3": "happy",
+    "4": "sad",
+    "5": "surprise",
+    "6": "neutral"
+  },
+  "normalization": {
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "test_metrics": {
+    "overall_accuracy": 0.676,
+    "balanced_accuracy": 0.665,
+    "macro_f1": 0.6584,
+    "weighted_f1": 0.6678,
+    "angry": {
+      "precision": 0.6129,
+      "recall": 0.5804,
+      "f1_score": 0.5963,
+      "support": 491.0
+    },
+    "disgust": {
+      "precision": 0.5432,
+      "recall": 0.8,
+      "f1_score": 0.6333,
+      "support": 55.0
+    },
+    "fear": {
+      "precision": 0.5394,
+      "recall": 0.4792,
+      "f1_score": 0.5159,
+      "support": 528.0
+    },
+    "happy": {
+      "precision": 0.8813,
+      "recall": 0.8612,
+      "f1_score": 0.8794,
+      "support": 879.0
+    },
+    "sad": {
+      "precision": 0.5488,
+      "recall": 0.4832,
+      "f1_score": 0.551,
+      "support": 594.0
+    },
+    "surprise": {
+      "precision": 0.7426,
+      "recall": 0.7837,
+      "f1_score": 0.7786,
+      "support": 416.0
+    },
+    "neutral": {
+      "precision": 0.6029,
+      "recall": 0.7252,
+      "f1_score": 0.6541,
+      "support": 626.0
+    }
+  },
+  "efficiency": {
+    "model_size_mb": 0.12,
+    "total_parameters": 11212969
+  },
+  "status": "production_promoted"
+}

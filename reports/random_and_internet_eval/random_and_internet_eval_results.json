@@ -1,0 +1,84 @@
+{
+  "dataset_samples": [
+    {
+      "Sample": "Dataset #1",
+      "True Emotion": "HAPPY",
+      "Predicted Emotion": "HAPPY",
+      "Confidence": "44.3%",
+      "Result": "CORRECT",
+      "Top Probabilities": "happy: 44.3%, fear: 20.2%, surprise: 9.1%",
+      "Saved Image": "D:\\projects\\emotion-detection-ai\\reports\\random_and_internet_eval\\dataset_random_1_happy.png"
+    },
+    {
+      "Sample": "Dataset #2",
+      "True Emotion": "ANGRY",
+      "Predicted Emotion": "NEUTRAL",
+      "Confidence": "87.6%",
+      "Result": "INCORRECT",
+      "Top Probabilities": "neutral: 87.6%, angry: 3.6%, disgust: 2.4%",
+      "Saved Image": "D:\\projects\\emotion-detection-ai\\reports\\random_and_internet_eval\\dataset_random_2_angry.png"
+    },
+    {
+      "Sample": "Dataset #3",
+      "True Emotion": "SAD",
+      "Predicted Emotion": "SAD",
+      "Confidence": "65.1%",
+      "Result": "CORRECT",
+      "Top Probabilities": "sad: 65.1%, neutral: 18.4%, fear: 8.6%",
+      "Saved Image": "D:\\projects\\emotion-detection-ai\\reports\\random_and_internet_eval\\dataset_random_3_sad.png"
+    },
+    {
+      "Sample": "Dataset #4",
+      "True Emotion": "NEUTRAL",
+      "Predicted Emotion": "NEUTRAL",
+      "Confidence": "69.6%",
+      "Result": "CORRECT",
+      "Top Probabilities": "neutral: 69.6%, angry: 8.5%, fear: 7.5%",
+      "Saved Image": "D:\\projects\\emotion-detection-ai\\reports\\random_and_internet_eval\\dataset_random_4_neutral.png"
+    }
+  ],
+  "dataset_accuracy_pct": 75.0,
+  "internet_samples": [
+    {
+      "Image Name": "internet_1_happy_smile",
+      "Expected Emotion": "HAPPY",
+      "Predicted Emotion": "HAPPY",
+      "Confidence": "52.1%",
+      "Result": "CORRECT",
+      "Top Probabilities": "happy: 52.1%, sad: 24.1%, angry: 6.9%",
+      "Description": "Smiling female portrait with authentic joyful smile",
+      "Saved Face Crop": "D:\\projects\\emotion-detection-ai\\reports\\random_and_internet_eval\\internet_1_happy_smile_crop48.png"
+    },
+    {
+      "Image Name": "internet_2_surprise",
+      "Expected Emotion": "SURPRISE",
+      "Predicted Emotion": "NEUTRAL",
+      "Confidence": "67.0%",
+      "Result": "INCORRECT",
+      "Top Probabilities": "neutral: 67.0%, sad: 9.5%, angry: 9.0%",
+      "Description": "Female portrait with wide eyes and elevated eyebrows (Surprise)",
+      "Saved Face Crop": "D:\\projects\\emotion-detection-ai\\reports\\random_and_internet_eval\\internet_2_surprise_crop48.png"
+    },
+    {
+      "Image Name": "internet_3_sad",
+      "Expected Emotion": "SAD",
+      "Predicted Emotion": "SAD",
+      "Confidence": "69.8%",
+      "Result": "CORRECT",
+      "Top Probabilities": "sad: 69.8%, neutral: 13.2%, fear: 10.3%",
+      "Description": "Somber portrait with melancholic downcast facial expression (Sad)",
+      "Saved Face Crop": "D:\\projects\\emotion-detection-ai\\reports\\random_and_internet_eval\\internet_3_sad_crop48.png"
+    },
+    {
+      "Image Name": "internet_4_neutral",
+      "Expected Emotion": "NEUTRAL",
+      "Predicted Emotion": "HAPPY",
+      "Confidence": "85.0%",
+      "Result": "INCORRECT",
+      "Top Probabilities": "happy: 85.0%, neutral: 7.0%, disgust: 3.3%",
+      "Description": "Male portrait with calm resting neutral facial expression (Neutral)",
+      "Saved Face Crop": "D:\\projects\\emotion-detection-ai\\reports\\random_and_internet_eval\\internet_4_neutral_crop48.png"
+    }
+  ],
+  "internet_accuracy_pct": 50.0
+}

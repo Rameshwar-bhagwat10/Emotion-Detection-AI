@@ -9,15 +9,18 @@ from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import ModelNotReadyError
-from app.db.session import AsyncSessionLocal
+from app.db.session import get_session_factory
+from app.services.analytics_service import AnalyticsService
 from app.services.prediction_service import PredictionService
 from app.services.session_service import SessionService
+from app.services.video_service import VideoService
 from ml.inference.engine import EmotionInferenceEngine
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """Provide an asynchronous database session with automatic transaction management."""
-    async with AsyncSessionLocal() as session:
+    factory = get_session_factory()
+    async with factory() as session:
         try:
             yield session
         except Exception:
@@ -25,6 +28,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             raise
         finally:
             await session.close()
+
 
 
 def get_request_id(request: Request) -> str:
@@ -53,3 +57,18 @@ def get_prediction_service(
 def get_session_service() -> SessionService:
     """Provide SessionService instance."""
     return SessionService()
+
+
+def get_analytics_service() -> AnalyticsService:
+    """Provide AnalyticsService instance."""
+    return AnalyticsService()
+
+
+def get_video_service(
+    prediction_service: PredictionService = Depends(get_prediction_service),
+) -> VideoService:
+    """Provide VideoService instance with injected PredictionService and async session factory."""
+    return VideoService(
+        prediction_service=prediction_service,
+        session_factory=get_session_factory(),
+    )
