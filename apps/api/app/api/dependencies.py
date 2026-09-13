@@ -37,13 +37,23 @@ def get_request_id(request: Request) -> str:
 
 
 def get_inference_engine(request: Request) -> EmotionInferenceEngine:
-    """Retrieve the initialized Phase 09 EmotionInferenceEngine from app.state."""
+    """Retrieve the initialized Phase 09 EmotionInferenceEngine from app.state with lazy fallback."""
     engine: EmotionInferenceEngine | None = getattr(request.app.state, "inference_engine", None)
     if engine is None:
-        raise ModelNotReadyError(
-            message="Emotion inference engine is not initialized or still starting up.",
-            details={"status": "not_ready"},
-        )
+        try:
+            from ml.inference.config import InferencePipelineConfig
+            pipeline_config = InferencePipelineConfig()
+            engine = EmotionInferenceEngine(config=pipeline_config)
+            engine.warm_up(num_warmup_passes=1)
+            request.app.state.inference_engine = engine
+            request.app.state.is_ready = True
+            request.app.state.model_error = None
+        except Exception as exc:
+            request.app.state.model_error = str(exc)
+            raise ModelNotReadyError(
+                message=f"Emotion inference engine initialization failed: {exc}",
+                details={"status": "not_ready", "error": str(exc)},
+            ) from exc
     return engine
 
 

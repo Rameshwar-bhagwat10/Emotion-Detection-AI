@@ -22,7 +22,8 @@ router = APIRouter(prefix="/predictions", tags=["Predictions"])
     response_description="Structured facial expression emotion predictions and bounding boxes",
 )
 async def create_prediction(
-    image: UploadFile = File(..., description="Uploaded image file (JPG, PNG, WEBP)"),
+    image: UploadFile | None = File(default=None, description="Uploaded image file (JPG, PNG, WEBP)"),
+    file: UploadFile | None = File(default=None, description="Uploaded image file alias"),
     session_id: uuid.UUID | None = Form(
         default=None, description="Optional associated session UUID"
     ),
@@ -31,9 +32,17 @@ async def create_prediction(
     service: PredictionService = Depends(get_prediction_service),
 ) -> PredictionResponseSchema:
     """Ingest image upload, execute Phase 09 ML inference, persist metadata, and return structured prediction."""
-    image_bytes = await image.read()
-    filename = image.filename or "unknown.jpg"
-    content_type = image.content_type
+    upload = image or file
+    if upload is None:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing image file. Please provide an image using 'image' or 'file' form field.",
+        )
+
+    image_bytes = await upload.read()
+    filename = upload.filename or "unknown.jpg"
+    content_type = upload.content_type
 
     return await service.predict_and_persist(
         image_bytes=image_bytes,

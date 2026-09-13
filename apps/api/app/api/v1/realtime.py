@@ -160,13 +160,23 @@ async def realtime_emotion_stream(  # noqa: C901
     # 1. Initialize Inference Engine & Services
     engine: EmotionInferenceEngine | None = getattr(websocket.app.state, "inference_engine", None)
     if engine is None:
-        error_msg = RealtimeErrorMessage(
-            code="MODEL_NOT_READY",
-            message="Phase 09 Inference Engine is not initialized or still warming up.",
-        )
-        await websocket.send_text(error_msg.model_dump_json())
-        await websocket.close(code=status.WS_1013_TRY_AGAIN_LATER)
-        return
+        try:
+            from ml.inference.config import InferencePipelineConfig
+            pipeline_config = InferencePipelineConfig()
+            engine = EmotionInferenceEngine(config=pipeline_config)
+            engine.warm_up(num_warmup_passes=1)
+            websocket.app.state.inference_engine = engine
+            websocket.app.state.is_ready = True
+            websocket.app.state.model_error = None
+        except Exception as exc:
+            websocket.app.state.model_error = str(exc)
+            error_msg = RealtimeErrorMessage(
+                code="MODEL_NOT_READY",
+                message=f"Phase 09 Inference Engine is not initialized: {exc}",
+            )
+            await websocket.send_text(error_msg.model_dump_json())
+            await websocket.close(code=status.WS_1013_TRY_AGAIN_LATER)
+            return
 
     prediction_service = PredictionService(inference_engine=engine)
     realtime_service = RealTimeService(prediction_service=prediction_service)

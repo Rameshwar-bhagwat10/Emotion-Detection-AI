@@ -73,6 +73,41 @@ def _load_state_dict_weights(weights_path_str: str) -> dict[str, Any]:
     if not weights_path.exists():
         raise ModelLoadingError(f"Optimized Champion weights file not found at {weights_path}")
 
+    # Detect un-pulled Git LFS pointers (< 1KB containing 'git-lfs' or 'version https')
+    # and automatically hydrate real weights from GitHub Media CDN
+    if weights_path.stat().st_size < 1000:
+        try:
+            with open(weights_path, "r", errors="ignore") as f:
+                header = f.read(200)
+            if "git-lfs" in header or "version https" in header:
+                logging.info(
+                    f"Detected un-pulled Git LFS pointer at {weights_path}. Hydrating from GitHub Media CDN..."
+                )
+                import urllib.request
+                media_url = (
+                    "https://media.githubusercontent.com/media/Rameshwar-bhagwat10/"
+                    "Emotion-Detection-AI/main/artifacts/optimized/champion/model.pt"
+                )
+                req = urllib.request.Request(
+                    media_url,
+                    headers={"User-Agent": "Mozilla/5.0 (EmotionDetectionAI-Hydrator/1.0)"},
+                )
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    blob = resp.read()
+                    if len(blob) > 1000:
+                        with open(weights_path, "wb") as out_f:
+                            out_f.write(blob)
+                        logging.info(
+                            f"Successfully hydrated model weights from CDN ({len(blob)} bytes)."
+                        )
+                    else:
+                        raise ModelLoadingError(f"Hydration payload unexpectedly small: {len(blob)} bytes.")
+        except Exception as hyd_err:
+            logging.error(f"Failed to auto-hydrate Champion model weights: {hyd_err}")
+            raise ModelLoadingError(
+                f"Weights file at {weights_path} is an un-pulled Git LFS pointer and CDN hydration failed: {hyd_err}"
+            ) from hyd_err
+
     try:
         try:
             checkpoint = torch.load(weights_path, map_location="cpu", weights_only=True)

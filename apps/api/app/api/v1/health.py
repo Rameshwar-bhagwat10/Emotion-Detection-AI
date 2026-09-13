@@ -71,6 +71,19 @@ async def readiness_probe(request: Request) -> JSONResponse:
     db_ready = db_health.get("status") == "healthy"
 
     inference_engine = getattr(request.app.state, "inference_engine", None)
+    if inference_engine is None:
+        try:
+            from ml.inference.config import InferencePipelineConfig
+            from ml.inference.engine import EmotionInferenceEngine
+            pipeline_config = InferencePipelineConfig()
+            inference_engine = EmotionInferenceEngine(config=pipeline_config)
+            inference_engine.warm_up(num_warmup_passes=1)
+            request.app.state.inference_engine = inference_engine
+            request.app.state.is_ready = True
+            request.app.state.model_error = None
+        except Exception as exc:
+            request.app.state.model_error = str(exc)
+
     model_ready = inference_engine is not None and getattr(request.app.state, "is_ready", False)
 
     is_ready = db_ready and model_ready
@@ -87,6 +100,7 @@ async def readiness_probe(request: Request) -> JSONResponse:
             "model_version": settings.MODEL_VERSION,
             "device": settings.DEVICE,
             "database": db_health,
+            "model_error": getattr(request.app.state, "model_error", None),
         },
     }
 

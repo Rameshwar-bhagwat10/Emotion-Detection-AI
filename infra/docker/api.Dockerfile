@@ -33,6 +33,14 @@ COPY apps/ apps/
 COPY ml/ ml/
 COPY artifacts/ artifacts/
 
+# Ensure Champion model weights are fully hydrated if cloned as an un-pulled Git LFS pointer
+RUN if [ ! -s /app/artifacts/optimized/champion/model.pt ] || [ $(wc -c < /app/artifacts/optimized/champion/model.pt) -lt 1000 ]; then \
+      echo "Hydrating Phase 09 Champion model weights from GitHub Media CDN..." && \
+      curl -fSL -o /app/artifacts/optimized/champion/model.pt \
+        https://media.githubusercontent.com/media/Rameshwar-bhagwat10/Emotion-Detection-AI/main/artifacts/optimized/champion/model.pt && \
+      echo "Model hydration complete: $(ls -lh /app/artifacts/optimized/champion/model.pt)"; \
+    fi
+
 # Install dependencies and editable project package
 RUN pip install --no-cache-dir -e .
 

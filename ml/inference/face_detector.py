@@ -157,18 +157,38 @@ class YuNetFaceDetector(BaseFaceDetector):
             raise ValueError(f"Expected RGB image of shape [H, W, 3], got {image_rgb.shape}")
 
         h, w = image_rgb.shape[:2]
-        self._detector.setInputSize((w, h))
+
+        # Dynamic downscaling for high-resolution images (>1280px) to guarantee sub-15ms detection latency on CPU
+        max_dim = max(h, w)
+        if max_dim > 1280:
+            scale = 1280.0 / float(max_dim)
+            det_w = int(w * scale)
+            det_h = int(h * scale)
+            bgr = cv2.resize(cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR), (det_w, det_h))
+            inv_scale = 1.0 / scale
+        else:
+            scale = 1.0
+            det_w, det_h = w, h
+            bgr = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR)
+            inv_scale = 1.0
+
+        self._detector.setInputSize((det_w, det_h))
         if hasattr(self._detector, "setScoreThreshold"):
             self._detector.setScoreThreshold(self.config.confidence_threshold)
 
-        bgr = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR)
         _, faces = self._detector.detect(bgr)
 
         detections: list[FaceDetection] = []
         if faces is not None:
             raw_detections = []
             for face in faces:
-                fx, fy, fw, fh = map(int, face[0:4])
+                if scale != 1.0:
+                    fx = int(face[0] * inv_scale)
+                    fy = int(face[1] * inv_scale)
+                    fw = int(face[2] * inv_scale)
+                    fh = int(face[3] * inv_scale)
+                else:
+                    fx, fy, fw, fh = map(int, face[0:4])
                 conf = float(face[14])
                 if conf >= self.config.confidence_threshold:
                     bbox = FaceBoundingBox(x=fx, y=fy, width=fw, height=fh)

@@ -71,11 +71,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         inference_engine.warm_up(num_warmup_passes=3)
         app.state.inference_engine = inference_engine
         app.state.is_ready = True
+        app.state.model_error = None
         logger.info("Phase 09 Inference Engine successfully loaded and ready.")
     except Exception as exc:
         logger.error(f"Failed to initialize Phase 09 Inference Engine: {exc}", exc_info=True)
         app.state.inference_engine = None
         app.state.is_ready = False
+        app.state.model_error = str(exc)
 
     # 2. Verify Database Connection / Initialize Local Fallback
     try:

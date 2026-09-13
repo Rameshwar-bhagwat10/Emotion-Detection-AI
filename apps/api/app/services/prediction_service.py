@@ -92,10 +92,11 @@ class PredictionService:
                     },
                 )
 
-        # 3. Phase 09 ML Inference (Single Source of Truth)
+        # 3. Phase 09 ML Inference (executed in threadpool to keep event loop unblocked)
         try:
-            inference_result: ImageInferenceResult = self.engine.predict_image(
-                image_source=image_bytes
+            inference_result: ImageInferenceResult = await asyncio.to_thread(
+                self.engine.predict_image,
+                image_source=image_bytes,
             )
         except Exception as exc:
             logger.error(f"[{request_id}] Phase 09 inference call failed: {exc}", exc_info=True)
