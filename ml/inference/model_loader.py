@@ -161,8 +161,14 @@ class ModelManager:
         model.eval()
 
         if self.device.type == "cpu":
-            torch.set_num_threads(2)
-            torch.set_num_interop_threads(1)
+            try:
+                torch.set_num_threads(2)
+            except Exception:
+                pass
+            try:
+                torch.set_num_interop_threads(1)
+            except Exception:
+                pass
 
         self.model = model
         logging.info(

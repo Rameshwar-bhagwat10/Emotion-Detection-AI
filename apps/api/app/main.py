@@ -24,9 +24,18 @@ from ml.inference.engine import EmotionInferenceEngine
 import torch
 
 # Optimize CPU threads for container deployment to eliminate CFS scheduling bottlenecks
-torch.set_num_threads(2)
-torch.set_num_interop_threads(1)
-torch.set_grad_enabled(False)
+try:
+    torch.set_num_threads(2)
+except Exception:
+    pass
+try:
+    torch.set_num_interop_threads(1)
+except Exception:
+    pass
+try:
+    torch.set_grad_enabled(False)
+except Exception:
+    pass
 
 # Initialize structured logging
 setup_logging(log_level=settings.LOG_LEVEL)
