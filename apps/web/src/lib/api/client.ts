@@ -24,7 +24,7 @@ export class ApiClientError extends Error {
  */
 export const apiClient: AxiosInstance = axios.create({
   baseURL: `${env.apiUrl.replace(/\/+$/, "")}/api/v1`,
-  timeout: 15000,
+  timeout: 60000, // 60s timeout accommodates Render free-tier cold starts
   headers: {
     Accept: "application/json",
   },
@@ -45,10 +45,28 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor to normalize error structures
+// Response interceptor to normalize error structures and auto-retry on Render cold starts
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError<ApiErrorResponse>) => {
+  async (error: AxiosError<ApiErrorResponse>) => {
+    const config = error.config as (typeof error.config & { _retryCount?: number }) | undefined;
+
+    // Detect temporary Render cold-start conditions: 502/503/504 gateway or initial network timeout
+    const isColdStart =
+      config &&
+      (!error.response ||
+        error.code === "ECONNABORTED" ||
+        error.response.status === 502 ||
+        error.response.status === 503 ||
+        error.response.status === 504);
+
+    if (isColdStart && (!config._retryCount || config._retryCount < 2)) {
+      config._retryCount = (config._retryCount || 0) + 1;
+      const delayMs = config._retryCount * 2500;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      return apiClient(config);
+    }
+
     if (error.response) {
       const data = error.response.data;
       const status = error.response.status;
@@ -69,13 +87,13 @@ apiClient.interceptors.response.use(
       );
     } else if (error.code === "ECONNABORTED") {
       throw new ApiClientError(
-        "Request timed out. The backend server took too long to respond.",
+        "Backend server is waking from standby (Render cold-start). Please retry in a few seconds.",
         "TIMEOUT",
         408
       );
     } else if (error.request) {
       throw new ApiClientError(
-        "Unable to connect to the backend server. Please verify FastAPI is running at " + env.apiUrl,
+        "Backend server is currently waking up or connecting. Please retry in a few seconds.",
         "NETWORK_ERROR",
         0
       );

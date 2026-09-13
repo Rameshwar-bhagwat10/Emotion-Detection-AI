@@ -97,7 +97,7 @@ export default function DashboardPage() {
       }
 
       if (healthData.status === "rejected" && readyData.status === "rejected") {
-        setError("Backend API is currently unreachable. Confirm FastAPI is operational on port 8000.");
+        setError("Backend server is connecting or waking from standby (Render cold-start). Auto-reconnecting in background...");
       }
     } catch (err: unknown) {
       const errorObj = err as Error;

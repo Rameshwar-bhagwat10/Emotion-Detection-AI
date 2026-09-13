@@ -10,6 +10,7 @@ import {
   WebSocketConnectionState,
 } from "@/types/realtime";
 import { createSession, endSession } from "@/lib/api/endpoints";
+import { env } from "@/config/environment";
 import {
   getOrCreateUserId,
   saveUserSession,
@@ -175,9 +176,7 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
    */
   const connectWebSocket = useCallback((activeSessionUUID?: string): Promise<WebSocket> => {
     return new Promise((resolve, reject) => {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const defaultHost = `${protocol}//${window.location.hostname}:8000/api/v1/realtime/emotion`;
-      const baseWsUrl = process.env.NEXT_PUBLIC_WS_URL || defaultHost;
+      const baseWsUrl = process.env.NEXT_PUBLIC_WS_URL || env.wsUrl;
 
       const url = new URL(baseWsUrl);
       if (activeSessionUUID) {

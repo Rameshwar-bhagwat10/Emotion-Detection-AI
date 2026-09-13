@@ -13,26 +13,43 @@ export interface AppHeaderProps {
 
 export function AppHeader({ onToggleSidebar, isSidebarOpen = true, className = "" }: AppHeaderProps) {
   const pathname = usePathname();
-  const [apiStatus, setApiStatus] = useState<"checking" | "online" | "offline">("checking");
+  const [apiStatus, setApiStatus] = useState<"checking" | "online" | "waking" | "offline">("checking");
+  const [, setFailureCount] = useState<number>(0);
 
-  const checkStatus = async () => {
+  const handleStatusFailure = React.useCallback(() => {
+    setFailureCount((prev) => {
+      const next = prev + 1;
+      // If 1 or 2 initial polls fail, Render is likely waking from cold start
+      if (next <= 2) {
+        setApiStatus("waking");
+      } else {
+        setApiStatus("offline");
+      }
+      return next;
+    });
+  }, []);
+
+  const checkStatus = React.useCallback(async () => {
     try {
       const data = await getHealth();
       if (data.status === "ok" || data.status === "degraded") {
         setApiStatus("online");
+        setFailureCount(0);
       } else {
-        setApiStatus("offline");
+        handleStatusFailure();
       }
     } catch {
-      setApiStatus("offline");
+      handleStatusFailure();
     }
-  };
+  }, [handleStatusFailure]);
 
   useEffect(() => {
     checkStatus();
-    const interval = setInterval(checkStatus, 15000);
+    // Fast initial retry if waking, otherwise standard 15s interval
+    const intervalTime = apiStatus === "waking" ? 5000 : 15000;
+    const interval = setInterval(checkStatus, intervalTime);
     return () => clearInterval(interval);
-  }, []);
+  }, [apiStatus, checkStatus]);
 
   const getPageTitle = () => {
     if (pathname.includes("/live")) return "Live Emotion Detection";
@@ -78,13 +95,19 @@ export function AppHeader({ onToggleSidebar, isSidebarOpen = true, className = "
             className={`w-2 h-2 rounded-full ${
               apiStatus === "online"
                 ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]"
-                : apiStatus === "checking"
+                : apiStatus === "waking" || apiStatus === "checking"
                 ? "bg-amber-400 animate-pulse"
                 : "bg-red-500"
             }`}
           />
           <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#999999]">
-            {apiStatus === "online" ? "System Active" : apiStatus === "checking" ? "Connecting" : "Offline"}
+            {apiStatus === "online"
+              ? "System Active"
+              : apiStatus === "waking"
+              ? "Waking Server..."
+              : apiStatus === "checking"
+              ? "Connecting"
+              : "Offline"}
           </span>
         </div>
       </div>
