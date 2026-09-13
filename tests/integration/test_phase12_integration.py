@@ -164,8 +164,7 @@ async def test_image_prediction_flow(client: AsyncClient):
     # Telemetry and model info
     assert "timing" in pred_data
     assert pred_data["timing"]["total_ms"] > 0
-    assert "model_info" in pred_data
-    assert pred_data["model_info"]["architecture"] == "resnet18"
+    assert pred_data["model_info"]["architecture"] in ("resnet18_cbam", "resnet18")
 
 
 @pytest.mark.asyncio

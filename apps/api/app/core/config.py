@@ -98,14 +98,14 @@ class Settings(BaseSettings):
         description="Path to Phase 08 Optimized Champion directory",
     )
     MODEL_VERSION: str = Field(
-        default="champion-pruning-30",
+        default="emotion-resnet18-cbam-optimized",
         description="Champion model identifier",
     )
     DEVICE: str = Field(
         default="auto", description="Compute device for ML inference (auto, cpu, cuda)"
     )
     CONFIDENCE_THRESHOLD: float = Field(
-        default=0.40,
+        default=0.35,
         description="Application confidence threshold for uncertain emotion labeling",
     )
     MAX_IMAGE_SIZE_MB: int = Field(

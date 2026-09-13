@@ -10,6 +10,11 @@ import {
   WebSocketConnectionState,
 } from "@/types/realtime";
 import { createSession, endSession } from "@/lib/api/endpoints";
+import {
+  getOrCreateUserId,
+  saveUserSession,
+  updateUserSession,
+} from "@/lib/storage/user-storage";
 
 export type SessionLifecycleState =
   | "NOT_STARTED"
@@ -57,6 +62,13 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
     droppedFrames: 0,
   });
 
+  // Dynamic frame dimensions for exact bounding box alignment
+  const [processedFrameDims, setProcessedFrameDims] = useState<{ width: number; height: number }>({
+    width: 640,
+    height: 480,
+  });
+  const processedDimsRef = useRef<{ width: number; height: number }>({ width: 640, height: 480 });
+
   // DOM & Hardware Refs
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -98,15 +110,36 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
       return;
     }
 
-    const { processingWidth, processingHeight, jpegQuality } = config;
-    offscreen.width = processingWidth;
-    offscreen.height = processingHeight;
+    const vWidth = video.videoWidth || 640;
+    const vHeight = video.videoHeight || 480;
+    const maxDim = 640;
+    let targetW = maxDim;
+    let targetH = Math.round(maxDim * (vHeight / vWidth));
+    if (vHeight > vWidth) {
+      targetH = maxDim;
+      targetW = Math.round(maxDim * (vWidth / vHeight));
+    }
+
+    // Ensure dimensions are even integers for encoder stability
+    targetW = targetW % 2 === 0 ? targetW : targetW - 1;
+    targetH = targetH % 2 === 0 ? targetH : targetH - 1;
+
+    offscreen.width = targetW;
+    offscreen.height = targetH;
 
     const ctx = offscreen.getContext("2d");
     if (!ctx) return;
 
-    // Draw current video frame to offscreen canvas
-    ctx.drawImage(video, 0, 0, processingWidth, processingHeight);
+    // Draw current video frame to offscreen canvas without distortion
+    ctx.drawImage(video, 0, 0, targetW, targetH);
+
+    if (
+      processedDimsRef.current.width !== targetW ||
+      processedDimsRef.current.height !== targetH
+    ) {
+      processedDimsRef.current = { width: targetW, height: targetH };
+      setProcessedFrameDims({ width: targetW, height: targetH });
+    }
 
     // Track camera capture FPS
     const now = performance.now();
@@ -133,9 +166,9 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
         });
       },
       "image/jpeg",
-      jpegQuality
+      config.jpegQuality
     );
-  }, [config]);
+  }, [config.jpegQuality]);
 
   /**
    * Connect to WebSocket backend endpoint with session correlation.
@@ -186,6 +219,12 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
             if (data.session_id) {
               setSessionId(data.session_id);
               activeSessionIdRef.current = data.session_id;
+              saveUserSession({
+                id: data.session_id,
+                name: `Webcam Session ${new Date().toLocaleTimeString()}`,
+                status: "active",
+                started_at: new Date().toISOString(),
+              });
             }
           } else if (data.type === "error") {
             setError(`${data.code}: ${data.message}`);
@@ -236,15 +275,21 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
         await videoRef.current.play();
       }
 
-      // 2. Initialize or connect backend session
+      // 2. Initialize or connect backend session with user isolation
       let initialSessionId: string | undefined;
       try {
-        const sessionRecord = await createSession(
-          `Webcam Session ${new Date().toLocaleTimeString()}`
-        );
+        const userId = getOrCreateUserId();
+        const sessionName = `Webcam Session ${new Date().toLocaleTimeString()}`;
+        const sessionRecord = await createSession(sessionName, userId);
         initialSessionId = sessionRecord.id;
         setSessionId(sessionRecord.id);
         activeSessionIdRef.current = sessionRecord.id;
+        saveUserSession({
+          id: sessionRecord.id,
+          name: sessionRecord.name || sessionName,
+          status: sessionRecord.status || "active",
+          started_at: sessionRecord.started_at || new Date().toISOString(),
+        });
       } catch (sessErr) {
         console.warn("Backend session creation warning (continuing with auto-session):", sessErr);
       }
@@ -315,9 +360,13 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
       videoRef.current.srcObject = null;
     }
 
-    // 3. Finalize backend session if ID is known
+    // 3. Finalize backend session and local storage record if ID is known
     const currentSessId = activeSessionIdRef.current;
     if (currentSessId) {
+      updateUserSession(currentSessId, {
+        status: "completed",
+        ended_at: new Date().toISOString(),
+      });
       try {
         await endSession(currentSessId);
       } catch (endErr) {
@@ -369,6 +418,7 @@ export function useRealtimeEmotion(initialConfig: Partial<RealtimeStreamConfig> 
     error,
     config,
     setConfig,
+    processedFrameDims,
     start,
     stop,
   };

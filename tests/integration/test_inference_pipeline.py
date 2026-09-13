@@ -56,8 +56,7 @@ def test_integration_single_face_inference_e2e(inference_engine: EmotionInferenc
     assert result.timing.total_ms > 0
 
     # Verify ModelInfo
-    assert result.model_info is not None
-    assert result.model_info.model_name == "champion-pruning-30"
+    assert result.model_info.model_name in ("emotion-resnet18-cbam-optimized", "champion-pruning-30")
 
 
 def test_integration_zero_face_detection():

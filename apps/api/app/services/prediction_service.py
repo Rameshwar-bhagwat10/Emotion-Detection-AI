@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import uuid
 from datetime import UTC, datetime
@@ -183,10 +184,33 @@ class PredictionService:
                 await db.commit()
             except Exception as exc:
                 await db.rollback()
-                logger.error(
-                    f"[{request_id}] Failed to persist prediction record: {exc}", exc_info=True
+                logger.warning(
+                    f"[{request_id}] Initial persistence failed ({exc}). Retrying after short backoff..."
                 )
-                raise DatabaseException(message=f"Database persistence failed: {exc}") from exc
+                try:
+                    await asyncio.sleep(0.15)
+                    prediction_record = await self.repo.create_prediction_with_faces(
+                        session=db,
+                        prediction_id=uuid.uuid4(),
+                        request_id=request_id,
+                        model_version=model_version,
+                        status=inference_result.status.value,
+                        faces_detected=inference_result.faces_detected,
+                        processing_time_ms=proc_time,
+                        image_width=image_w,
+                        image_height=image_h,
+                        session_id=session_id,
+                        faces_data=faces_persist_data,
+                    )
+                    persisted_id = prediction_record.id
+                    await db.commit()
+                except Exception as retry_exc:
+                    await db.rollback()
+                    logger.error(
+                        f"[{request_id}] Persistence retry also encountered notice: {retry_exc}"
+                    )
+                    # Do not crash the entire inference prediction if database is locked; return valid inference results
+                    persisted_id = None
 
         # 7. Construct and return final API response
         timing_schema = (

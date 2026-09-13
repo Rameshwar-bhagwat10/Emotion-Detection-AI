@@ -4,40 +4,95 @@
 
 @layer base {
   :root {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --canvas: #000000;
+    --surface-soft: #0d0d0d;
+    --surface-card: #141414;
+    --surface-elevated: #1f1f1f;
+    --hairline: #262626;
+    --hairline-strong: #3a3a3a;
+    --ink: #ffffff;
+    --body: #cccccc;
+    --body-strong: #e6e6e6;
+    --muted: #999999;
+    --muted-soft: #666666;
+    --link: #c3d9f3;
+  }
 
-    --card: 222 47% 14%;
-    --card-foreground: 210 40% 98%;
+  body {
+    background-color: #000000;
+    color: #cccccc;
+    font-family: var(--font-serif), Cormorant Garamond, Garamond, Georgia, serif;
+    letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-    --popover: 222 47% 14%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
-
-    --secondary: 217 32% 17%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 217 32% 20%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217 32% 20%;
-    --input: 217 32% 20%;
-    --ring: 224 76% 48%;
-
-    --radius: 0.5rem;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), Saira Condensed, sans-serif;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: #ffffff;
   }
 }
 
-body {
-  color: hsl(var(--foreground));
-  background-color: hsl(var(--background));
-  font-feature-settings: "rlig" 1, "calt" 1;
+@layer components {
+  /* VALENCE Primary Button: transparent background + 1px white border + pill shape + monospace */
+  .btn-valence {
+    @apply inline-flex items-center justify-center h-11 px-8 rounded-full border border-white bg-transparent text-white font-mono text-[13px] tracking-[2.5px] uppercase transition-all duration-300 hover:bg-white hover:text-black cursor-pointer select-none active:scale-[0.98];
+  }
+
+  /* VALENCE Secondary / Soft Button */
+  .btn-valence-secondary {
+    @apply inline-flex items-center justify-center h-11 px-8 rounded-full border border-[#3a3a3a] bg-transparent text-[#cccccc] font-mono text-[13px] tracking-[2.5px] uppercase transition-all duration-300 hover:border-white hover:text-white cursor-pointer select-none active:scale-[0.98];
+  }
+
+  /* VALENCE Icon Button: 40x40 circular transparent outline */
+  .btn-valence-icon {
+    @apply inline-flex items-center justify-center w-10 h-10 rounded-full border border-white/60 bg-transparent text-white transition-all duration-200 hover:border-white hover:bg-white hover:text-black cursor-pointer;
+  }
+
+  /* VALENCE Card: Rectangular 0px + subtle #141414 surface + 1px #262626 hairline */
+  .card-valence {
+    @apply bg-[#141414] border border-[#262626] rounded-none;
+  }
+
+  /* Technical Spec Cell: Full-width or grid cell with hairline dividers */
+  .spec-cell {
+    @apply py-6 border-b border-[#262626] transition-colors hover:border-[#3a3a3a];
+  }
+
+  /* Underline-only hairline text input with zero corner radius */
+  .input-valence {
+    @apply w-full bg-transparent border-b border-[#3a3a3a] focus:border-white text-white font-mono text-sm py-3 px-0 rounded-none outline-none transition-colors placeholder:text-[#666666];
+  }
+
+  /* VALENCE Wordmark Display */
+  .wordmark-display {
+    @apply font-display text-sm uppercase tracking-[6px] text-white font-normal select-none;
+  }
+
+  /* Typography tokens */
+  .display-xl {
+    @apply font-display uppercase text-5xl sm:text-6xl md:text-7xl tracking-[4px] font-normal leading-[1.1] text-white;
+  }
+
+  .display-lg {
+    @apply font-display uppercase text-3xl sm:text-4xl md:text-5xl tracking-[3px] font-normal leading-[1.15] text-white;
+  }
+
+  .display-md {
+    @apply font-display uppercase text-2xl sm:text-3xl tracking-[2px] font-normal leading-[1.2] text-white;
+  }
+
+  .display-sm {
+    @apply font-display uppercase text-lg sm:text-xl tracking-[1.5px] font-normal leading-[1.3] text-white;
+  }
+
+  .caption-mono {
+    @apply font-mono uppercase text-[11px] tracking-[2px] text-[#999999] font-normal;
+  }
+
+  .nav-link-mono {
+    @apply font-mono uppercase text-xs tracking-[2px] text-[#999999] hover:text-white transition-colors duration-200;
+  }
 }

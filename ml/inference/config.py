@@ -33,11 +33,12 @@ class ModelInferenceConfig:
     weights_file: str = "artifacts/optimized/champion/model.pt"
     onnx_file: str = "artifacts/optimized/champion/model.onnx"
     model_format: str = "pytorch"  # "pytorch" | "onnx"
-    expected_architecture: str = "resnet18"
-    input_size: list[int] = field(default_factory=lambda: [48, 48])
-    input_channels: int = 1
-    mean: list[float] = field(default_factory=lambda: [0.507743])
-    std: list[float] = field(default_factory=lambda: [0.255009])
+    expected_architecture: str = "resnet18_cbam"
+    input_size: list[int] = field(default_factory=lambda: [112, 112])
+    input_channels: int = 3
+    mean: list[float] = field(default_factory=lambda: [0.485, 0.456, 0.406])
+    std: list[float] = field(default_factory=lambda: [0.229, 0.224, 0.225])
+    logit_adjustment_tau: float = 0.30
 
     def validate(self) -> None:
         """Validate model configuration values."""
@@ -61,7 +62,7 @@ class FaceDetectionConfig:
     haar_scale_factor: float = 1.1
     haar_min_neighbors: int = 5
     min_face_size: list[int] = field(default_factory=lambda: [20, 20])
-    confidence_threshold: float = 0.50
+    confidence_threshold: float = 0.30
     nms_threshold: float = 0.30
     face_padding: float = 0.15  # Expand bounding box by 15% before cropping
     max_faces: int = 20
@@ -150,11 +151,12 @@ class InferencePipelineConfig:
             weights_file=mod_data.get("weights_file", "artifacts/optimized/champion/model.pt"),
             onnx_file=mod_data.get("onnx_file", "artifacts/optimized/champion/model.onnx"),
             model_format=mod_data.get("model_format", "pytorch"),
-            expected_architecture=mod_data.get("expected_architecture", "resnet18"),
-            input_size=mod_data.get("input_size", [48, 48]),
-            input_channels=mod_data.get("input_channels", 1),
-            mean=norm_data.get("mean", [0.507743]),
-            std=norm_data.get("std", [0.255009]),
+            expected_architecture=mod_data.get("expected_architecture", "resnet18_cbam"),
+            input_size=mod_data.get("input_size", [112, 112]),
+            input_channels=mod_data.get("input_channels", 3),
+            mean=norm_data.get("mean", [0.485, 0.456, 0.406]),
+            std=norm_data.get("std", [0.229, 0.224, 0.225]),
+            logit_adjustment_tau=float(mod_data.get("logit_adjustment_tau", 0.30)),
         )
 
         fd_data = data.get("face_detection", {})

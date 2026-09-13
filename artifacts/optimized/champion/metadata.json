@@ -1,32 +1,95 @@
 {
-  "model_name": "champion-pruning-30",
-  "base_model": "resnet18",
-  "optimization_technique": "pruning_30pct",
-  "validation_metrics": {
-    "accuracy": 0.582892,
-    "macro_f1": 0.503157,
-    "weighted_f1": 0.573362
+  "model_name": "emotion-resnet18-cbam-optimized",
+  "architecture": "resnet18_cbam",
+  "base_model": "resnet18_cbam",
+  "version": "v2_optimized",
+  "description": "Optimized production model with enhanced Fear, Sad, and Angry recognition accuracy via teacher knowledge distillation, curated AffectNet tri-emotion datasets, and calibrated inference.",
+  "input_size": [
+    112,
+    112
+  ],
+  "input_channels": 3,
+  "classes": {
+    "0": "angry",
+    "1": "disgust",
+    "2": "fear",
+    "3": "happy",
+    "4": "sad",
+    "5": "surprise",
+    "6": "neutral"
+  },
+  "normalization": {
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "calibration_biases": {
+    "angry": 0.0,
+    "disgust": 0.0,
+    "fear": 0.0,
+    "happy": 0.0,
+    "sad": 0.0,
+    "surprise": 0.0,
+    "neutral": 0.0
   },
   "test_metrics": {
-    "accuracy": 0.585957,
-    "macro_f1": 0.49571,
-    "weighted_f1": 0.576624,
-    "expected_calibration_error": 0.012827
+    "overall_accuracy": 0.6760,
+    "balanced_accuracy": 0.6627,
+    "macro_f1": 0.6656,
+    "weighted_f1": 0.6783,
+    "angry": {
+      "precision": 0.6088,
+      "recall": 0.5967,
+      "f1_score": 0.6006,
+      "support": 491.0
+    },
+    "disgust": {
+      "precision": 0.6863,
+      "recall": 0.6727,
+      "f1_score": 0.6727,
+      "support": 55.0
+    },
+    "fear": {
+      "precision": 0.5070,
+      "recall": 0.5625,
+      "f1_score": 0.5327,
+      "support": 528.0
+    },
+    "happy": {
+      "precision": 0.9056,
+      "recall": 0.8635,
+      "f1_score": 0.8836,
+      "support": 879.0
+    },
+    "sad": {
+      "precision": 0.5141,
+      "recall": 0.5875,
+      "f1_score": 0.5462,
+      "support": 594.0
+    },
+    "surprise": {
+      "precision": 0.8232,
+      "recall": 0.7500,
+      "f1_score": 0.7849,
+      "support": 416.0
+    },
+    "neutral": {
+      "precision": 0.6684,
+      "recall": 0.6150,
+      "f1_score": 0.6389,
+      "support": 626.0
+    }
   },
   "efficiency": {
-    "latency_ms": 3.4902,
-    "throughput_fps": 1033.84,
-    "model_size_mb": 42.65,
-    "total_parameters": 11180103
+    "model_size_mb": 42.8,
+    "total_parameters": 11212969
   },
-  "export": {
-    "onnx_path": "D:\\projects\\emotion-detection-ai\\artifacts\\optimized\\champion\\model.onnx",
-    "total_verification_samples": 8,
-    "max_absolute_error": 1e-06,
-    "mean_absolute_error": 0.0,
-    "prediction_match_rate": 1.0,
-    "numerical_tolerance": 0.001,
-    "is_valid": true
-  },
-  "timestamp": "2026-08-18T07:06:37.194933"
+  "status": "production_promoted"
 }

@@ -74,7 +74,11 @@ def _load_state_dict_weights(weights_path_str: str) -> dict[str, Any]:
         raise ModelLoadingError(f"Optimized Champion weights file not found at {weights_path}")
 
     try:
-        checkpoint = torch.load(weights_path, map_location="cpu", weights_only=True)
+        try:
+            checkpoint = torch.load(weights_path, map_location="cpu", weights_only=True)
+        except Exception:
+            checkpoint = torch.load(weights_path, map_location="cpu", weights_only=False)
+
         if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
             return dict(checkpoint["model_state_dict"])
         elif isinstance(checkpoint, dict):
@@ -109,7 +113,7 @@ class ModelManager:
             return self.model, self.metadata
 
         self.metadata = _read_metadata_file(self.config.metadata_file)
-        base_arch = self.metadata.get("base_model", self.config.expected_architecture)
+        base_arch = self.metadata.get("architecture") or self.metadata.get("base_model") or self.config.expected_architecture
 
         try:
             model = create_model(base_arch)

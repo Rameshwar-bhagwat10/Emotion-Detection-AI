@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Play, Sparkles, User, BarChart2 } from "lucide-react";
-import { EMOTIONS } from "@/types/emotion";
+import { Play, Clock, Sparkles, Layers } from "lucide-react";
 import { ExpressionEvent, ExpressionSegment, VideoTrack } from "@/types/video-analysis";
+import { EMOTIONS, PredictionEmotion } from "@/types/emotion";
 
 export interface EmotionTimelineProps {
   durationSeconds: number;
@@ -14,6 +14,17 @@ export interface EmotionTimelineProps {
   onSeek: (seconds: number) => void;
   className?: string;
 }
+
+const EMOTION_COLORS: Record<string, string> = {
+  happy: "rgb(16, 185, 129)",    // Emerald
+  neutral: "rgb(56, 189, 248)",  // Sky Blue
+  surprise: "rgb(245, 158, 11)", // Amber
+  sad: "rgb(99, 102, 241)",      // Indigo
+  fear: "rgb(168, 85, 247)",     // Purple
+  angry: "rgb(244, 63, 94)",     // Rose / Red
+  disgust: "rgb(20, 184, 166)",  // Teal
+  uncertain: "rgb(161, 161, 170)",
+};
 
 export function EmotionTimeline({
   durationSeconds,
@@ -53,6 +64,10 @@ export function EmotionTimeline({
     );
   }, [filteredSegments, currentTime]);
 
+  const activeMeta = activeSegment
+    ? EMOTIONS[activeSegment.emotion.toLowerCase() as PredictionEmotion] || EMOTIONS.neutral
+    : EMOTIONS.neutral;
+
   const formatTimestamp = (sec: number) => {
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
@@ -70,279 +85,285 @@ export function EmotionTimeline({
 
   // Generate ruler time ticks
   const ticks = useMemo(() => {
-    const tickCount = Math.min(10, Math.max(3, Math.floor(duration / 2)));
+    const tickCount = Math.min(8, Math.max(3, Math.floor(duration / 3)));
     const step = duration / tickCount;
     return Array.from({ length: tickCount + 1 }, (_, i) => i * step);
   }, [duration]);
 
   return (
-    <div className={`bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-6 shadow-xl space-y-6 ${className}`}>
+    <div className={`p-6 bg-[#0d0d0d] border border-[#262626] rounded-none space-y-6 flex flex-col justify-between h-full ${className}`}>
       {/* Header & Track Selector Tabs */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
-        <div>
-          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-primary/10 text-primary">
-              <Sparkles className="w-4 h-4" />
-            </span>
-            Synchronized Expression Timeline
-          </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Interactive temporal progression. Click any expression segment or timestamp to seek playback.
-          </p>
-        </div>
+      <div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-[#262626]">
+          <div>
+            <div className="font-mono text-xs uppercase tracking-[2px] text-[#999999] mb-1 flex items-center gap-2">
+              <Clock className="w-3.5 h-3.5 text-[#c3d9f3]" />
+              <span>VIDEO TIMELINE</span>
+              <span className="text-[#3a3a3a]">/</span>
+              <span className="text-[#c3d9f3]">EMOTION SHIFTS</span>
+            </div>
+            <h3 className="font-display text-2xl uppercase tracking-[2px] text-white">
+              CHRONOLOGICAL EMOTION TIMELINE
+            </h3>
+            <p className="font-sans text-xs text-[#999999] mt-1">
+              Click any color segment or timestamp to jump to that moment in the video.
+            </p>
+          </div>
 
-        {/* Multi-Face Track Tabs */}
-        {tracks && tracks.length > 1 && (
-          <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/50">
-            <button
-              type="button"
-              onClick={() => setSelectedTrackId("all")}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                selectedTrackId === "all"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              All Faces ({tracks.length})
-            </button>
-            {tracks.map((t) => (
+          {/* Multi-Face Track Tabs */}
+          {tracks && tracks.length > 1 && (
+            <div className="flex items-center gap-1 bg-[#141414] p-1 border border-[#262626] rounded-none">
               <button
-                key={t.track_id}
                 type="button"
-                onClick={() => setSelectedTrackId(t.track_id)}
-                className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                  selectedTrackId === t.track_id
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                onClick={() => setSelectedTrackId("all")}
+                className={`px-3 py-1 font-mono text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer rounded-none ${
+                  selectedTrackId === "all"
+                    ? "bg-[#1f1f1f] text-white border border-white"
+                    : "text-[#666666] hover:text-white"
                 }`}
               >
-                <User className="w-3 h-3 text-primary" />
-                Track {t.track_id}
+                ALL FACES ({tracks.length})
               </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Timeline Visualization Container */}
-      <div className="space-y-2">
-        {/* Time Ruler */}
-        <div className="relative h-4 w-full text-[10px] font-mono text-muted-foreground select-none">
-          {ticks.map((t, idx) => {
-            const leftPct = (t / duration) * 100;
-            return (
-              <span
-                key={idx}
-                style={{ left: `${Math.min(95, Math.max(0, leftPct))}%` }}
-                className="absolute -translate-x-1/2"
-              >
-                {formatTimestamp(t)}
-              </span>
-            );
-          })}
-        </div>
-
-        {/* Track Bar(s) */}
-        <div className="space-y-3">
-          {selectedTrackId === "all" ? (
-            Object.entries(tracksGrouped).map(([trackStr, segs]) => {
-              const trackId = parseInt(trackStr);
-              return (
-                <div key={trackId} className="space-y-1">
-                  <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <User className="w-3 h-3 text-primary" />
-                      Face Track {trackId}
-                    </span>
-                    <span>{segs.length} segments</span>
-                  </div>
-
-                  {/* Render segmented bar for this track */}
-                  <div
-                    onClick={handleTimelineClick}
-                    className="relative h-10 w-full bg-muted/40 rounded-xl overflow-hidden cursor-pointer border border-border/60 hover:border-primary/50 transition-colors flex"
-                  >
-                    {segs.map((seg) => {
-                      const meta = EMOTIONS[seg.emotion] || EMOTIONS.neutral;
-                      const widthPct = Math.max(0.5, (seg.duration / duration) * 100);
-                      const leftPct = (seg.start_time / duration) * 100;
-                      const isSegActive = currentTime >= seg.start_time && currentTime <= seg.end_time;
-
-                      return (
-                        <div
-                          key={seg.id}
-                          style={{
-                            left: `${leftPct}%`,
-                            width: `${widthPct}%`,
-                            backgroundColor: meta.color,
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSeek(seg.start_time);
-                          }}
-                          className={`absolute top-0 bottom-0 flex items-center justify-center px-1 text-white text-[11px] font-bold overflow-hidden transition-all hover:brightness-110 hover:z-10 group ${
-                            isSegActive ? "ring-2 ring-white shadow-lg z-10" : "opacity-90"
-                          }`}
-                          title={`${meta.label}: ${formatTimestamp(seg.start_time)} - ${formatTimestamp(seg.end_time)} (${Math.round(seg.average_confidence * 100)}% conf)`}
-                        >
-                          {widthPct > 6 && (
-                            <span className="truncate drop-shadow-sm flex items-center gap-1">
-                              <span>{meta.emoji}</span>
-                              {widthPct > 12 && <span className="capitalize">{seg.emotion}</span>}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-
-                    {/* Playhead line */}
-                    <div
-                      style={{ left: `${Math.max(0, Math.min(100, (currentTime / duration) * 100))}%` }}
-                      className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_8px_rgba(255,255,255,0.9)] pointer-events-none z-20"
-                    >
-                      <div className="absolute -top-1 -left-1 w-2.5 h-2.5 rounded-full bg-white shadow-md" />
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            /* Single Selected Track */
-            <div
-              onClick={handleTimelineClick}
-              className="relative h-12 w-full bg-muted/40 rounded-xl overflow-hidden cursor-pointer border border-border/60 hover:border-primary/50 transition-colors flex"
-            >
-              {filteredSegments.map((seg) => {
-                const meta = EMOTIONS[seg.emotion] || EMOTIONS.neutral;
-                const widthPct = Math.max(0.5, (seg.duration / duration) * 100);
-                const leftPct = (seg.start_time / duration) * 100;
-                const isSegActive = currentTime >= seg.start_time && currentTime <= seg.end_time;
-
-                return (
-                  <div
-                    key={seg.id}
-                    style={{
-                      left: `${leftPct}%`,
-                      width: `${widthPct}%`,
-                      backgroundColor: meta.color,
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSeek(seg.start_time);
-                    }}
-                    className={`absolute top-0 bottom-0 flex items-center justify-center px-1 text-white text-xs font-bold overflow-hidden transition-all hover:brightness-110 hover:z-10 ${
-                      isSegActive ? "ring-2 ring-white shadow-lg z-10" : "opacity-90"
-                    }`}
-                    title={`${meta.label}: ${formatTimestamp(seg.start_time)} - ${formatTimestamp(seg.end_time)}`}
-                  >
-                    {widthPct > 5 && (
-                      <span className="truncate drop-shadow-sm flex items-center gap-1.5">
-                        <span>{meta.emoji}</span>
-                        {widthPct > 10 && <span className="capitalize">{seg.emotion}</span>}
-                        {widthPct > 18 && (
-                          <span className="opacity-90 font-mono text-[10px]">
-                            {Math.round(seg.average_confidence * 100)}%
-                          </span>
-                        )}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-
-              {/* Playhead line */}
-              <div
-                style={{ left: `${Math.max(0, Math.min(100, (currentTime / duration) * 100))}%` }}
-                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_8px_rgba(255,255,255,0.9)] pointer-events-none z-20"
-              >
-                <div className="absolute -top-1 -left-1 w-2.5 h-2.5 rounded-full bg-white shadow-md" />
-              </div>
+              {tracks.map((t) => (
+                <button
+                  key={t.track_id}
+                  type="button"
+                  onClick={() => setSelectedTrackId(t.track_id)}
+                  className={`px-3 py-1 font-mono text-[10px] uppercase tracking-[1.5px] transition-all cursor-pointer rounded-none ${
+                    selectedTrackId === t.track_id
+                      ? "bg-[#1f1f1f] text-[#c3d9f3] border border-[#c3d9f3]"
+                      : "text-[#666666] hover:text-white"
+                  }`}
+                >
+                  FACE {t.track_id}
+                </button>
+              ))}
             </div>
           )}
         </div>
-      </div>
 
-      {/* Active / Inspected Segment Detail Card */}
-      {activeSegment && (
-        <div className="bg-muted/30 border border-border/60 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in fade-in">
-          <div className="flex items-center gap-3.5">
-            <div
-              style={{ backgroundColor: EMOTIONS[activeSegment.emotion]?.color || "gray" }}
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xl shadow-md shrink-0"
-            >
-              {EMOTIONS[activeSegment.emotion]?.emoji || "😐"}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-bold text-foreground capitalize">
-                  {activeSegment.emotion}
+        {/* Timeline Visualization Container */}
+        <div className="space-y-2 mt-5">
+          {/* Time Ruler */}
+          <div className="relative h-4 w-full font-mono text-[10px] text-[#666666] select-none">
+            {ticks.map((t, idx) => {
+              const leftPct = (t / duration) * 100;
+              return (
+                <span
+                  key={idx}
+                  style={{ left: `${Math.min(95, Math.max(0, leftPct))}%` }}
+                  className="absolute -translate-x-1/2"
+                >
+                  {formatTimestamp(t)}
                 </span>
-                <span className="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-primary/10 text-primary border border-primary/20">
-                  Track {activeSegment.track_id}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {EMOTIONS[activeSegment.emotion]?.description}
-              </p>
-            </div>
+              );
+            })}
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-muted-foreground">
-            <div>
-              <span className="block text-[10px] uppercase text-muted-foreground/80 font-sans font-semibold">
-                Interval
-              </span>
-              <span className="text-foreground font-semibold">
-                {formatTimestamp(activeSegment.start_time)} – {formatTimestamp(activeSegment.end_time)}
-              </span>
-            </div>
-            <div>
-              <span className="block text-[10px] uppercase text-muted-foreground/80 font-sans font-semibold">
-                Duration
-              </span>
-              <span className="text-foreground font-semibold">{activeSegment.duration.toFixed(1)}s</span>
-            </div>
-            <div>
-              <span className="block text-[10px] uppercase text-muted-foreground/80 font-sans font-semibold">
-                Avg Confidence
-              </span>
-              <span className="text-emerald-500 font-bold">
-                {(activeSegment.average_confidence * 100).toFixed(1)}%
-              </span>
-            </div>
-            <div>
-              <span className="block text-[10px] uppercase text-muted-foreground/80 font-sans font-semibold">
-                Predictions
-              </span>
-              <span className="text-foreground font-semibold">{activeSegment.prediction_count}</span>
-            </div>
+          {/* Track Bar(s) */}
+          <div className="space-y-3">
+            {selectedTrackId === "all" ? (
+              Object.entries(tracksGrouped).map(([trackStr, segs]) => {
+                const trackId = parseInt(trackStr);
+                return (
+                  <div key={trackId} className="space-y-1">
+                    <div className="flex items-center justify-between font-mono text-[10px] text-[#999999] uppercase tracking-wider">
+                      <span className="flex items-center gap-1.5">
+                        <Layers className="w-3 h-3 text-[#c3d9f3]" />
+                        <span>FACE #{trackId}</span>
+                      </span>
+                      <span>{segs.length} EMOTION SEGMENTS</span>
+                    </div>
 
-            <button
-              type="button"
-              onClick={() => onSeek(activeSegment.start_time)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all font-sans text-xs shadow-sm"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              Play Segment
-            </button>
+                    {/* Render segmented bar for this track */}
+                    <div
+                      onClick={handleTimelineClick}
+                      className="relative h-9 w-full bg-[#141414] border border-[#262626] cursor-pointer hover:border-[#3a3a3a] transition-colors rounded-none overflow-hidden"
+                    >
+                      {segs.map((seg) => {
+                        const widthPct = Math.max(0.5, (seg.duration / duration) * 100);
+                        const leftPct = (seg.start_time / duration) * 100;
+                        const isSegActive = currentTime >= seg.start_time && currentTime <= seg.end_time;
+                        const emotionKey = seg.emotion.toLowerCase();
+                        const meta = EMOTIONS[emotionKey as PredictionEmotion] || EMOTIONS.neutral;
+                        const bg = EMOTION_COLORS[emotionKey] || "rgb(56, 189, 248)";
+
+                        return (
+                          <div
+                            key={seg.id}
+                            style={{
+                              left: `${leftPct}%`,
+                              width: `${widthPct}%`,
+                              backgroundColor: bg,
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSeek(seg.start_time);
+                            }}
+                            className={`absolute top-0 bottom-0 flex items-center justify-center px-1 text-black font-mono text-[11px] font-bold tracking-wider overflow-hidden transition-all select-none rounded-none ${
+                              isSegActive ? "ring-2 ring-white z-10 brightness-110" : "opacity-90 hover:opacity-100 hover:brightness-110"
+                            }`}
+                            title={`${meta.emoji} ${meta.label}: ${formatTimestamp(seg.start_time)} - ${formatTimestamp(seg.end_time)} (${Math.round(seg.average_confidence * 100)}% confidence)`}
+                          >
+                            {widthPct > 8 && (
+                              <span className="truncate drop-shadow-sm flex items-center gap-1 text-black">
+                                <span>{meta.emoji}</span>
+                                <span className="capitalize hidden sm:inline">{meta.label}</span>
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {/* Playhead line */}
+                      <div
+                        style={{ left: `${Math.max(0, Math.min(100, (currentTime / duration) * 100))}%` }}
+                        className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_10px_rgba(255,255,255,1)] pointer-events-none z-20"
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              /* Single Selected Track */
+              <div
+                onClick={handleTimelineClick}
+                className="relative h-10 w-full bg-[#141414] border border-[#262626] cursor-pointer hover:border-[#3a3a3a] transition-colors rounded-none overflow-hidden"
+              >
+                {filteredSegments.map((seg) => {
+                  const widthPct = Math.max(0.5, (seg.duration / duration) * 100);
+                  const leftPct = (seg.start_time / duration) * 100;
+                  const isSegActive = currentTime >= seg.start_time && currentTime <= seg.end_time;
+                  const emotionKey = seg.emotion.toLowerCase();
+                  const meta = EMOTIONS[emotionKey as PredictionEmotion] || EMOTIONS.neutral;
+                  const bg = EMOTION_COLORS[emotionKey] || "rgb(56, 189, 248)";
+
+                  return (
+                    <div
+                      key={seg.id}
+                      style={{
+                        left: `${leftPct}%`,
+                        width: `${widthPct}%`,
+                        backgroundColor: bg,
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSeek(seg.start_time);
+                      }}
+                      className={`absolute top-0 bottom-0 flex items-center justify-center px-1 text-black font-mono text-[11px] font-bold tracking-wider overflow-hidden transition-all select-none rounded-none ${
+                        isSegActive ? "ring-2 ring-white z-10 brightness-110" : "opacity-90 hover:opacity-100 hover:brightness-110"
+                      }`}
+                      title={`${meta.emoji} ${meta.label}: ${formatTimestamp(seg.start_time)} - ${formatTimestamp(seg.end_time)}`}
+                    >
+                      {widthPct > 6 && (
+                        <span className="truncate drop-shadow-sm flex items-center gap-1 text-black">
+                          <span>{meta.emoji}</span>
+                          <span className="capitalize">{meta.label}</span>
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Playhead line */}
+                <div
+                  style={{ left: `${Math.max(0, Math.min(100, (currentTime / duration) * 100))}%` }}
+                  className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_10px_rgba(255,255,255,1)] pointer-events-none z-20"
+                />
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Emotion Legend */}
-      <div className="flex flex-wrap items-center gap-3 pt-2">
-        <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-          <BarChart2 className="w-3.5 h-3.5" /> Legend:
-        </span>
-        {Object.entries(EMOTIONS).map(([key, meta]) => (
-          <div key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span
-              style={{ backgroundColor: meta.color }}
-              className="w-2.5 h-2.5 rounded-full inline-block"
-            />
-            <span className="capitalize">{meta.label}</span>
+      {/* Bottom Section: Color Legend & Current Moment Card */}
+      <div className="space-y-4 pt-3">
+        {/* Emotion Color Legend */}
+        <div className="pt-3 border-t border-[#262626]">
+          <div className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#666666] mb-2.5 flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-[#c3d9f3]" />
+            <span>EMOTION COLOR REFERENCE</span>
           </div>
-        ))}
+          <div className="flex flex-wrap gap-2.5 sm:gap-4">
+            {Object.entries(EMOTION_COLORS).filter(([key]) => key !== "uncertain").map(([emotionKey, color]) => {
+              const meta = EMOTIONS[emotionKey as PredictionEmotion] || EMOTIONS.neutral;
+              return (
+                <div key={emotionKey} className="flex items-center gap-1.5 text-xs">
+                  <span
+                    className="w-2 h-2 rounded-none inline-block"
+                    style={{ backgroundColor: color }}
+                  />
+                  <span className="text-sm select-none">{meta.emoji}</span>
+                  <span className="text-[#cccccc] font-mono text-[11px] capitalize">{meta.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Active / Inspected Segment Detail Card */}
+        {activeSegment && (
+          <div
+            className="bg-[#141414] border p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-none"
+            style={{ borderColor: activeMeta.color }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-3xl select-none" role="img" aria-label={activeMeta.label}>
+                {activeMeta.emoji}
+              </span>
+              <div>
+                <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#999999] block">
+                  CURRENT MOMENT EMOTION
+                </span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span
+                    className="font-display text-2xl uppercase tracking-[1.5px] font-normal"
+                    style={{ color: activeMeta.color }}
+                  >
+                    {activeMeta.label}
+                  </span>
+                  <span className="font-mono text-xs text-[#c3d9f3] bg-[#1f1f1f] px-2 py-0.5 border border-[#3a3a3a] rounded-none">
+                    FACE #{activeSegment.track_id}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 font-mono text-xs text-[#999999]">
+              <div>
+                <span className="block text-[9px] uppercase text-[#666666] tracking-wider">
+                  TIME RANGE
+                </span>
+                <span className="text-white">
+                  {formatTimestamp(activeSegment.start_time)} – {formatTimestamp(activeSegment.end_time)}
+                </span>
+              </div>
+              <div>
+                <span className="block text-[9px] uppercase text-[#666666] tracking-wider">
+                  DURATION
+                </span>
+                <span className="text-white">{activeSegment.duration.toFixed(1)}s</span>
+              </div>
+              <div>
+                <span className="block text-[9px] uppercase text-[#666666] tracking-wider">
+                  CONFIDENCE
+                </span>
+                <span style={{ color: activeMeta.color }} className="font-bold">
+                  {(activeSegment.average_confidence * 100).toFixed(1)}%
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onSeek(activeSegment.start_time)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-white bg-white text-black font-mono text-[11px] uppercase tracking-[1.5px] hover:bg-[#eaeaea] transition-all cursor-pointer rounded-none"
+              >
+                <Play className="w-3 h-3 fill-current" />
+                <span>JUMP TO START</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

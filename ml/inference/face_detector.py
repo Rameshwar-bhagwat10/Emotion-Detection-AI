@@ -158,27 +158,39 @@ class YuNetFaceDetector(BaseFaceDetector):
 
         h, w = image_rgb.shape[:2]
         self._detector.setInputSize((w, h))
+        if hasattr(self._detector, "setScoreThreshold"):
+            self._detector.setScoreThreshold(self.config.confidence_threshold)
+
         bgr = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR)
         _, faces = self._detector.detect(bgr)
 
         detections: list[FaceDetection] = []
-        if faces is None:
-            return detections
+        if faces is not None:
+            raw_detections = []
+            for face in faces:
+                fx, fy, fw, fh = map(int, face[0:4])
+                conf = float(face[14])
+                if conf >= self.config.confidence_threshold:
+                    bbox = FaceBoundingBox(x=fx, y=fy, width=fw, height=fh)
+                    padded = bbox.pad_and_clip(self.config.face_padding, img_width=w, img_height=h)
+                    raw_detections.append((padded, conf))
 
-        raw_detections = []
-        for face in faces:
-            fx, fy, fw, fh = map(int, face[0:4])
-            conf = float(face[14])
-            if conf >= self.config.confidence_threshold:
-                bbox = FaceBoundingBox(x=fx, y=fy, width=fw, height=fh)
-                padded = bbox.pad_and_clip(self.config.face_padding, img_width=w, img_height=h)
-                raw_detections.append((padded, conf))
+            # Sort by area descending (largest faces first)
+            raw_detections.sort(key=lambda item: item[0].area, reverse=True)
 
-        # Sort by area descending (largest faces first)
-        raw_detections.sort(key=lambda item: item[0].area, reverse=True)
+            for idx, (p_bbox, conf) in enumerate(raw_detections[: self.config.max_faces]):
+                detections.append(FaceDetection(face_id=idx + 1, bbox=p_bbox, confidence=conf))
 
-        for idx, (p_bbox, conf) in enumerate(raw_detections[: self.config.max_faces]):
-            detections.append(FaceDetection(face_id=idx + 1, bbox=p_bbox, confidence=conf))
+        # Robust Fallback: If YuNet detected 0 faces, try Haar cascade so non-frontal / challenging faces are not skipped
+        if len(detections) == 0 and hasattr(cv2, "CascadeClassifier"):
+            try:
+                if not hasattr(self, "_fallback_haar") or self._fallback_haar is None:
+                    self._fallback_haar = HaarCascadeFaceDetector(self.config)
+                haar_detections = self._fallback_haar.detect(image_rgb)
+                if haar_detections:
+                    return haar_detections
+            except Exception as exc:
+                logging.debug(f"Haar cascade fallback notice: {exc}")
 
         return detections
 

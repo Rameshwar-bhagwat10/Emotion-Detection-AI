@@ -19,6 +19,65 @@ from ml.inference.schemas import BoundingBoxDict, FacePrediction
 
 DEFAULT_CLASSES = list(EMOTION_NAMES)
 
+DEFAULT_CLASS_PRIORS: dict[str, float] = {
+    "angry": 3995.0,
+    "disgust": 436.0,
+    "fear": 4097.0,
+    "happy": 7215.0,
+    "sad": 4965.0,
+    "surprise": 3171.0,
+    "neutral": 4965.0,
+}
+
+
+DEFAULT_CLASS_CALIBRATION_BIAS: dict[str, float] = {
+    "angry": 0.0,
+    "disgust": 0.0,
+    "fear": 0.0,
+    "happy": 0.0,
+    "sad": 0.0,
+    "surprise": 0.0,
+    "neutral": 0.0,
+}
+
+
+def apply_logit_prior_adjustment(
+    logits: torch.Tensor,
+    classes: Sequence[str],
+    tau: float = 0.30,
+    class_priors: dict[str, float] | None = None,
+    class_biases: dict[str, float] | None = None,
+) -> torch.Tensor:
+    """Apply balanced logit prior adjustment and calibration to eliminate class frequency bias.
+
+    Formula:
+        z_c* = z_c - tau * log(pi_c) + b_c
+
+    When tau > 0, underrepresented classes (disgust, fear, surprise, angry, sad)
+    receive an adjustment removing the high-frequency baseline of happy and neutral,
+    and calibrated biases elevate sensitivity for subtle negative expressions.
+    """
+    adjusted = logits
+    if tau > 0.0:
+        priors_map = class_priors or DEFAULT_CLASS_PRIORS
+        total = sum(priors_map.get(c, 1.0) for c in classes)
+        priors_vec = [priors_map.get(c, 1.0) / total for c in classes]
+        log_priors = torch.tensor(
+            np.log(np.array(priors_vec, dtype=np.float32) + 1e-8),
+            dtype=logits.dtype,
+            device=logits.device,
+        )
+        adjusted = adjusted - tau * log_priors
+
+    bias_map = class_biases if class_biases is not None else DEFAULT_CLASS_CALIBRATION_BIAS
+    if bias_map:
+        bias_vec = [bias_map.get(c, 0.0) for c in classes]
+        bias_tensor = torch.tensor(bias_vec, dtype=logits.dtype, device=logits.device)
+        adjusted = adjusted + bias_tensor
+
+    return adjusted
+
+
 
 def process_logits(
     logits: torch.Tensor,
@@ -26,6 +85,9 @@ def process_logits(
     classes: Sequence[str] | None = None,
     confidence_threshold: float = 0.40,
     uncertain_label: str = "uncertain",
+    logit_adjustment_tau: float = 0.30,
+    class_priors: dict[str, float] | None = None,
+    class_biases: dict[str, float] | None = None,
 ) -> list[FacePrediction]:
     """Convert raw model logits into structured FacePrediction objects.
 
@@ -35,6 +97,9 @@ def process_logits(
         classes: Ordered list of class names (defaults to authoritative FER-2013 classes).
         confidence_threshold: Confidence threshold for uncertainty gating.
         uncertain_label: String label for predictions below threshold.
+        logit_adjustment_tau: Temperature for logit prior adjustment (0.0 to disable).
+        class_priors: Optional dictionary mapping class names to prior frequencies.
+        class_biases: Optional dictionary mapping class names to calibration additive biases.
 
     Returns:
         List of structured FacePrediction instances.
@@ -56,6 +121,16 @@ def process_logits(
     if logits.shape[1] != num_classes:
         raise ValueError(
             f"Logits dimension ({logits.shape[1]}) != expected class count ({num_classes})"
+        )
+
+    # Apply logit prior adjustment before softmax
+    if logit_adjustment_tau > 0.0 or class_biases is not None:
+        logits = apply_logit_prior_adjustment(
+            logits,
+            class_list,
+            tau=logit_adjustment_tau,
+            class_priors=class_priors,
+            class_biases=class_biases,
         )
 
     # Apply softmax to obtain probability distributions

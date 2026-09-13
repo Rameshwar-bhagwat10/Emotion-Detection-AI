@@ -12,8 +12,6 @@ import {
   Cell,
 } from "recharts";
 import { ConfidenceAnalytics } from "@/types/analytics";
-import { EMOTIONS, PredictionEmotion } from "@/types/emotion";
-import { Gauge, ShieldAlert, ShieldCheck, BarChart3 } from "lucide-react";
 
 export interface ConfidenceChartProps {
   confidenceAnalytics: ConfidenceAnalytics;
@@ -21,10 +19,12 @@ export interface ConfidenceChartProps {
   title?: string;
 }
 
+const MONO_SHADES = ["#444444", "#666666", "#999999", "#c3d9f3", "#ffffff"];
+
 export function ConfidenceChart({
   confidenceAnalytics,
   className = "",
-  title = "Model Confidence Analysis",
+  title = "MODEL CONFIDENCE INTERVALS",
 }: ConfidenceChartProps) {
   const [activeTab, setActiveTab] = useState<"distribution" | "classes">("distribution");
 
@@ -38,23 +38,18 @@ export function ConfidenceChart({
     high_confidence_count,
   } = confidenceAnalytics;
 
-  // Histogram data
   const histogramData = distribution.map((b) => ({
     name: b.range,
     count: b.count,
     percentage: b.percentage,
   }));
 
-  // Class confidences data
   const classData = Object.entries(class_confidences).map(([emo, avg]) => {
-    const meta = EMOTIONS[emo.toLowerCase() as PredictionEmotion] || EMOTIONS.neutral;
     return {
-      name: meta.label,
+      name: emo.toUpperCase(),
       emotion: emo,
       avgPercent: Math.round(avg * 100),
       avgScore: avg,
-      color: meta.color,
-      emoji: meta.emoji,
     };
   });
 
@@ -63,98 +58,90 @@ export function ConfidenceChart({
   if (totalEvaluated === 0) {
     return (
       <div
-        className={`p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col items-center justify-center min-h-[320px] text-center ${className}`}
+        className={`p-6 bg-[#0d0d0d] border border-[#262626] flex flex-col items-center justify-center min-h-[320px] text-center ${className}`}
       >
-        <div className="w-12 h-12 rounded-xl bg-zinc-800/50 flex items-center justify-center text-zinc-500 mb-3">
-          <Gauge className="w-6 h-6" />
-        </div>
-        <h3 className="text-base font-semibold text-zinc-300">No Confidence Telemetry</h3>
-        <p className="text-sm text-zinc-500 max-w-sm mt-1">
-          Confidence distributions will populate once predictions are recorded in the database.
+        <div className="font-mono text-xs text-[#666666] mb-2">[NO TELEMETRY]</div>
+        <h3 className="font-display text-lg uppercase tracking-[2px] text-white">NO CONFIDENCE DATA</h3>
+        <p className="font-serif text-sm text-[#999999] max-w-sm mt-1">
+          Confidence distributions will populate once inference events are recorded into the database.
         </p>
       </div>
     );
   }
 
   return (
-    <div className={`p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 ${className}`}>
+    <div className={`p-6 bg-[#0d0d0d] border border-[#262626] ${className}`}>
       {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-zinc-800/60">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#262626]">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-zinc-100">{title}</h3>
-            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-              Avg: {(average_confidence * 100).toFixed(1)}%
+          <div className="flex items-center gap-3">
+            <h3 className="font-display text-lg uppercase tracking-[2px] text-white">{title}</h3>
+            <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#c3d9f3] bg-[#141414] px-2 py-0.5 border border-[#3a3a3a]">
+              MEAN: {(average_confidence * 100).toFixed(1)}%
             </span>
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
-            Softmax certainty intervals across {totalEvaluated.toLocaleString()} predictions.
+          <p className="font-serif text-xs text-[#999999] mt-1">
+            Softmax certainty intervals across {totalEvaluated.toLocaleString()} evaluations.
           </p>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-zinc-950 border border-zinc-800 self-start sm:self-auto">
+        <div className="flex items-center gap-1 p-1 bg-[#141414] border border-[#262626] self-start sm:self-auto font-mono text-[10px]">
           <button
+            type="button"
             onClick={() => setActiveTab("distribution")}
-            className={`p-1.5 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-1 transition-colors cursor-pointer ${
               activeTab === "distribution"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#1f1f1f] text-white border border-white"
+                : "text-[#666666] hover:text-white"
             }`}
           >
-            <BarChart3 className="w-3.5 h-3.5" />
-            <span>Histogram</span>
+            HISTOGRAM
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("classes")}
-            className={`p-1.5 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-1 transition-colors cursor-pointer ${
               activeTab === "classes"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#1f1f1f] text-white border border-white"
+                : "text-[#666666] hover:text-white"
             }`}
           >
-            <Gauge className="w-3.5 h-3.5" />
-            <span>Per Class</span>
+            PER CLASS
           </button>
         </div>
       </div>
 
-      {/* KPI Highlights Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5">
-        <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/60">
-          <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider block">
-            Average Score
+      {/* KPI Highlights Bar (4 Spec Cells in Hairline Grid) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[#262626] border border-[#262626] my-5 font-mono">
+        <div className="p-3 bg-[#141414]">
+          <span className="text-[10px] text-[#666666] uppercase tracking-[1.5px] block">
+            MEAN SCORE
           </span>
-          <span className="text-lg font-bold text-zinc-100 font-mono mt-0.5 block">
+          <span className="text-xl text-white mt-1 block">
             {(average_confidence * 100).toFixed(1)}%
           </span>
         </div>
-        <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/60">
-          <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider block">
-            Score Range
+        <div className="p-3 bg-[#141414]">
+          <span className="text-[10px] text-[#666666] uppercase tracking-[1.5px] block">
+            RANGE BOUNDS
           </span>
-          <span className="text-lg font-bold text-zinc-100 font-mono mt-0.5 block">
+          <span className="text-xl text-white mt-1 block">
             {(min_confidence * 100).toFixed(0)}% – {(max_confidence * 100).toFixed(0)}%
           </span>
         </div>
-        <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/60">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">
-              High (≥80%)
-            </span>
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          </div>
-          <span className="text-lg font-bold text-emerald-400 font-mono mt-0.5 block">
+        <div className="p-3 bg-[#141414]">
+          <span className="text-[10px] text-[#666666] uppercase tracking-[1.5px] block">
+            HIGH (&gt;=80%)
+          </span>
+          <span className="text-xl text-[#c3d9f3] mt-1 block">
             {high_confidence_count.toLocaleString()}
           </span>
         </div>
-        <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/60">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">
-              Low (&lt;60%)
-            </span>
-            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-          </div>
-          <span className="text-lg font-bold text-amber-400 font-mono mt-0.5 block">
+        <div className="p-3 bg-[#141414]">
+          <span className="text-[10px] text-[#666666] uppercase tracking-[1.5px] block">
+            LOW (&lt;60%)
+          </span>
+          <span className="text-xl text-[#999999] mt-1 block">
             {low_confidence_count.toLocaleString()}
           </span>
         </div>
@@ -165,86 +152,80 @@ export function ConfidenceChart({
         <ResponsiveContainer width="100%" height="100%">
           {activeTab === "distribution" ? (
             <BarChart data={histogramData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#262626" vertical={false} />
               <XAxis
                 dataKey="name"
-                stroke="#71717a"
-                fontSize={11}
+                stroke="#666666"
+                fontSize={10}
+                fontFamily="monospace"
                 tickLine={false}
-                axisLine={{ stroke: "#3f3f46" }}
+                axisLine={{ stroke: "#262626" }}
               />
               <YAxis
-                stroke="#71717a"
-                fontSize={11}
+                stroke="#666666"
+                fontSize={10}
+                fontFamily="monospace"
                 tickLine={false}
-                axisLine={{ stroke: "#3f3f46" }}
+                axisLine={{ stroke: "#262626" }}
               />
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="p-3 rounded-xl bg-zinc-950/95 border border-zinc-800 shadow-xl text-xs">
-                        <div className="font-semibold text-zinc-200">
-                          Range: <span className="font-mono text-indigo-400">{data.name}</span>
-                        </div>
-                        <div className="mt-1.5 space-y-0.5 text-zinc-400">
-                          <div>Predictions: <span className="text-zinc-200 font-mono font-medium">{data.count.toLocaleString()}</span></div>
-                          <div>Proportion: <span className="text-zinc-200 font-mono font-medium">{data.percentage}%</span></div>
-                        </div>
+                      <div className="p-3 bg-black border border-[#3a3a3a] text-xs font-mono space-y-1">
+                        <div className="text-white tracking-wider font-bold">INTERVAL: {data.name}</div>
+                        <div className="text-[#999999]">COUNT: <span className="text-white">{data.count.toLocaleString()}</span></div>
+                        <div className="text-[#c3d9f3]">SHARE: <span className="text-white">{data.percentage}%</span></div>
                       </div>
                     );
                   }
                   return null;
                 }}
               />
-              <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                {histogramData.map((entry, index) => {
-                  const colors = ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#10b981"];
-                  return <Cell key={`hist-${index}`} fill={colors[index % colors.length]} />;
+              <Bar dataKey="count">
+                {histogramData.map((_, index) => {
+                  return <Cell key={`hist-${index}`} fill={MONO_SHADES[index % MONO_SHADES.length]} />;
                 })}
               </Bar>
             </BarChart>
           ) : (
             <BarChart data={classData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#262626" vertical={false} />
               <XAxis
                 dataKey="name"
-                stroke="#71717a"
-                fontSize={11}
+                stroke="#666666"
+                fontSize={10}
+                fontFamily="monospace"
                 tickLine={false}
-                axisLine={{ stroke: "#3f3f46" }}
+                axisLine={{ stroke: "#262626" }}
               />
               <YAxis
-                stroke="#71717a"
-                fontSize={11}
+                stroke="#666666"
+                fontSize={10}
+                fontFamily="monospace"
                 domain={[0, 100]}
                 tickFormatter={(val) => `${val}%`}
                 tickLine={false}
-                axisLine={{ stroke: "#3f3f46" }}
+                axisLine={{ stroke: "#262626" }}
               />
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="p-3 rounded-xl bg-zinc-950/95 border border-zinc-800 shadow-xl text-xs">
-                        <div className="flex items-center gap-2 font-semibold text-zinc-200">
-                          <span>{data.emoji}</span>
-                          <span>{data.name}</span>
-                        </div>
-                        <div className="mt-1.5 space-y-0.5 text-zinc-400">
-                          <div>Avg Confidence: <span className="text-zinc-200 font-mono font-medium">{data.avgPercent}%</span></div>
-                        </div>
+                      <div className="p-3 bg-black border border-[#3a3a3a] text-xs font-mono space-y-1">
+                        <div className="text-white tracking-wider font-bold">{data.name}</div>
+                        <div className="text-[#c3d9f3]">MEAN CONFIDENCE: <span className="text-white">{data.avgPercent}%</span></div>
                       </div>
                     );
                   }
                   return null;
                 }}
               />
-              <Bar dataKey="avgPercent" radius={[6, 6, 0, 0]}>
-                {classData.map((entry, index) => (
-                  <Cell key={`cls-${index}`} fill={entry.color} />
+              <Bar dataKey="avgPercent">
+                {classData.map((_, index) => (
+                  <Cell key={`cls-${index}`} fill={index % 2 === 0 ? "#ffffff" : "#c3d9f3"} />
                 ))}
               </Bar>
             </BarChart>

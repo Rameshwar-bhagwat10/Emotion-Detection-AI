@@ -30,6 +30,21 @@ export const apiClient: AxiosInstance = axios.create({
   },
 });
 
+// Request interceptor to attach persistent client user ID for privacy isolation
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    try {
+      const userId = localStorage.getItem("valence_client_user_id");
+      if (userId) {
+        config.headers["X-User-Id"] = userId;
+      }
+    } catch {
+      // Ignore localStorage access restrictions in restricted environments
+    }
+  }
+  return config;
+});
+
 // Response interceptor to normalize error structures
 apiClient.interceptors.response.use(
   (response) => response,

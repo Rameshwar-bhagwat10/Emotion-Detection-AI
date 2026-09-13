@@ -57,8 +57,19 @@ models/production/*
 *.keras
 *.tflite
 *.joblib
-*.pkl
 *.data
+
+# Whitelist production champion model and face detector
+!artifacts/optimized/champion/model.pt
+!ml/inference/assets/face_detection_yunet.onnx
+
+# Ignore backups & temporary crops
+*.bak
+data/sample_crops/
+data/sample_crops_exact/
+data/user_eval_crops/
+*.db-shm
+*.db-wal
 
 # Databases & Local Upload Storage
 *.db

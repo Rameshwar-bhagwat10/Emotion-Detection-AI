@@ -4,7 +4,7 @@ from collections.abc import AsyncGenerator
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import text
+from sqlalchemy import event, text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -21,11 +21,23 @@ logger = get_logger(__name__)
 def _create_configured_engine(db_url: str) -> AsyncEngine:
     """Helper to configure async engine based on dialect."""
     if db_url.startswith("sqlite"):
-        return create_async_engine(
+        configured_engine = create_async_engine(
             db_url,
             echo=settings.DEBUG,
             future=True,
+            connect_args={"timeout": 60.0, "check_same_thread": False},
         )
+
+        @event.listens_for(configured_engine.sync_engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA journal_mode=WAL")
+            cursor.execute("PRAGMA synchronous=NORMAL")
+            cursor.execute("PRAGMA busy_timeout=60000")
+            cursor.close()
+
+        return configured_engine
+
     return create_async_engine(
         db_url,
         echo=settings.DEBUG,

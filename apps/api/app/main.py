@@ -100,10 +100,14 @@ def create_application() -> FastAPI:
     app.add_middleware(RequestContextMiddleware)
 
     # Configure CORS middleware
+    cors_origins = [settings.CORS_ORIGINS] if isinstance(settings.CORS_ORIGINS, str) else list(settings.CORS_ORIGINS)
+    allow_wildcard = "*" in cors_origins
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.CORS_ORIGINS,
-        allow_credentials=True,
+        allow_origins=cors_origins if not allow_wildcard else ["*"],
+        allow_origin_regex=r"https://.*\.vercel\.app" if allow_wildcard else None,
+        allow_credentials=not allow_wildcard,
         allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=["Content-Range", "Accept-Ranges", "Content-Length", "X-Request-ID", "X-Process-Time-Ms"],
@@ -127,6 +131,22 @@ def create_application() -> FastAPI:
         video_service: VideoService = Depends(get_video_service),
     ):
         return await stream_video_file(video_id=video_id, video_service=video_service)
+
+    # Direct /ws alias for clients connecting directly to /ws
+    from app.api.v1.realtime import realtime_emotion_stream
+    from fastapi import WebSocket
+
+    @app.websocket("/ws")
+    async def direct_ws_stream(
+        websocket: WebSocket,
+        session_id: str | None = None,
+        session_name: str | None = None,
+    ):
+        await realtime_emotion_stream(
+            websocket=websocket,
+            session_id=session_id,
+            session_name=session_name,
+        )
 
     # Root redirect / metadata endpoint
     @app.get("/", tags=["Root"])

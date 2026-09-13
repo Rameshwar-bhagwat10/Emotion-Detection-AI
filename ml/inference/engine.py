@@ -234,6 +234,8 @@ class EmotionInferenceEngine:
             classes=self.config.classes,
             confidence_threshold=self.config.confidence_threshold,
             uncertain_label=self.config.uncertain_label,
+            logit_adjustment_tau=getattr(self.config.model, "logit_adjustment_tau", 0.30),
+            class_biases=self.metadata.get("calibration_biases", None) if self.metadata else None,
         )
         timing.postprocessing_ms = (time.perf_counter() - t4) * 1000.0
         timing.total_ms = (time.perf_counter() - t_start_total) * 1000.0

@@ -32,7 +32,7 @@ def test_model_manager_load_and_caching():
     model, metadata = manager.load_champion()
 
     assert model is not None
-    assert metadata["model_name"] == "champion-pruning-30"
+    assert metadata["model_name"] in ("emotion-resnet18-cbam-optimized", "champion-pruning-30")
     assert not model.training  # In eval mode
 
     # Second call returns cached instance
@@ -40,7 +40,9 @@ def test_model_manager_load_and_caching():
     assert m2 is model
 
     # Forward pass test
-    dummy = torch.randn(2, 1, 48, 48)
+    c = cfg.input_channels
+    h, w = cfg.input_size
+    dummy = torch.randn(2, c, h, w)
     with torch.inference_mode():
         out = model(dummy)
     assert out.shape == (2, 7)

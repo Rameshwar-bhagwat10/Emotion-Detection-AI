@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
-import { UploadCloud, FileVideo, X, Settings2, AlertCircle, ArrowRight, Play } from "lucide-react";
+import { Upload, Film, AlertCircle, FileVideo, CheckCircle2 } from "lucide-react";
 
 export interface VideoUploaderProps {
   onUpload: (file: File, samplingFps: number, sessionName?: string) => Promise<void>;
@@ -89,27 +89,29 @@ export function VideoUploader({ onUpload, isUploading = false, className = "" }:
   };
 
   return (
-    <div className={`bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-6 sm:p-8 shadow-xl ${className}`}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 pb-5 border-b border-border/60">
+    <div className={`p-6 bg-[#0d0d0d] border border-[#262626] rounded-none ${className}`}>
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-[#262626]">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-            <span className="p-2 rounded-lg bg-primary/10 text-primary">
-              <FileVideo className="w-5 h-5" />
-            </span>
-            Temporal Video Expression Analysis
+          <div className="font-mono text-xs uppercase tracking-[2px] text-[#999999] mb-1 flex items-center gap-2">
+            <Film className="w-3.5 h-3.5 text-[#c3d9f3]" />
+            <span>VIDEO UPLOAD & ANALYSIS</span>
+          </div>
+          <h2 className="font-display text-2xl uppercase tracking-[2px] text-white">
+            UPLOAD VIDEO FOR EMOTION ANALYSIS
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Upload video to detect multi-face trajectories, temporal expression transitions, and synchronized timeline analytics.
+          <p className="font-sans text-xs text-[#999999] mt-1">
+            Analyze facial expressions, track multiple people simultaneously, and generate a chronological emotion timeline.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/60 px-3 py-1.5 rounded-full border border-border/50">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Production Champion Engine
+        <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[1.5px] text-emerald-400 bg-[#141414] px-3 py-1.5 border border-[#262626] rounded-none">
+          <span className="w-2 h-2 rounded-none bg-emerald-400" />
+          <span>READY TO ANALYZE</span>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Dropzone */}
+        {/* Dropzone with Tactical Corner Crosshairs */}
         {!selectedFile ? (
           <div
             onDragOver={(e) => {
@@ -119,12 +121,18 @@ export function VideoUploader({ onUpload, isUploading = false, className = "" }:
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`relative border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all duration-200 ${
+            className={`relative border border-dashed p-10 text-center cursor-pointer transition-all rounded-none ${
               dragOver
-                ? "border-primary bg-primary/5 scale-[1.005]"
-                : "border-border/80 hover:border-primary/60 hover:bg-muted/30"
+                ? "border-[#c3d9f3] bg-[#141414]"
+                : "border-[#3a3a3a] hover:border-white bg-[#000000] hover:bg-[#141414]"
             }`}
           >
+            {/* Precision Corner Crosshairs */}
+            <div className="absolute top-3 left-3 w-3 h-3 border-t border-l border-white/30 pointer-events-none" />
+            <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-white/30 pointer-events-none" />
+            <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-white/30 pointer-events-none" />
+            <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-white/30 pointer-events-none" />
+
             <input
               ref={fileInputRef}
               type="file"
@@ -132,40 +140,46 @@ export function VideoUploader({ onUpload, isUploading = false, className = "" }:
               onChange={handleFileChange}
               className="hidden"
             />
-            <div className="flex flex-col items-center justify-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                <UploadCloud className="w-8 h-8" />
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <div className="w-12 h-12 border border-[#3a3a3a] bg-[#141414] flex items-center justify-center text-white rounded-none">
+                <Upload className="w-5 h-5 text-[#c3d9f3]" />
               </div>
-              <div className="space-y-1.5">
-                <p className="text-base font-semibold text-foreground">
-                  Drag and drop your video file, or <span className="text-primary underline">browse</span>
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Supports MP4, WebM, MOV, AVI, MKV up to {MAX_FILE_SIZE_MB}MB
-                </p>
+              <p className="font-display text-lg uppercase tracking-[2px] text-white">
+                DRAG & DROP VIDEO HERE OR CLICK TO BROWSE
+              </p>
+              <p className="font-sans text-xs text-[#888888] max-w-sm">
+                Supports MP4, WebM, MOV, and AVI formats up to {MAX_FILE_SIZE_MB}MB.
+              </p>
+              <div className="pt-2">
+                <span className="px-4 py-2 bg-white text-black font-mono text-xs font-semibold uppercase tracking-[1.5px] rounded-none pointer-events-none">
+                  BROWSE FILES
+                </span>
               </div>
             </div>
           </div>
         ) : (
           /* Selected File Preview */
-          <div className="bg-muted/40 border border-border/80 rounded-xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="bg-[#141414] border border-[#262626] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-none">
             <div className="flex items-center gap-4 min-w-0">
               {previewUrl && (
-                <div className="relative w-28 h-20 bg-black rounded-lg overflow-hidden shrink-0 border border-border/50 group">
+                <div className="relative w-28 h-18 bg-black shrink-0 border border-[#262626] overflow-hidden rounded-none">
                   <video src={previewUrl} className="w-full h-full object-cover" muted />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
-                    <Play className="w-5 h-5 text-white/90" />
-                  </div>
                 </div>
               )}
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">{selectedFile.name}</p>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+              <div className="min-w-0 font-mono">
+                <div className="flex items-center gap-2">
+                  <FileVideo className="w-3.5 h-3.5 text-[#c3d9f3] shrink-0" />
+                  <p className="text-xs uppercase tracking-wider text-white truncate font-medium">{selectedFile.name}</p>
+                </div>
+                <div className="flex items-center gap-2.5 text-[11px] text-[#999999] mt-1.5">
                   <span>{(selectedFile.size / (1024 * 1024)).toFixed(1)} MB</span>
-                  <span>•</span>
+                  <span className="text-[#3a3a3a]">/</span>
                   <span className="uppercase">{selectedFile.name.split(".").pop()}</span>
-                  <span>•</span>
-                  <span className="text-emerald-500 font-medium">Ready to analyze</span>
+                  <span className="text-[#3a3a3a]">/</span>
+                  <span className="text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>READY</span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -174,33 +188,27 @@ export function VideoUploader({ onUpload, isUploading = false, className = "" }:
               type="button"
               onClick={handleClear}
               disabled={isUploading}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 border border-destructive/20 transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 border border-[#3a3a3a] text-xs font-mono uppercase tracking-[1.5px] text-[#999999] hover:text-white hover:border-white transition-colors cursor-pointer rounded-none disabled:opacity-40"
             >
-              <X className="w-3.5 h-3.5" />
-              Remove File
+              REMOVE
             </button>
           </div>
         )}
 
         {/* Error banner */}
         {errorMessage && (
-          <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm animate-in fade-in">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <p>{errorMessage}</p>
+          <div className="p-3 bg-[#141414] border border-red-900/60 font-mono text-xs text-red-400 flex items-center gap-2 rounded-none">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+            <span>[ERROR] {errorMessage}</span>
           </div>
         )}
 
         {/* Analysis Configuration */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-muted/25 border border-border/50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-[#141414] border border-[#262626] rounded-none">
           <div>
-            <label className="text-xs font-semibold text-foreground flex items-center justify-between mb-1.5">
-              <span className="flex items-center gap-1.5">
-                <Settings2 className="w-3.5 h-3.5 text-muted-foreground" />
-                Sampling Rate (Analysis FPS)
-              </span>
-              <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-xs">
-                {samplingFps.toFixed(1)} FPS
-              </span>
+            <label className="font-mono text-xs uppercase tracking-[1.5px] text-[#cccccc] flex items-center justify-between mb-2">
+              <span>SAMPLING RATE (FRAMES PER SECOND)</span>
+              <span className="text-[#c3d9f3]">{samplingFps.toFixed(0)} FPS</span>
             </label>
             <input
               type="range"
@@ -210,28 +218,25 @@ export function VideoUploader({ onUpload, isUploading = false, className = "" }:
               value={samplingFps}
               disabled={isUploading}
               onChange={(e) => setSamplingFps(parseFloat(e.target.value))}
-              className="w-full accent-primary h-2 bg-muted rounded-lg cursor-pointer"
+              className="w-full accent-white h-1 bg-[#262626] cursor-pointer rounded-none"
             />
-            <p className="text-[11px] text-muted-foreground mt-1.5">
-              Evaluates {samplingFps} frames per second. 5–10 FPS provides optimal temporal resolution without latency overhead.
+            <p className="font-sans text-xs text-[#888888] mt-2">
+              Samples {samplingFps} frame(s) per second for multi-face tracking and emotion extraction.
             </p>
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-foreground block mb-1.5">
-              Session Label (Optional)
+            <label className="font-mono text-xs uppercase tracking-[1.5px] text-[#cccccc] block mb-2">
+              SESSION TITLE (OPTIONAL)
             </label>
             <input
               type="text"
-              placeholder="e.g. Interview Analysis #4"
+              placeholder="e.g. Interview Analysis, Focus Group"
               value={sessionName}
               disabled={isUploading}
               onChange={(e) => setSessionName(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-background border border-border/80 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className="input-valence w-full rounded-none"
             />
-            <p className="text-[11px] text-muted-foreground mt-1.5">
-              Groups temporal video records into application analytics history.
-            </p>
           </div>
         </div>
 
@@ -240,18 +245,15 @@ export function VideoUploader({ onUpload, isUploading = false, className = "" }:
           <button
             type="submit"
             disabled={!selectedFile || isUploading}
-            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="btn-valence flex items-center gap-2 cursor-pointer rounded-none disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isUploading ? (
               <>
-                <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                Uploading & Scheduling...
+                <span className="inline-block w-3 h-3 border border-white border-t-transparent animate-spin rounded-none" />
+                <span>UPLOADING & ANALYZING...</span>
               </>
             ) : (
-              <>
-                Start Video Analysis
-                <ArrowRight className="w-4 h-4" />
-              </>
+              <span>START VIDEO ANALYSIS</span>
             )}
           </button>
         </div>

@@ -14,19 +14,20 @@ model:
   weights_file: "artifacts/optimized/champion/model.pt"
   onnx_file: "artifacts/optimized/champion/model.onnx"
   model_format: "pytorch"  # "pytorch" | "onnx"
-  expected_architecture: "resnet18"
-  input_size: [48, 48]
-  input_channels: 1
+  expected_architecture: "resnet18_cbam"
+  input_size: [112, 112]
+  input_channels: 3
   normalization:
-    mean: [0.507743]
-    std: [0.255009]
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+  logit_adjustment_tau: 0.30
 
 face_detection:
   detector_type: "yunet"  # "yunet" | "haar" | "passthrough"
   haar_scale_factor: 1.1
   haar_min_neighbors: 5
   min_face_size: [20, 20]
-  confidence_threshold: 0.50
+  confidence_threshold: 0.30
   nms_threshold: 0.30
   face_padding: 0.15  # Expand bounding box by 15% before cropping
   max_faces: 20
@@ -34,7 +35,7 @@ face_detection:
 inference:
   batch_size: 16
   warmup_iterations: 3
-  confidence_threshold: 0.40
+  confidence_threshold: 0.35
   uncertain_label: "uncertain"
   enable_timing: true
   max_image_dimension: 4096

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import { Play, Pause, RotateCcw, Volume2, VolumeX, Maximize2, Layers, AlertCircle, RefreshCw } from "lucide-react";
-import { EMOTIONS, PredictionEmotion } from "@/types/emotion";
+import { Play, Pause, RotateCcw, Volume2, VolumeX, Maximize2, Minimize2, Layers, AlertTriangle } from "lucide-react";
 import { VideoMetadata, VideoPredictionItem } from "@/types/video-analysis";
+import { EMOTIONS, PredictionEmotion } from "@/types/emotion";
 
 export interface VideoPlayerProps {
   streamUrl: string;
@@ -33,17 +33,24 @@ export function VideoPlayer({
   const [showOverlay, setShowOverlay] = useState<boolean>(true);
   const [playbackRate, setPlaybackRate] = useState<number>(1.0);
   const [hasPlaybackError, setHasPlaybackError] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [videoDimensions, setVideoDimensions] = useState<{ width: number; height: number }>({
     width: metadata?.width || 640,
     height: metadata?.height || 360,
   });
 
-  // Reset error when streamUrl changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
   useEffect(() => {
     setHasPlaybackError(false);
   }, [streamUrl]);
 
-  // Handle external seek requests
   useEffect(() => {
     if (seekToTime !== undefined && seekToTime !== null && videoRef.current) {
       videoRef.current.currentTime = seekToTime;
@@ -127,7 +134,6 @@ export function VideoPlayer({
       (p) => Math.abs(p.timestamp - currentTime) <= windowSec
     );
 
-    // Group by track_id and pick closest
     const byTrack: Record<number, VideoPredictionItem> = {};
     matching.forEach((p) => {
       const existing = byTrack[p.track_id];
@@ -139,13 +145,21 @@ export function VideoPlayer({
     return Object.values(byTrack);
   }, [predictions, currentTime]);
 
+  const viewScale = Math.max(0.6, Math.min(2.0, videoDimensions.width / 720));
+
   return (
     <div
       ref={containerRef}
-      className={`relative bg-black rounded-2xl overflow-hidden shadow-2xl border border-border/80 group ${className}`}
+      className={`relative bg-[#000000] border border-[#262626] rounded-none overflow-hidden flex flex-col justify-between ${className}`}
     >
-      {/* Video Element */}
-      <div className="relative aspect-video flex items-center justify-center bg-black/90">
+      {/* Video Element Viewport */}
+      <div className="relative aspect-video flex items-center justify-center bg-black overflow-hidden">
+        {/* Precision Corner Crosshairs */}
+        <div className="absolute top-3 left-3 w-3 h-3 border-t border-l border-white/30 pointer-events-none z-20" />
+        <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-white/30 pointer-events-none z-20" />
+        <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-white/30 pointer-events-none z-20" />
+        <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-white/30 pointer-events-none z-20" />
+
         <video
           ref={videoRef}
           src={streamUrl}
@@ -160,16 +174,16 @@ export function VideoPlayer({
           onClick={togglePlay}
         />
 
-        {/* Video Load Error Fallback Overlay */}
+        {/* Video Load Error Fallback */}
         {hasPlaybackError && (
-          <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center text-center p-6 space-y-3 z-30">
-            <AlertCircle className="w-10 h-10 text-amber-500 animate-pulse" />
-            <div>
-              <p className="text-white text-sm font-semibold">Video Stream Playback Notice</p>
-              <p className="text-white/70 text-xs mt-1 max-w-sm">
-                The browser could not directly render this video container. Click reload to refresh the stream buffer.
-              </p>
+          <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center text-center p-6 space-y-3 z-30 font-mono text-xs">
+            <div className="w-10 h-10 border border-amber-500/40 bg-amber-950/20 flex items-center justify-center rounded-none">
+              <AlertTriangle className="w-5 h-5 text-amber-400" />
             </div>
+            <span className="text-amber-400 font-bold uppercase tracking-wider">[STREAM BUFFER NOTICE]</span>
+            <p className="font-sans text-xs text-[#999999] max-w-sm">
+              The video stream requires buffer initialization or reload.
+            </p>
             <button
               type="button"
               onClick={() => {
@@ -178,64 +192,247 @@ export function VideoPlayer({
                   videoRef.current.load();
                 }
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
+              className="px-4 py-2 border border-white bg-white text-black font-mono text-xs uppercase tracking-[1.5px] hover:bg-[#eaeaea] transition-all cursor-pointer rounded-none"
             >
-              <RefreshCw className="w-3.5 h-3.5" /> Reload Stream
+              RELOAD STREAM
             </button>
           </div>
         )}
 
+        {/* High-Precision Cyber-Tactical SVG Face Overlay */}
+        {showOverlay && videoDimensions.width > 0 && videoDimensions.height > 0 && currentFaces.length > 0 && (
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            viewBox={`0 0 ${videoDimensions.width} ${videoDimensions.height}`}
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <defs>
+              {currentFaces.map((face) => {
+                const meta =
+                  EMOTIONS[face.smoothed_emotion.toLowerCase() as PredictionEmotion] ||
+                  EMOTIONS.neutral;
+                return (
+                  <filter
+                    key={`glow-${face.track_id}`}
+                    id={`glow-v-${face.track_id}`}
+                    x="-20%"
+                    y="-20%"
+                    width="140%"
+                    height="140%"
+                  >
+                    <feDropShadow
+                      dx="0"
+                      dy="0"
+                      stdDeviation={4 * viewScale}
+                      floodColor={meta.color}
+                      floodOpacity="0.85"
+                    />
+                  </filter>
+                );
+              })}
+            </defs>
 
-        {/* Dynamic Face Bounding Box & Emotion Tag Overlay */}
-        {showOverlay && videoDimensions.width > 0 && videoDimensions.height > 0 && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
             {currentFaces.map((face) => {
-              const meta = EMOTIONS[face.smoothed_emotion as PredictionEmotion] || EMOTIONS.neutral;
-              // Bounding box percentages
-              const left = (face.bbox.x / videoDimensions.width) * 100;
-              const top = (face.bbox.y / videoDimensions.height) * 100;
-              const width = (face.bbox.width / videoDimensions.width) * 100;
-              const height = (face.bbox.height / videoDimensions.height) * 100;
+              const meta =
+                EMOTIONS[face.smoothed_emotion.toLowerCase() as PredictionEmotion] ||
+                EMOTIONS.neutral;
+              const color = meta.color || "rgb(56, 189, 248)";
+
+              const { x, y, width: w, height: h } = face.bbox;
+              const bLen = Math.max(14 * viewScale, Math.min(32 * viewScale, w * 0.22));
+              const cx = x + w / 2;
+              const cy = y + h / 2;
+              const crossLen = 5 * viewScale;
+
+              // Badge layout calculations
+              const badgeH = 26 * viewScale;
+              const fontSize = 10.5 * viewScale;
+              const emojiSize = 12 * viewScale;
+              const pctSize = 9 * viewScale;
+              const labelText = (meta.label || "NEUTRAL").toUpperCase();
+              const pctText = `${Math.round(face.smoothed_confidence * 100)}%`;
+
+              const badgeW = Math.max(140 * viewScale, (labelText.length * 7.5 + 85) * viewScale);
+              const badgeY = y > badgeH + 6 * viewScale ? y - badgeH - 6 * viewScale : y + 6 * viewScale;
+              const badgeX = Math.max(2, Math.min(videoDimensions.width - badgeW - 2, x));
 
               return (
-                <div
-                  key={face.track_id}
-                  style={{
-                    left: `${Math.max(0, left)}%`,
-                    top: `${Math.max(0, top)}%`,
-                    width: `${Math.min(100 - left, width)}%`,
-                    height: `${Math.min(100 - top, height)}%`,
-                  }}
-                  className="absolute border-2 rounded-lg transition-all duration-100"
-                  // Use CSS variable or style for border color
-                >
-                  <div
-                    style={{ borderColor: meta.color }}
-                    className="absolute inset-0 border-2 rounded-lg shadow-[0_0_12px_rgba(0,0,0,0.5)]"
+                <g key={face.track_id} className="transition-all duration-150">
+                  {/* Subtle holographic face fill */}
+                  <rect
+                    x={x}
+                    y={y}
+                    width={w}
+                    height={h}
+                    fill={color}
+                    fillOpacity="0.08"
                   />
-                  {/* Face Tag Badge */}
-                  <div
-                    style={{ backgroundColor: meta.color }}
-                    className="absolute -top-7 left-0 px-2 py-0.5 rounded text-[11px] font-bold text-white shadow-md flex items-center gap-1.5 whitespace-nowrap"
-                  >
-                    <span>{meta.emoji}</span>
-                    <span>Track {face.track_id}:</span>
-                    <span className="capitalize">{face.smoothed_emotion}</span>
-                    <span className="opacity-90 font-mono text-[10px]">
-                      {Math.round(face.smoothed_confidence * 100)}%
-                    </span>
-                  </div>
-                </div>
+
+                  {/* Hairline dashed perimeter */}
+                  <rect
+                    x={x}
+                    y={y}
+                    width={w}
+                    height={h}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="1"
+                    strokeDasharray="4 3"
+                    strokeOpacity="0.35"
+                  />
+
+                  {/* High-tech L-shaped corner brackets with glow filter */}
+                  <path
+                    d={`M ${x} ${y + bLen} L ${x} ${y} L ${x + bLen} ${y}`}
+                    stroke={color}
+                    strokeWidth={2.5 * viewScale}
+                    fill="none"
+                    strokeLinecap="square"
+                    filter={`url(#glow-v-${face.track_id})`}
+                  />
+                  <path
+                    d={`M ${x + w - bLen} ${y} L ${x + w} ${y} L ${x + w} ${y + bLen}`}
+                    stroke={color}
+                    strokeWidth={2.5 * viewScale}
+                    fill="none"
+                    strokeLinecap="square"
+                    filter={`url(#glow-v-${face.track_id})`}
+                  />
+                  <path
+                    d={`M ${x} ${y + h - bLen} L ${x} ${y + h} L ${x + bLen} ${y + h}`}
+                    stroke={color}
+                    strokeWidth={2.5 * viewScale}
+                    fill="none"
+                    strokeLinecap="square"
+                    filter={`url(#glow-v-${face.track_id})`}
+                  />
+                  <path
+                    d={`M ${x + w - bLen} ${y + h} L ${x + w} ${y + h} L ${x + w} ${y + h - bLen}`}
+                    stroke={color}
+                    strokeWidth={2.5 * viewScale}
+                    fill="none"
+                    strokeLinecap="square"
+                    filter={`url(#glow-v-${face.track_id})`}
+                  />
+
+                  {/* 4 Corner micro-vertices */}
+                  <rect x={x - 1.5} y={y - 1.5} width={3 * viewScale} height={3 * viewScale} fill="#ffffff" />
+                  <rect x={x + w - 1.5} y={y - 1.5} width={3 * viewScale} height={3 * viewScale} fill="#ffffff" />
+                  <rect x={x - 1.5} y={y + h - 1.5} width={3 * viewScale} height={3 * viewScale} fill="#ffffff" />
+                  <rect x={x + w - 1.5} y={y + h - 1.5} width={3 * viewScale} height={3 * viewScale} fill="#ffffff" />
+
+                  {/* Centroid precision crosshair [ + ] */}
+                  <line
+                    x1={cx - crossLen}
+                    y1={cy}
+                    x2={cx + crossLen}
+                    y2={cy}
+                    stroke={color}
+                    strokeWidth="1"
+                    strokeOpacity="0.6"
+                  />
+                  <line
+                    x1={cx}
+                    y1={cy - crossLen}
+                    x2={cx}
+                    y2={cy + crossLen}
+                    stroke={color}
+                    strokeWidth="1"
+                    strokeOpacity="0.6"
+                  />
+
+                  {/* Floating Obsidian Emotion HUD Badge */}
+                  <g>
+                    {/* Solid Obsidian background */}
+                    <rect
+                      x={badgeX}
+                      y={badgeY}
+                      width={badgeW}
+                      height={badgeH}
+                      fill="#080808"
+                      stroke={color}
+                      strokeWidth="1"
+                      fillOpacity="0.96"
+                    />
+
+                    {/* Left status accent strip */}
+                    <rect
+                      x={badgeX}
+                      y={badgeY}
+                      width={3.5 * viewScale}
+                      height={badgeH}
+                      fill={color}
+                    />
+
+                    {/* Canonical Emotion Emoji */}
+                    <text
+                      x={badgeX + 9 * viewScale}
+                      y={badgeY + badgeH * 0.68}
+                      fontSize={emojiSize}
+                      dominantBaseline="middle"
+                      style={{ userSelect: "none" }}
+                    >
+                      {meta.emoji}
+                    </text>
+
+                    {/* Emotion Label */}
+                    <text
+                      x={badgeX + 26 * viewScale}
+                      y={badgeY + badgeH * 0.65}
+                      fill="#ffffff"
+                      fontSize={fontSize}
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                      dominantBaseline="middle"
+                      letterSpacing="1px"
+                    >
+                      {labelText}
+                    </text>
+
+                    {/* Confidence Score Pill */}
+                    <rect
+                      x={badgeX + badgeW - 42 * viewScale}
+                      y={badgeY + (badgeH - 16 * viewScale) / 2}
+                      width={38 * viewScale}
+                      height={16 * viewScale}
+                      fill="#141414"
+                      stroke="#2e2e2e"
+                      strokeWidth="1"
+                    />
+                    <text
+                      x={badgeX + badgeW - 23 * viewScale}
+                      y={badgeY + badgeH * 0.66}
+                      fill="#e0e0e0"
+                      fontSize={pctSize}
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      {pctText}
+                    </text>
+
+                    {/* Probability Progress Bar at Badge Bottom */}
+                    <line
+                      x1={badgeX}
+                      y1={badgeY + badgeH}
+                      x2={badgeX + badgeW * Math.max(0.1, face.smoothed_confidence)}
+                      y2={badgeY + badgeH}
+                      stroke={color}
+                      strokeWidth={2 * viewScale}
+                    />
+                  </g>
+                </g>
               );
             })}
-          </div>
+          </svg>
         )}
       </div>
 
-      {/* Floating Controls Bar */}
-      <div className="bg-gradient-to-t from-black/95 via-black/80 to-transparent p-4 flex flex-col gap-3">
+      {/* Controls Bar */}
+      <div className="bg-[#0d0d0d] border-t border-[#262626] p-4 flex flex-col gap-3 rounded-none">
         {/* Scrubber Progress Bar */}
-        <div className="relative flex items-center group/scrubber cursor-pointer">
+        <div className="relative flex items-center cursor-pointer">
           <input
             type="range"
             min={0}
@@ -249,81 +446,81 @@ export function VideoPlayer({
               }
               onTimeUpdate(t);
             }}
-            className="w-full accent-primary h-1.5 bg-white/20 rounded-lg cursor-pointer group-hover/scrubber:h-2.5 transition-all"
+            className="w-full accent-white h-1 bg-[#262626] cursor-pointer rounded-none"
           />
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between gap-4 text-white text-sm">
+        {/* Action Buttons Row */}
+        <div className="flex items-center justify-between gap-4 text-white text-xs font-mono">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={togglePlay}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              className="p-1.5 border border-[#3a3a3a] hover:border-white text-white transition-colors cursor-pointer rounded-none"
               title={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? <Pause className="w-5 h-5 fill-white" /> : <Play className="w-5 h-5 fill-white" />}
+              {isPlaying ? <Pause className="w-3.5 h-3.5 fill-white" /> : <Play className="w-3.5 h-3.5 fill-white" />}
             </button>
 
             <button
               type="button"
               onClick={handleRestart}
-              className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1.5 border border-[#262626] text-[#999999] hover:text-white hover:border-[#3a3a3a] transition-colors cursor-pointer rounded-none"
               title="Restart"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
 
-            <div className="font-mono text-xs text-white/80">
-              <span className="text-white font-semibold">{formatTime(currentTime)}</span>
-              <span className="opacity-50 mx-1.5">/</span>
+            <div className="tracking-wider text-[#999999] font-mono text-xs">
+              <span className="text-white">{formatTime(currentTime)}</span>
+              <span className="mx-1 text-[#3a3a3a]">/</span>
               <span>{formatTime(duration)}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Toggle Overlay */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Toggle Overlay Reticle */}
             <button
               type="button"
               onClick={() => setShowOverlay(!showOverlay)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 border text-[10px] uppercase tracking-[1.5px] transition-colors cursor-pointer rounded-none ${
                 showOverlay
-                  ? "bg-primary/20 border-primary/40 text-primary"
-                  : "bg-white/5 border-white/10 text-white/60 hover:text-white"
+                  ? "bg-[#1f1f1f] border-[#c3d9f3] text-[#c3d9f3]"
+                  : "bg-[#141414] border-[#262626] text-[#666666] hover:text-white"
               }`}
-              title="Toggle Face Tracking & Emotion Overlay"
+              title="Toggle Face Tracking & Reticle Overlay"
             >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Overlay</span>
+              <Layers className="w-3 h-3" />
+              <span>RETICLE: {showOverlay ? "ON" : "OFF"}</span>
             </button>
 
             {/* Playback speed */}
             <button
               type="button"
               onClick={handleRateChange}
-              className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-xs font-mono text-white/90"
+              className="px-2 py-1 border border-[#262626] bg-[#141414] text-[10px] font-mono text-[#999999] hover:text-white cursor-pointer rounded-none"
               title="Playback Speed"
             >
-              {playbackRate}x
+              {playbackRate}X
             </button>
 
             {/* Mute */}
             <button
               type="button"
               onClick={toggleMute}
-              className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1.5 border border-[#262626] text-[#999999] hover:text-white cursor-pointer rounded-none"
             >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
             </button>
 
             {/* Fullscreen */}
             <button
               type="button"
               onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-              title="Fullscreen"
+              className="p-1.5 border border-[#262626] text-[#999999] hover:text-white cursor-pointer rounded-none"
+              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
             >
-              <Maximize2 className="w-4 h-4" />
+              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>

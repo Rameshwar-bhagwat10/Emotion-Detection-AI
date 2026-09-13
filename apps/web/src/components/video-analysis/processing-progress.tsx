@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Loader2, AlertTriangle, CheckCircle2, Clock, Cpu, Film, Sparkles, XCircle } from "lucide-react";
+import { Activity, Clock, Layers, AlertCircle } from "lucide-react";
 import { VideoAnalysisStatus } from "@/types/video-analysis";
 
 export interface ProcessingProgressProps {
@@ -12,11 +12,11 @@ export interface ProcessingProgressProps {
 }
 
 const STAGES = [
-  { key: "queued", label: "Queued", icon: Clock },
-  { key: "processing", label: "Inference & Tracking", icon: Cpu },
-  { key: "generating_timeline", label: "Temporal Smoothing", icon: Sparkles },
-  { key: "saving", label: "Persisting Results", icon: Film },
-  { key: "completed", label: "Complete", icon: CheckCircle2 },
+  { key: "queued", label: "01 / QUEUED" },
+  { key: "processing", label: "02 / FRAME EXTRACTION" },
+  { key: "generating_timeline", label: "03 / EMOTION INFERENCE" },
+  { key: "saving", label: "04 / TEMPORAL SMOOTHING" },
+  { key: "completed", label: "05 / COMPLETE" },
 ];
 
 export function ProcessingProgress({
@@ -63,39 +63,37 @@ export function ProcessingProgress({
   };
 
   return (
-    <div className={`bg-card/80 backdrop-blur-md border border-border/80 rounded-2xl p-6 sm:p-8 shadow-xl ${className}`}>
+    <div className={`p-6 bg-[#0d0d0d] border border-[#262626] rounded-none ${className}`}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-border/60">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[#262626]">
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-lg bg-primary/10 text-primary animate-spin">
-              <Loader2 className="w-5 h-5" />
-            </span>
-            <div>
-              <h3 className="text-lg font-bold text-foreground">
-                Analyzing Video Expressions...
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {filename ? `Processing "${filename}"` : "Executing streaming frame inference"}
-              </p>
-            </div>
+          <div className="font-mono text-xs uppercase tracking-[2px] text-[#999999] mb-1 flex items-center gap-2">
+            <Activity className="w-3.5 h-3.5 text-[#c3d9f3]" />
+            <span>TEMPORAL PIPELINE</span>
+            <span className="text-[#3a3a3a]">/</span>
+            <span className="text-[#c3d9f3]">BATCH PROCESSING</span>
           </div>
+          <h3 className="font-display text-2xl uppercase tracking-[2.5px] text-white">
+            EXECUTING VIDEO EMOTION ANALYSIS
+          </h3>
+          <p className="font-sans text-xs text-[#999999] mt-1">
+            {filename ? `Analyzing specimen archive "${filename}"` : "Sampling frames and computing emotion vectors"}
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground bg-muted/60 px-3 py-1.5 rounded-lg border border-border/40">
-            <Clock className="w-3.5 h-3.5 text-primary" />
-            Elapsed: {formatElapsed(elapsedSeconds)}
+          <div className="flex items-center gap-2 font-mono text-xs text-[#999999] bg-[#141414] px-3 py-1.5 border border-[#262626] rounded-none">
+            <Clock className="w-3.5 h-3.5 text-[#c3d9f3]" />
+            <span>ELAPSED: <span className="text-white font-semibold">{formatElapsed(elapsedSeconds)}</span></span>
           </div>
           {onCancel && (
             <button
               type="button"
               onClick={handleCancelClick}
               disabled={isCancelling}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 border border-destructive/20 transition-colors disabled:opacity-50"
+              className="px-4 py-1.5 border border-red-500/60 bg-red-950/20 text-red-400 font-mono text-xs uppercase tracking-[1.5px] hover:bg-red-900/40 hover:text-white transition-all cursor-pointer rounded-none disabled:opacity-40"
             >
-              <XCircle className="w-3.5 h-3.5" />
-              {isCancelling ? "Cancelling..." : "Cancel Job"}
+              {isCancelling ? "ABORTING..." : "ABORT JOB"}
             </button>
           )}
         </div>
@@ -103,55 +101,61 @@ export function ProcessingProgress({
 
       {/* Progress Bar & Percentage */}
       <div className="my-8 space-y-3">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold text-foreground flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-            {status.current_stage ? status.current_stage.replace(/_/g, " ").toUpperCase() : "PROCESSING"}
+        <div className="flex items-center justify-between font-mono text-xs uppercase tracking-[2px]">
+          <span className="text-white flex items-center gap-2">
+            <span className="w-2 h-2 rounded-none bg-[#c3d9f3] animate-pulse" />
+            <Layers className="w-3.5 h-3.5 text-[#c3d9f3] inline" />
+            <span>STAGE: {status.current_stage ? status.current_stage.replace(/_/g, " ") : "PROCESSING"}</span>
           </span>
-          <span className="font-mono text-lg font-extrabold text-primary">
-            {status.progress_percent.toFixed(1)}%
+          <span className="text-2xl text-white font-mono">
+            {status.progress_percent.toFixed(1)}
+            <span className="text-sm text-[#666666] ml-0.5">%</span>
           </span>
         </div>
 
-        <div className="relative h-3 w-full bg-muted/60 rounded-full overflow-hidden p-0.5 border border-border/40">
+        {/* 2px Precision Hairline Progress Bar */}
+        <div className="h-1.5 w-full bg-[#1a1a1a] overflow-hidden rounded-none">
           <div
-            className="h-full bg-gradient-to-r from-primary via-indigo-500 to-purple-500 rounded-full transition-all duration-300 shadow-sm"
-            style={{ width: `${Math.max(2, Math.min(100, status.progress_percent))}%` }}
+            className="h-full bg-[#c3d9f3] transition-all duration-300 rounded-none"
+            style={{ width: `${Math.max(1, Math.min(100, status.progress_percent))}%` }}
           />
         </div>
 
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center justify-between font-mono text-[11px] text-[#666666]">
           <span>
             {status.frames_analyzed > 0
-              ? `${status.frames_analyzed} sampled frames evaluated`
-              : "Ingesting video stream..."}
+              ? `${status.frames_analyzed.toLocaleString()} FRAMES EVALUATED`
+              : "BUFFERING FRAME STREAM..."}
           </span>
-          {status.total_frames > 0 && <span>{status.total_frames} total container frames</span>}
+          {status.total_frames > 0 && (
+            <span>{status.total_frames.toLocaleString()} TOTAL FRAMES</span>
+          )}
         </div>
       </div>
 
-      {/* Stage Stepper */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-2">
+      {/* Stage Stepper Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-px bg-[#262626] border border-[#262626] rounded-none">
         {STAGES.map((s, idx) => {
           const isDone = idx < activeIdx;
           const isCurrent = idx === activeIdx;
-          const Icon = s.icon;
 
           return (
             <div
               key={s.key}
-              className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all ${
+              className={`p-3 text-center transition-all ${
                 isCurrent
-                  ? "bg-primary/10 border-primary/40 text-primary shadow-sm"
+                  ? "bg-[#1f1f1f] text-[#c3d9f3]"
                   : isDone
-                  ? "bg-muted/40 border-emerald-500/30 text-emerald-500"
-                  : "bg-muted/20 border-border/30 text-muted-foreground opacity-60"
+                  ? "bg-[#141414] text-white"
+                  : "bg-[#0d0d0d] text-[#666666]"
               }`}
             >
-              <div className="p-1.5 rounded-full mb-1.5">
-                <Icon className={`w-4 h-4 ${isCurrent ? "animate-pulse" : ""}`} />
+              <div className="font-mono text-[10px] uppercase tracking-[1.5px]">
+                {s.label}
               </div>
-              <span className="text-[11px] font-semibold leading-tight">{s.label}</span>
+              <div className="font-mono text-[9px] mt-1 text-[#666666]">
+                {isDone ? "[DONE]" : isCurrent ? "[ACTIVE]" : "[PENDING]"}
+              </div>
             </div>
           );
         })}
@@ -159,12 +163,9 @@ export function ProcessingProgress({
 
       {/* Failure alert */}
       {status.status === "FAILED" && (
-        <div className="mt-6 flex items-center gap-2.5 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm">
-          <AlertTriangle className="w-5 h-5 shrink-0" />
-          <div>
-            <p className="font-semibold">Analysis Failed</p>
-            <p className="text-xs mt-0.5 opacity-90">{status.error_message || "An unexpected error occurred during processing."}</p>
-          </div>
+        <div className="mt-6 p-4 bg-[#141414] border border-red-900/60 font-mono text-xs text-red-400 flex items-center gap-2 rounded-none">
+          <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+          <span>[FAILED] {status.error_message || "Execution terminated unexpectedly during video analysis."}</span>
         </div>
       )}
     </div>

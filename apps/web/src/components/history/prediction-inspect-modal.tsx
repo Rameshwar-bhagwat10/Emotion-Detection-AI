@@ -2,17 +2,7 @@
 
 import React from "react";
 import { HistoricalPrediction } from "@/types/analytics";
-import { EMOTIONS, PredictionEmotion } from "@/types/emotion";
-import {
-  X,
-  Cpu,
-  Clock,
-  Layers,
-  Sparkles,
-  AlertTriangle,
-  CheckCircle2,
-  Maximize2,
-} from "lucide-react";
+import { X } from "lucide-react";
 
 export interface PredictionInspectModalProps {
   prediction: HistoricalPrediction | null;
@@ -28,7 +18,6 @@ export function PredictionInspectModal({
   if (!isOpen || !prediction) return null;
 
   const probabilities = prediction.probabilities || {};
-  // Sort probabilities to generate Top-K explainability ranking
   const rankedProbabilities = Object.entries(probabilities)
     .map(([emo, prob]) => ({
       emotion: emo,
@@ -37,126 +26,103 @@ export function PredictionInspectModal({
     }))
     .sort((a, b) => b.probability - a.probability);
 
-  const topEmotionKey = (prediction.emotion.toLowerCase() in EMOTIONS
-    ? prediction.emotion.toLowerCase()
-    : "uncertain") as PredictionEmotion;
-  const topMeta = EMOTIONS[topEmotionKey] || EMOTIONS.neutral;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-2xl bg-[#0d0d0d] border border-[#262626] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/50">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Sparkles className="w-5 h-5" />
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#262626] bg-[#000000]">
+          <div>
+            <div className="font-mono text-[10px] uppercase tracking-[2px] text-[#999999]">
+              INFERENCE TELEMETRY DOSSIER
             </div>
-            <div>
-              <h3 className="text-base font-semibold text-zinc-100">
-                Prediction Details & Explainability
-              </h3>
-              <p className="text-xs text-zinc-400 font-mono">
-                ID: {prediction.prediction_id}
-              </p>
-            </div>
+            <h3 className="font-display text-xl uppercase tracking-[2px] text-white">
+              PREDICTION EXPLAINABILITY
+            </h3>
+            <p className="font-mono text-[10px] text-[#666666]">
+              ID: {prediction.prediction_id}
+            </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+            className="p-1.5 border border-[#3a3a3a] text-[#999999] hover:text-white hover:border-white transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Top Prediction Summary Card */}
-          <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <span className="text-4xl">{topMeta.emoji}</span>
-              <div>
-                <span className="text-xs text-zinc-400 font-medium uppercase tracking-wider block">
-                  Classified Expression
-                </span>
-                <span className="text-xl font-bold text-zinc-100 capitalize">
-                  {topMeta.label}
-                </span>
-                <div className="flex items-center gap-2 mt-1">
-                  {prediction.is_uncertain ? (
-                    <span className="inline-flex items-center gap-1 text-xs text-amber-400 font-medium">
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      Low Confidence / Uncertain
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-xs text-emerald-400 font-medium">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Calibrated Confidence
-                    </span>
-                  )}
-                </div>
+          <div className="p-4 bg-[#141414] border border-[#262626] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-[2px] text-[#666666] block">
+                CLASSIFIED AFFECT
+              </span>
+              <span className="font-display text-3xl uppercase tracking-[2.5px] text-white mt-0.5 block">
+                {prediction.emotion}
+              </span>
+              <div className="font-mono text-xs mt-1">
+                {prediction.is_uncertain ? (
+                  <span className="text-amber-400">[!] LOW CERTAINTY THRESHOLD</span>
+                ) : (
+                  <span className="text-[#c3d9f3]">[CALIBRATED CONFIDENCE]</span>
+                )}
               </div>
             </div>
 
-            <div className="sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-zinc-800">
-              <span className="text-xs text-zinc-400 font-medium uppercase tracking-wider block">
-                Confidence
+            <div className="sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-[#262626]">
+              <span className="font-mono text-[10px] uppercase tracking-[2px] text-[#666666] block">
+                CONFIDENCE SCORE
               </span>
-              <span className="text-2xl font-bold text-indigo-400 font-mono">
-                {(prediction.confidence * 100).toFixed(1)}%
+              <span className="font-mono text-3xl text-white">
+                {(prediction.confidence * 100).toFixed(1)}
+                <span className="text-sm text-[#666666]">%</span>
               </span>
             </div>
           </div>
 
           {/* Top-K Explainability Ranking */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-indigo-400" />
-                <span>Softmax Probability Distribution (Top-K)</span>
-              </h4>
-              <span className="text-xs text-zinc-500">Ranked by likelihood</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between font-mono text-xs uppercase tracking-[2px] text-[#999999] pb-2 border-b border-[#262626]">
+              <span>SOFTMAX PROBABILITY DENSITY</span>
+              <span className="text-[#666666]">RANKED</span>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {rankedProbabilities.map((item, idx) => {
-                const emoKey = (item.emotion.toLowerCase() in EMOTIONS
-                  ? item.emotion.toLowerCase()
-                  : "uncertain") as PredictionEmotion;
-                const meta = EMOTIONS[emoKey] || EMOTIONS.neutral;
                 const isTop = idx === 0;
 
                 return (
                   <div
                     key={item.emotion}
-                    className={`p-2.5 rounded-xl border transition-colors ${
+                    className={`p-3 border transition-colors ${
                       isTop
-                        ? "bg-indigo-950/20 border-indigo-500/40"
-                        : "bg-zinc-900/40 border-zinc-800/60"
+                        ? "bg-[#1f1f1f] border-[#c3d9f3]"
+                        : "bg-[#141414] border-[#262626]"
                     }`}
                   >
-                    <div className="flex items-center justify-between text-xs mb-1.5">
+                    <div className="flex items-center justify-between font-mono text-xs uppercase tracking-[1.5px] mb-1.5">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-zinc-500 w-4">#{idx + 1}</span>
-                        <span className="text-sm">{meta.emoji}</span>
-                        <span className={`font-medium capitalize ${isTop ? "text-indigo-300" : "text-zinc-300"}`}>
-                          {meta.label}
+                        <span className="text-[#666666]">#{idx + 1}</span>
+                        <span className={isTop ? "text-white" : "text-[#999999]"}>
+                          {item.emotion}
                         </span>
                       </div>
-                      <span className="font-mono font-medium text-zinc-200">
+                      <span className={isTop ? "text-[#c3d9f3]" : "text-[#999999]"}>
                         {item.percentage}%
                       </span>
                     </div>
 
-                    <div className="w-full bg-zinc-800/80 rounded-full h-1.5 overflow-hidden">
+                    <div className="w-full bg-[#1a1a1a] h-1 overflow-hidden">
                       <div
-                        className="h-full rounded-full transition-all duration-300"
-                        style={{
-                          width: `${item.percentage}%`,
-                          backgroundColor: meta.color,
-                        }}
+                        className={`h-full transition-all duration-300 ${
+                          isTop ? "bg-[#c3d9f3]" : "bg-[#3a3a3a]"
+                        }`}
+                        style={{ width: `${item.percentage}%` }}
                       />
                     </div>
                   </div>
@@ -166,55 +132,60 @@ export function PredictionInspectModal({
           </div>
 
           {/* Model Traceability & Technical Telemetry */}
-          <div>
-            <h4 className="text-sm font-semibold text-zinc-200 mb-3 flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-purple-400" />
-              <span>Model Traceability & Metadata</span>
-            </h4>
+          <div className="space-y-3">
+            <div className="font-mono text-xs uppercase tracking-[2px] text-[#999999] pb-2 border-b border-[#262626]">
+              TRACEABILITY & SPECIFICATION
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60 space-y-1">
-                <span className="text-zinc-500 block">Model Version</span>
-                <span className="font-mono font-medium text-zinc-200">{prediction.model_version}</span>
-              </div>
-              <div className="p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60 space-y-1">
-                <span className="text-zinc-500 block">Pipeline Latency</span>
-                <span className="font-mono font-medium text-zinc-200 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                  {prediction.processing_time_ms} ms
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#262626] border border-[#262626] font-mono text-xs">
+              <div className="p-3 bg-[#141414]">
+                <span className="text-[10px] text-[#666666] uppercase tracking-[1.5px] block">
+                  ARCHITECTURE
                 </span>
+                <span className="text-white">{prediction.model_version}</span>
               </div>
-              <div className="p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60 space-y-1">
-                <span className="text-zinc-500 block">Face Bounding Box</span>
-                <span className="font-mono font-medium text-zinc-200 flex items-center gap-1.5">
-                  <Maximize2 className="w-3.5 h-3.5 text-zinc-400" />
+              <div className="p-3 bg-[#141414]">
+                <span className="text-[10px] text-[#666666] uppercase tracking-[1.5px] block">
+                  LATENCY
+                </span>
+                <span className="text-white">{prediction.processing_time_ms} MS</span>
+              </div>
+              <div className="p-3 bg-[#141414]">
+                <span className="text-[10px] text-[#666666] uppercase tracking-[1.5px] block">
+                  RETICLE COORDS
+                </span>
+                <span className="text-white">
                   [{prediction.bbox.x}, {prediction.bbox.y}, {prediction.bbox.width}×{prediction.bbox.height}]
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60 space-y-1">
-                <span className="text-zinc-500 block">Timestamp</span>
-                <span className="font-mono font-medium text-zinc-200">
-                  {new Date(prediction.timestamp).toLocaleString()}
+              <div className="p-3 bg-[#141414]">
+                <span className="text-[10px] text-[#666666] uppercase tracking-[1.5px] block">
+                  TIMESTAMP
+                </span>
+                <span className="text-white truncate block">
+                  {new Date(prediction.timestamp).toISOString()}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Ethical AI & Explainability Notice */}
-          <div className="p-3 rounded-xl bg-zinc-900/30 border border-zinc-800/50 text-[11px] text-zinc-500 leading-relaxed">
-            <span className="font-semibold text-zinc-400 block mb-0.5">Ethical AI Notice</span>
-            This inspection presents statistical softmax likelihoods produced by visual facial geometry classification.
-            Scores reflect model feature attribution and should not be construed as clinical diagnostic or definitive subjective emotional determinations.
+          {/* Ethical AI Notice */}
+          <div className="p-3 bg-[#000000] border border-[#262626] font-serif text-xs text-[#666666] leading-relaxed">
+            <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#999999] block mb-1">
+              ENGINEERING SPECIFICATION NOTICE
+            </span>
+            Likelihood values represent mathematical activations produced by deep neural geometry isolation. Values reflect statistical feature weights rather than subjective emotional reality.
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-zinc-800 bg-zinc-900/30 flex justify-end">
+        <div className="p-4 border-t border-[#262626] bg-[#000000] flex justify-end">
           <button
+            type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-sm font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 transition-colors"
+            className="px-5 py-1.5 rounded-full border border-white bg-transparent text-white font-mono text-xs uppercase tracking-[2px] hover:bg-white hover:text-black transition-all cursor-pointer"
           >
-            Close
+            DISMISS
           </button>
         </div>
       </div>

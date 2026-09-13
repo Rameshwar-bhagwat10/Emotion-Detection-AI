@@ -18,7 +18,7 @@ class TemporalSmoother:
         self,
         alpha: float = 0.6,
         confidence_threshold: float = 0.40,
-        probability_margin: float = 0.08,
+        probability_margin: float = 0.03,
         persistence_steps: int = 2,
         max_missing_steps: int = 15,
     ) -> None:
@@ -105,7 +105,14 @@ class TemporalSmoother:
         else:
             # Check margin requirement
             prev_stable_p = smoothed_probs.get(stable_emotion, 0.0) if stable_emotion != "uncertain" else 0.0
-            margin_ok = (dominant_confidence - prev_stable_p >= self.probability_margin) or (stable_emotion == "uncertain")
+            is_neutral_exit = (stable_emotion == "neutral" and candidate_dominant != "uncertain")
+
+            # Standard margin requirement or responsive neutral exit when non-neutral emotion leads
+            margin_ok = (
+                (dominant_confidence - prev_stable_p >= self.probability_margin)
+                or (stable_emotion == "uncertain")
+                or (is_neutral_exit and dominant_confidence > prev_stable_p)
+            )
 
             if margin_ok:
                 if state.get("candidate_emotion") == candidate_dominant:
@@ -114,7 +121,8 @@ class TemporalSmoother:
                     state["candidate_emotion"] = candidate_dominant
                     state["candidate_count"] = 1
 
-                if state["candidate_count"] >= self.persistence_steps:
+                required_steps = 1 if (is_neutral_exit and dominant_confidence >= 0.35) else self.persistence_steps
+                if state["candidate_count"] >= required_steps:
                     # Transition confirmed
                     stable_emotion = candidate_dominant
                     state["stable_emotion"] = stable_emotion

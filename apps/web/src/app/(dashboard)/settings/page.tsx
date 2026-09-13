@@ -1,8 +1,5 @@
-export default function Page() {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">Settings</h1>
-      <p className="text-muted-foreground mt-2">Placeholder page component.</p>
-    </div>
-  );
+import { redirect } from "next/navigation";
+
+export default function SettingsPage() {
+  redirect("/dashboard");
 }

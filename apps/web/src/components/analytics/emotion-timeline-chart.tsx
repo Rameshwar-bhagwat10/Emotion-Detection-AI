@@ -11,8 +11,7 @@ import {
   Tooltip,
 } from "recharts";
 import { TimelineAnalytics } from "@/types/analytics";
-import { EMOTIONS, SUPPORTED_EMOTIONS, PredictionEmotion } from "@/types/emotion";
-import { Clock, Activity, Layers } from "lucide-react";
+import { SUPPORTED_EMOTIONS, EMOTIONS, EmotionType } from "@/types/emotion";
 
 export interface EmotionTimelineChartProps {
   timeline: TimelineAnalytics;
@@ -23,7 +22,7 @@ export interface EmotionTimelineChartProps {
 export function EmotionTimelineChart({
   timeline,
   className = "",
-  title = "Expression Progression Timeline",
+  title = "Emotion Timeline",
 }: EmotionTimelineChartProps) {
   const [activeMetric, setActiveMetric] = useState<"stacked" | "confidence">("stacked");
 
@@ -39,17 +38,16 @@ export function EmotionTimelineChart({
       emotionFields[emo] = b.emotion_counts[emo] || 0;
     }
 
-    const domKey = (b.dominant_emotion?.toLowerCase() || "neutral") as PredictionEmotion;
-    const domMeta = EMOTIONS[domKey] || EMOTIONS.neutral;
+    const domKey = (b.dominant_emotion || "neutral").toLowerCase() as EmotionType;
+    const domMeta = EMOTIONS[domKey];
 
     return {
       timeLabel,
       relativeSeconds: b.relative_seconds,
       count: b.prediction_count,
       confidencePercent: Math.round(b.average_confidence * 100),
-      dominantLabel: domMeta.label,
-      dominantEmoji: domMeta.emoji,
-      dominantColor: domMeta.color,
+      dominantLabel: domMeta ? `${domMeta.emoji} ${domMeta.label}` : (b.dominant_emotion || "NEUTRAL").toUpperCase(),
+      dominantColor: domMeta?.color || "#38bdf8",
       ...emotionFields,
     };
   });
@@ -57,57 +55,55 @@ export function EmotionTimelineChart({
   if (buckets.length === 0) {
     return (
       <div
-        className={`p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col items-center justify-center min-h-[300px] text-center ${className}`}
+        className={`p-6 bg-[#0d0d0d] border border-[#262626] flex flex-col items-center justify-center min-h-[300px] text-center ${className}`}
       >
-        <div className="w-12 h-12 rounded-xl bg-zinc-800/50 flex items-center justify-center text-zinc-500 mb-3">
-          <Clock className="w-6 h-6" />
-        </div>
-        <h3 className="text-base font-semibold text-zinc-300">No Timeline Data</h3>
-        <p className="text-sm text-zinc-500 max-w-sm mt-1">
-          Predictions recorded over multiple time intervals will form a chronological progression chart.
+        <div className="font-mono text-xs text-[#666666] mb-2">[NO DATA]</div>
+        <h3 className="font-display text-lg uppercase tracking-[2px] text-white">No Timeline Data</h3>
+        <p className="font-serif text-sm text-[#999999] max-w-sm mt-1">
+          Predictions recorded over multiple seconds will construct this timeline graph.
         </p>
       </div>
     );
   }
 
   return (
-    <div className={`p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 ${className}`}>
+    <div className={`p-6 bg-[#0d0d0d] border border-[#262626] ${className}`}>
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-800/60">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#262626]">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-zinc-100">{title}</h3>
-            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-800 text-zinc-300 border border-zinc-700">
+          <div className="flex items-center gap-3">
+            <h3 className="font-display text-lg uppercase tracking-[2px] text-white">{title}</h3>
+            <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#c3d9f3] bg-[#141414] px-2 py-0.5 border border-[#3a3a3a]">
               {bucket_seconds}s intervals
             </span>
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
-            Chronological classification flow across {total_buckets} temporal window{total_buckets !== 1 ? "s" : ""}.
+          <p className="font-serif text-xs text-[#999999] mt-1">
+            Emotion progression across {total_buckets} time window{total_buckets !== 1 ? "s" : ""}.
           </p>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-zinc-950 border border-zinc-800 self-start sm:self-auto">
+        <div className="flex items-center gap-1 p-1 bg-[#141414] border border-[#262626] self-start sm:self-auto font-mono text-[10px]">
           <button
+            type="button"
             onClick={() => setActiveMetric("stacked")}
-            className={`p-1.5 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-1 transition-colors cursor-pointer ${
               activeMetric === "stacked"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#1f1f1f] text-white border border-white"
+                : "text-[#666666] hover:text-white"
             }`}
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Expressions</span>
+            Emotion Flow
           </button>
           <button
+            type="button"
             onClick={() => setActiveMetric("confidence")}
-            className={`p-1.5 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-1 transition-colors cursor-pointer ${
               activeMetric === "confidence"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#1f1f1f] text-white border border-white"
+                : "text-[#666666] hover:text-white"
             }`}
           >
-            <Activity className="w-3.5 h-3.5" />
-            <span>Confidence Curve</span>
+            Confidence Curve
           </button>
         </div>
       </div>
@@ -117,36 +113,35 @@ export function EmotionTimelineChart({
         <ResponsiveContainer width="100%" height="100%">
           {activeMetric === "stacked" ? (
             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#262626" vertical={false} />
               <XAxis
                 dataKey="timeLabel"
-                stroke="#71717a"
-                fontSize={11}
+                stroke="#666666"
+                fontSize={10}
+                fontFamily="monospace"
                 tickLine={false}
-                axisLine={{ stroke: "#3f3f46" }}
+                axisLine={{ stroke: "#262626" }}
               />
               <YAxis
-                stroke="#71717a"
-                fontSize={11}
+                stroke="#666666"
+                fontSize={10}
+                fontFamily="monospace"
                 tickLine={false}
-                axisLine={{ stroke: "#3f3f46" }}
+                axisLine={{ stroke: "#262626" }}
               />
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="p-3 rounded-xl bg-zinc-950/95 border border-zinc-800 shadow-xl text-xs space-y-2">
-                        <div className="flex items-center justify-between gap-4 font-semibold text-zinc-200">
-                          <span className="font-mono text-zinc-400">+{data.timeLabel}</span>
-                          <div className="flex items-center gap-1 text-indigo-300">
-                            <span>{data.dominantEmoji}</span>
-                            <span>{data.dominantLabel}</span>
-                          </div>
+                      <div className="p-3 bg-black border border-[#3a3a3a] text-xs font-mono space-y-1">
+                        <div className="flex items-center justify-between gap-4 font-bold text-white">
+                          <span>+{data.timeLabel}</span>
+                          <span className="text-[#c3d9f3]">{data.dominantLabel}</span>
                         </div>
-                        <div className="pt-1 border-t border-zinc-800/80 space-y-1 text-zinc-400">
-                          <div>Window Predictions: <span className="font-mono text-zinc-200">{data.count}</span></div>
-                          <div>Avg Confidence: <span className="font-mono text-zinc-200">{data.confidencePercent}%</span></div>
+                        <div className="pt-1 border-t border-[#262626] text-[#999999] space-y-0.5">
+                          <div>EVALUATIONS: <span className="text-white">{data.count}</span></div>
+                          <div>AVG CERTAINTY: <span className="text-white">{data.confidencePercent}%</span></div>
                         </div>
                       </div>
                     );
@@ -155,16 +150,18 @@ export function EmotionTimelineChart({
                 }}
               />
               {SUPPORTED_EMOTIONS.map((emo) => {
-                const meta = EMOTIONS[emo as PredictionEmotion];
+                const meta = EMOTIONS[emo as EmotionType];
+                const color = meta?.color || "rgb(56, 189, 248)";
                 return (
                   <Area
                     key={emo}
                     type="monotone"
                     dataKey={emo}
+                    name={meta ? `${meta.emoji} ${meta.label}` : emo}
                     stackId="1"
-                    stroke={meta.color}
-                    fill={meta.color}
-                    fillOpacity={0.4}
+                    stroke={color}
+                    fill={color}
+                    fillOpacity={0.45}
                   />
                 );
               })}
@@ -173,40 +170,42 @@ export function EmotionTimelineChart({
             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="confidenceGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.6} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
+                  <stop offset="5%" stopColor="#c3d9f3" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#c3d9f3" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#262626" vertical={false} />
               <XAxis
                 dataKey="timeLabel"
-                stroke="#71717a"
-                fontSize={11}
+                stroke="#666666"
+                fontSize={10}
+                fontFamily="monospace"
                 tickLine={false}
-                axisLine={{ stroke: "#3f3f46" }}
+                axisLine={{ stroke: "#262626" }}
               />
               <YAxis
-                stroke="#71717a"
-                fontSize={11}
+                stroke="#666666"
+                fontSize={10}
+                fontFamily="monospace"
                 domain={[0, 100]}
                 tickFormatter={(val) => `${val}%`}
                 tickLine={false}
-                axisLine={{ stroke: "#3f3f46" }}
+                axisLine={{ stroke: "#262626" }}
               />
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="p-3 rounded-xl bg-zinc-950/95 border border-zinc-800 shadow-xl text-xs space-y-1.5">
-                        <div className="font-semibold text-zinc-200 font-mono">
-                          Time: +{data.timeLabel}
+                      <div className="p-3 bg-black border border-[#3a3a3a] text-xs font-mono space-y-1">
+                        <div className="font-bold text-white tracking-wider">
+                          +{data.timeLabel}
                         </div>
-                        <div className="text-indigo-400 font-medium">
-                          Confidence: <span className="font-mono text-zinc-100">{data.confidencePercent}%</span>
+                        <div className="text-emerald-400">
+                          Confidence: <span className="text-white">{data.confidencePercent}%</span>
                         </div>
-                        <div className="text-zinc-400">
-                          Dominant: <span className="text-zinc-200">{data.dominantEmoji} {data.dominantLabel}</span>
+                        <div className="text-[#999999]">
+                          Dominant: <span className="text-white font-medium">{data.dominantLabel}</span>
                         </div>
                       </div>
                     );
@@ -217,8 +216,8 @@ export function EmotionTimelineChart({
               <Area
                 type="monotone"
                 dataKey="confidencePercent"
-                stroke="#818cf8"
-                strokeWidth={2}
+                stroke="#c3d9f3"
+                strokeWidth={1.5}
                 fill="url(#confidenceGrad)"
               />
             </AreaChart>
@@ -227,13 +226,14 @@ export function EmotionTimelineChart({
       </div>
 
       {/* Mini Legend */}
-      <div className="flex flex-wrap items-center gap-3 pt-4 mt-2 border-t border-zinc-800/40 text-[11px] text-zinc-400">
+      <div className="flex flex-wrap items-center gap-4 pt-3 border-t border-[#262626] font-mono text-[10px] text-[#999999] uppercase">
         {SUPPORTED_EMOTIONS.map((emo) => {
-          const meta = EMOTIONS[emo as PredictionEmotion];
+          const meta = EMOTIONS[emo as EmotionType];
+          const color = meta?.color || "rgb(56, 189, 248)";
           return (
             <div key={emo} className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: meta.color }} />
-              <span>{meta.label}</span>
+              <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+              <span>{meta?.emoji} {meta?.label || emo}</span>
             </div>
           );
         })}

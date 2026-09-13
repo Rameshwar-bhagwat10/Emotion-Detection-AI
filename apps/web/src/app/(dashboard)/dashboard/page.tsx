@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Activity,
-  ArrowRight,
   Camera,
   Cpu,
   Database,
@@ -12,10 +10,18 @@ import {
   RefreshCw,
   Server,
   ShieldAlert,
-  Sparkles,
+  Video,
   Zap,
+  ArrowRight,
+  Trash2,
 } from "lucide-react";
 import { getHealth, getReadiness, listSessions } from "@/lib/api/endpoints";
+import {
+  getOrCreateUserId,
+  getUserSessions,
+  getUserSessionIds,
+  deleteUserSession,
+} from "@/lib/storage/user-storage";
 import { HealthResponse, ReadinessResponse, SessionResponse } from "@/types/api";
 import { SUPPORTED_EMOTIONS, EMOTIONS } from "@/types/emotion";
 
@@ -30,10 +36,14 @@ export default function DashboardPage() {
     setIsRefreshing(true);
     setError(null);
     try {
+      const userId = getOrCreateUserId();
+      const localSessions = getUserSessions();
+      const localSessionIds = getUserSessionIds();
+
       const [healthData, readyData, sessionData] = await Promise.allSettled([
         getHealth(),
         getReadiness(),
-        listSessions(5, 0),
+        listSessions(10, 0, userId),
       ]);
 
       if (healthData.status === "fulfilled") {
@@ -42,19 +52,65 @@ export default function DashboardPage() {
       if (readyData.status === "fulfilled") {
         setReadiness(readyData.value);
       }
+
       if (sessionData.status === "fulfilled") {
-        setSessions(sessionData.value.sessions);
+        // Filter strictly by this user's local session IDs or user_id matching
+        const userFiltered = sessionData.value.sessions.filter(
+          (s) => localSessionIds.has(s.id) || (s.user_id && s.user_id === userId)
+        );
+
+        if (userFiltered.length > 0) {
+          setSessions(userFiltered);
+        } else if (localSessions.length > 0) {
+          // Fallback to local storage records if backend SQLite has no records yet
+          setSessions(
+            localSessions.map((ls) => ({
+              id: ls.id,
+              name: ls.name,
+              user_id: userId,
+              status: ls.status,
+              started_at: ls.started_at,
+              ended_at: ls.ended_at || null,
+              created_at: ls.started_at,
+            }))
+          );
+        } else {
+          setSessions([]);
+        }
+      } else {
+        // If backend listSessions fails (or in production without session DB), fallback to localStorage
+        if (localSessions.length > 0) {
+          setSessions(
+            localSessions.map((ls) => ({
+              id: ls.id,
+              name: ls.name,
+              user_id: userId,
+              status: ls.status,
+              started_at: ls.started_at,
+              ended_at: ls.ended_at || null,
+              created_at: ls.started_at,
+            }))
+          );
+        } else {
+          setSessions([]);
+        }
       }
 
       if (healthData.status === "rejected" && readyData.status === "rejected") {
-        setError("Backend API is currently unreachable. Make sure FastAPI is running on port 8000.");
+        setError("Backend API is currently unreachable. Confirm FastAPI is operational on port 8000.");
       }
     } catch (err: unknown) {
       const errorObj = err as Error;
-      setError(errorObj.message || "Failed to load dashboard metrics.");
+      setError(errorObj.message || "Failed to load telemetry metrics.");
     } finally {
       setIsRefreshing(false);
     }
+  };
+
+  const handleDeleteSession = (sessionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteUserSession(sessionId);
+    setSessions((prev) => prev.filter((s) => s.id !== sessionId));
   };
 
   useEffect(() => {
@@ -68,303 +124,359 @@ export default function DashboardPage() {
   const isSystemOnline = health?.status === "ok" || readiness?.status === "ready";
 
   return (
-    <div className="space-y-8">
-      {/* Top Banner / System Status Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 border border-zinc-800/80 p-6 md:p-8 shadow-xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-        
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-xs font-semibold text-indigo-300">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Phase 12 Integrated Production System</span>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-              Facial Expression Emotion Detection AI
-            </h2>
-            <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
-              Real-time deep learning inference platform powered by ResNet-18 Champion and YuNet neural face detection.
-              Trained across 7 human facial expression categories.
-            </p>
-          </div>
-
-          <button
-            onClick={loadData}
-            disabled={isRefreshing}
-            className="self-start md:self-auto flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 border border-zinc-700/50 transition-all cursor-pointer disabled:opacity-50"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
-            <span>{isRefreshing ? "Syncing..." : "Sync Status"}</span>
-          </button>
+    <div className="space-y-8 bg-black text-[#cccccc]">
+      {/* 1. Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#222222]">
+        <div>
+          <h1 className="font-display text-2xl sm:text-3xl uppercase tracking-[2px] text-white">
+            Overview
+          </h1>
+          <p className="font-mono text-xs text-[#888888] tracking-[1px] mt-1">
+            Real-time emotion AI metrics, pipeline status, and detection services
+          </p>
         </div>
 
-        {/* Live Status Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-          {/* Backend Status */}
-          <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-zinc-400">FastAPI Backend</span>
-              <Server className="w-4 h-4 text-zinc-500" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className={`w-2.5 h-2.5 rounded-full ${
-                  isSystemOnline ? "bg-emerald-400 animate-pulse" : "bg-rose-500"
-                }`}
-              />
-              <span className="text-lg font-bold text-zinc-100">
-                {isSystemOnline ? "System Online" : "Service Offline"}
-              </span>
-            </div>
-            <div className="text-[11px] text-zinc-500 mt-1 font-mono">
-              v{health?.version || "1.0.0"} ({health?.environment || "development"})
-            </div>
-          </div>
-
-          {/* Model Inference Status */}
-          <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-zinc-400">ML Inference Engine</span>
-              <Cpu className="w-4 h-4 text-zinc-500" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className={`w-2.5 h-2.5 rounded-full ${
-                  isModelReady ? "bg-emerald-400" : "bg-amber-400 animate-ping"
-                }`}
-              />
-              <span className="text-lg font-bold text-zinc-100">
-                {isModelReady ? "Inference Ready" : "Warming Up..."}
-              </span>
-            </div>
-            <div className="text-[11px] text-zinc-500 mt-1 font-mono">
-              {readiness?.details?.model_version || "champion-pruning-30"} ({readiness?.details?.device || "cpu"})
-            </div>
-          </div>
-
-          {/* Database Status */}
-          <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-zinc-400">Session Database</span>
-              <Database className="w-4 h-4 text-zinc-500" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className={`w-2.5 h-2.5 rounded-full ${
-                  isDbReady ? "bg-emerald-400" : "bg-amber-400"
-                }`}
-              />
-              <span className="text-lg font-bold text-zinc-100">
-                {isDbReady ? "Connected" : "Disconnected"}
-              </span>
-            </div>
-            <div className="text-[11px] text-zinc-500 mt-1 font-mono capitalize">
-              {health?.dependencies?.database?.database || "Active"} ({health?.dependencies?.database?.host || "local"})
-            </div>
-          </div>
-
-          {/* Real-Time WebSocket */}
-          <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-zinc-400">WebSocket Stream</span>
-              <Zap className="w-4 h-4 text-zinc-500" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-              <span className="text-lg font-bold text-zinc-100">Bidirectional</span>
-            </div>
-            <div className="text-[11px] text-zinc-500 mt-1 font-mono">
-              /api/v1/realtime/emotion
-            </div>
-          </div>
-        </div>
+        <button
+          onClick={loadData}
+          disabled={isRefreshing}
+          className="inline-flex items-center gap-2 h-9 px-4 rounded-full border border-[#262626] hover:border-[#444444] bg-[#111111] hover:bg-[#1a1a1a] text-[#cccccc] hover:text-white font-mono text-[11px] uppercase tracking-[1.5px] transition-all cursor-pointer self-start sm:self-auto disabled:opacity-50"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-emerald-400" : "text-[#888888]"}`} />
+          <span>{isRefreshing ? "Syncing..." : "Refresh"}</span>
+        </button>
       </div>
 
-      {/* Error Alert if API is down */}
+      {/* 2. Error Notice */}
       {error && (
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 text-sm">
-          <ShieldAlert className="w-5 h-5 flex-shrink-0" />
-          <div className="flex-1">
-            <strong className="font-semibold">Connection Notice: </strong>
-            <span>{error}</span>
-          </div>
+        <div className="p-4 bg-[#141414] border border-red-500/40 text-red-400 font-mono text-xs uppercase tracking-[1px] rounded-none flex items-center gap-3">
+          <ShieldAlert className="w-4 h-4 flex-shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      {/* Quick Actions Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Live Camera Action */}
-        <Link
-          href="/live"
-          className="group relative flex flex-col justify-between p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-indigo-500/50 transition-all hover:shadow-xl hover:shadow-indigo-500/10"
-        >
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-105 transition-transform">
-                <Camera className="w-6 h-6" />
-              </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                Real-Time Streaming
-              </span>
-            </div>
-            <h3 className="text-xl font-bold text-zinc-100 group-hover:text-indigo-300 transition-colors">
-              Live Webcam Emotion Detection
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Launch interactive webcam detection with real-time face bounding boxes, instantaneous and smoothed confidence metrics, and session recording.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 mt-6 group-hover:translate-x-1 transition-transform">
-            <span>Launch Live Feed</span>
-            <ArrowRight className="w-4 h-4" />
-          </div>
-        </Link>
-
-        {/* Image Upload Action */}
-        <Link
-          href="/image-analysis"
-          className="group relative flex flex-col justify-between p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-purple-500/50 transition-all hover:shadow-xl hover:shadow-purple-500/10"
-        >
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 group-hover:scale-105 transition-transform">
-                <ImageIcon className="w-6 h-6" />
-              </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                Single / Multi-Face
-              </span>
-            </div>
-            <h3 className="text-xl font-bold text-zinc-100 group-hover:text-purple-300 transition-colors">
-              Image Expression Analysis
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Upload photographs to detect facial expressions, view complete 7-class probability distributions, face bounding coordinates, and inference latency telemetry.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-purple-400 mt-6 group-hover:translate-x-1 transition-transform">
-            <span>Analyze Image</span>
-            <ArrowRight className="w-4 h-4" />
-          </div>
-        </Link>
-      </div>
-
-      {/* Model Specifications & Emotion Palette */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Supported Emotion Classes (7 cols) */}
-        <div className="lg:col-span-7 p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-bold text-zinc-200">Recognized Facial Expression Classes</h3>
-            <span className="text-xs text-zinc-500 font-mono">7 Classes</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {SUPPORTED_EMOTIONS.map((emotion) => {
-              const meta = EMOTIONS[emotion];
-              return (
-                <div
-                  key={emotion}
-                  className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex flex-col justify-between"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl">{meta.emoji}</span>
-                    <span
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: meta.color }}
-                    />
-                  </div>
-                  <div className="font-semibold text-xs text-zinc-200">{meta.label}</div>
-                  <div className="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">
-                    {meta.description}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Model Architecture Specs (5 cols) */}
-        <div className="lg:col-span-5 p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+      {/* 3. Core Status Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Backend Node */}
+        <div className="p-5 bg-[#0e0e0e] border border-[#222222] hover:border-[#333333] rounded-none space-y-3 transition-colors">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-zinc-200">Model Architecture</h3>
-            <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              Champion
+            <span className="font-mono text-[10px] uppercase tracking-[2px] text-[#777777]">
+              API SERVER
             </span>
+            <div className="w-7 h-7 rounded-none bg-[#161616] border border-[#262626] flex items-center justify-center text-[#888888]">
+              <Server className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <div className="space-y-2.5 text-xs text-zinc-400">
-            <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
-              <span className="text-zinc-500">Backbone</span>
-              <span className="font-medium text-zinc-200">ResNet-18 + CBAM Attention</span>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${isSystemOnline ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "bg-red-500"}`} />
+              <span className={`font-display text-xl uppercase tracking-[1px] ${isSystemOnline ? "text-emerald-400" : "text-red-400"}`}>
+                {isSystemOnline ? "ONLINE" : "OFFLINE"}
+              </span>
             </div>
-            <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
-              <span className="text-zinc-500">Face Detection</span>
-              <span className="font-medium text-zinc-200">YuNet ONNX (640x480)</span>
+            <div className="font-mono text-[10px] uppercase tracking-[1px] text-[#666666] mt-1">
+              v{health?.version || "1.0.0"} · FASTAPI
             </div>
-            <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
-              <span className="text-zinc-500">Input Resolution</span>
-              <span className="font-medium text-zinc-200">48 × 48 px (Grayscale)</span>
+          </div>
+        </div>
+
+        {/* Inference Core */}
+        <div className="p-5 bg-[#0e0e0e] border border-[#222222] hover:border-[#333333] rounded-none space-y-3 transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] uppercase tracking-[2px] text-[#777777]">
+              AI MODEL
+            </span>
+            <div className="w-7 h-7 rounded-none bg-[#161616] border border-[#262626] flex items-center justify-center text-[#888888]">
+              <Cpu className="w-3.5 h-3.5" />
             </div>
-            <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
-              <span className="text-zinc-500">Optimization</span>
-              <span className="font-medium text-zinc-200">30% Structured Pruning</span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${isModelReady ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "bg-amber-400 animate-pulse"}`} />
+              <span className={`font-display text-xl uppercase tracking-[1px] ${isModelReady ? "text-white" : "text-amber-400"}`}>
+                {isModelReady ? "READY & ACTIVE" : "WARMING UP"}
+              </span>
             </div>
-            <div className="flex items-center justify-between py-1.5">
-              <span className="text-zinc-500">Uncertainty Threshold</span>
-              <span className="font-medium text-zinc-200">40.0% Confidence Cutoff</span>
+            <div className="font-mono text-[10px] uppercase tracking-[1px] text-[#888888] mt-1">
+              RESNET-18 CBAM · YUNET
+            </div>
+          </div>
+        </div>
+
+        {/* Database */}
+        <div className="p-5 bg-[#0e0e0e] border border-[#222222] hover:border-[#333333] rounded-none space-y-3 transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] uppercase tracking-[2px] text-[#777777]">
+              DATABASE
+            </span>
+            <div className="w-7 h-7 rounded-none bg-[#161616] border border-[#262626] flex items-center justify-center text-[#888888]">
+              <Database className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${isDbReady ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "bg-amber-400"}`} />
+              <span className={`font-display text-xl uppercase tracking-[1px] ${isDbReady ? "text-white" : "text-amber-400"}`}>
+                {isDbReady ? "CONNECTED" : "DISCONNECTED"}
+              </span>
+            </div>
+            <div className="font-mono text-[10px] uppercase tracking-[1px] text-[#666666] mt-1">
+              SQLITE WAL MODE
+            </div>
+          </div>
+        </div>
+
+        {/* Real-time Stream */}
+        <div className="p-5 bg-[#0e0e0e] border border-[#222222] hover:border-[#333333] rounded-none space-y-3 transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] uppercase tracking-[2px] text-[#777777]">
+              STREAMING
+            </span>
+            <div className="w-7 h-7 rounded-none bg-[#161616] border border-[#262626] flex items-center justify-center text-[#888888]">
+              <Zap className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+              <span className="font-display text-xl uppercase tracking-[1px] text-white">
+                WEBSOCKET
+              </span>
+            </div>
+            <div className="font-mono text-[10px] uppercase tracking-[1px] text-emerald-400 mt-1">
+              REAL-TIME DUPLEX
             </div>
           </div>
         </div>
       </div>
 
-      {/* Recent Sessions List */}
-      <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-base font-bold text-zinc-200">Recent Analysis Sessions</h3>
-            <p className="text-xs text-zinc-500 mt-0.5">Persisted session records from database</p>
+      {/* 4. Action Feature Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Live Camera Card */}
+        <div className="bg-[#0e0e0e] border border-[#222222] hover:border-[#333333] rounded-none p-6 flex flex-col justify-between group transition-all">
+          <div className="space-y-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <Camera className="w-4 h-4" />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[1px] text-emerald-400 px-2 py-0.5 border border-emerald-500/30 bg-emerald-950/20 rounded-none">
+                REAL-TIME
+              </span>
+            </div>
+            <div>
+              <h2 className="font-display text-xl uppercase tracking-[1.5px] text-white">
+                Live Webcam Detection
+              </h2>
+              <p className="font-sans text-xs text-[#888888] leading-relaxed mt-2">
+                Detect and follow emotions through your camera in real time with smooth face tracking, emotion color tags, and live confidence meters.
+              </p>
+            </div>
           </div>
           <Link
             href="/live"
-            className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="btn-valence self-start"
           >
-            Start New Session →
+            <span>Start Live Camera</span>
+            <ArrowRight className="w-3.5 h-3.5 ml-2 inline" />
           </Link>
         </div>
 
+        {/* Image Analysis Card */}
+        <div className="bg-[#0e0e0e] border border-[#222222] hover:border-[#333333] rounded-none p-6 flex flex-col justify-between group transition-all">
+          <div className="space-y-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-none bg-[#c3d9f3]/10 border border-[#c3d9f3]/20 flex items-center justify-center text-[#c3d9f3]">
+                <ImageIcon className="w-4 h-4" />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[1px] text-[#cccccc] px-2 py-0.5 border border-[#2a2a2a] bg-[#161616] rounded-none">
+                UPLOAD
+              </span>
+            </div>
+            <div>
+              <h2 className="font-display text-xl uppercase tracking-[1.5px] text-white">
+                Image Emotion Analysis
+              </h2>
+              <p className="font-sans text-xs text-[#888888] leading-relaxed mt-2">
+                Upload photos to detect all faces with colored bounding boxes and inspect full 7-class probability distributions for each person.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/image-analysis"
+            className="btn-valence-secondary self-start"
+          >
+            <span>Analyze Image</span>
+            <ArrowRight className="w-3.5 h-3.5 ml-2 inline" />
+          </Link>
+        </div>
+
+        {/* Video Analysis Card */}
+        <div className="bg-[#0e0e0e] border border-[#222222] hover:border-[#333333] rounded-none p-6 flex flex-col justify-between group transition-all">
+          <div className="space-y-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-none bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                <Video className="w-4 h-4" />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[1px] text-amber-400 px-2 py-0.5 border border-amber-500/30 bg-amber-950/20 rounded-none">
+                TIMELINE
+              </span>
+            </div>
+            <div>
+              <h2 className="font-display text-xl uppercase tracking-[1.5px] text-white">
+                Video File Analysis
+              </h2>
+              <p className="font-sans text-xs text-[#888888] leading-relaxed mt-2">
+                Upload video files to track facial expressions over time with an interactive colorful timeline scrubber and emotion shift summary.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/video-analysis"
+            className="btn-valence-secondary self-start"
+          >
+            <span>Analyze Video</span>
+            <ArrowRight className="w-3.5 h-3.5 ml-2 inline" />
+          </Link>
+        </div>
+      </div>
+
+      {/* 5. Supported Emotion Classes Matrix */}
+      <div className="bg-[#0c0c0c] border border-[#222222] rounded-none p-6 sm:p-7">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#1f1f1f]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-2 bg-emerald-400" />
+            <h2 className="font-display text-lg uppercase tracking-[2px] text-white">
+              Supported Emotions
+            </h2>
+          </div>
+          <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#777777]">
+            7 Target Classes
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+          {SUPPORTED_EMOTIONS.map((emotion) => {
+            const meta = EMOTIONS[emotion];
+            return (
+              <div
+                key={emotion}
+                className="p-4 bg-[#121212] border border-[#222222] hover:border-[#333333] rounded-none flex flex-col justify-between space-y-3 transition-all duration-200 relative overflow-hidden group"
+              >
+                {/* Subtle top color hairline */}
+                <div
+                  className="absolute top-0 inset-x-0 h-0.5 transition-all group-hover:h-1"
+                  style={{ backgroundColor: meta.color }}
+                />
+
+                {/* Emoji badge with sharp tinted container */}
+                <div
+                  className="w-10 h-10 rounded-none flex items-center justify-center text-2xl transition-transform group-hover:scale-110 select-none"
+                  style={{
+                    backgroundColor: `${meta.color}15`,
+                    border: `1px solid ${meta.color}30`,
+                  }}
+                >
+                  <span>{meta.emoji}</span>
+                </div>
+
+                <div>
+                  <div className="font-display text-sm uppercase tracking-[1px] text-white">
+                    {meta.label}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span
+                      className="w-1.5 h-1.5"
+                      style={{ backgroundColor: meta.color }}
+                    />
+                    <span
+                      className="font-mono text-[10px] uppercase tracking-[1px]"
+                      style={{ color: meta.color }}
+                    >
+                      {emotion}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="font-sans text-[11px] text-[#777777] leading-relaxed line-clamp-2">
+                  {meta.description}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 6. Recent Sessions Table */}
+      <div className="bg-[#0c0c0c] border border-[#222222] rounded-none p-6 sm:p-7">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#1f1f1f]">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="font-display text-lg uppercase tracking-[2px] text-white">
+                Recent Sessions
+              </h2>
+              <span className="px-1.5 py-0.5 border border-[#333333] bg-[#141414] text-[9px] uppercase tracking-[1px] text-[#888888] font-mono">
+                USER ISOLATED
+              </span>
+            </div>
+            <div className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#777777] mt-0.5">
+              Live Detection Sessions & Recordings
+            </div>
+          </div>
+        </div>
+
         {sessions.length > 0 ? (
-          <div className="divide-y divide-zinc-800/60 overflow-x-auto">
-            <table className="w-full text-left text-xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-mono text-xs">
               <thead>
-                <tr className="text-zinc-500 uppercase tracking-wider font-semibold border-b border-zinc-800/80">
-                  <th className="py-2.5 px-3">Session Name / ID</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 px-3">Started At</th>
-                  <th className="py-2.5 px-3">Ended At</th>
+                <tr className="border-b border-[#222222] text-[#666666] uppercase text-[10px] tracking-[1.5px]">
+                  <th className="py-2.5 px-4">Session Name</th>
+                  <th className="py-2.5 px-4">Status</th>
+                  <th className="py-2.5 px-4">Started At</th>
+                  <th className="py-2.5 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/40 font-mono">
+              <tbody className="divide-y divide-[#1a1a1a]">
                 {sessions.map((session) => (
-                  <tr key={session.id} className="hover:bg-zinc-800/20 transition-colors">
-                    <td className="py-3 px-3">
-                      <span className="font-sans font-medium text-zinc-200 block">
-                        {session.name || "Detection Session"}
-                      </span>
-                      <span className="text-[11px] text-zinc-500">{session.id}</span>
+                  <tr key={session.id} className="hover:bg-[#141414] transition-colors">
+                    <td className="py-3 px-4 text-white">
+                      <div className="font-medium">{session.name || "Unnamed Session"}</div>
+                      <div className="text-[10px] text-[#666666] font-mono">{session.id}</div>
                     </td>
-                    <td className="py-3 px-3">
+                    <td className="py-3 px-4">
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                        className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] uppercase tracking-[0.5px] border rounded-none ${
                           session.status === "active"
-                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                            : "bg-zinc-800 text-zinc-400"
+                            ? "border-emerald-500/30 text-emerald-400 bg-emerald-950/20"
+                            : "border-[#2a2a2a] text-[#888888] bg-[#141414]"
                         }`}
                       >
+                        <span
+                          className={`w-1.5 h-1.5 ${
+                            session.status === "active" ? "bg-emerald-400" : "bg-[#666666]"
+                          }`}
+                        />
                         {session.status}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-zinc-400">
+                    <td className="py-3 px-4 text-[#888888]">
                       {new Date(session.started_at).toLocaleString()}
                     </td>
-                    <td className="py-3 px-3 text-zinc-500">
-                      {session.ended_at ? new Date(session.ended_at).toLocaleString() : "—"}
+                    <td className="py-3 px-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/sessions/${session.id}`}
+                          className="inline-flex items-center h-7 px-3 border border-[#333333] hover:border-white text-[#cccccc] hover:text-white font-mono text-[10px] uppercase tracking-[1px] transition-all rounded-none"
+                        >
+                          Details
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteSession(session.id, e)}
+                          className="p-1.5 border border-[#262626] hover:border-red-500/50 bg-[#111111] hover:bg-red-950/20 text-[#666666] hover:text-red-400 transition-colors cursor-pointer rounded-none"
+                          title="Remove session record"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -372,12 +484,12 @@ export default function DashboardPage() {
             </table>
           </div>
         ) : (
-          <div className="py-8 text-center bg-zinc-950/40 rounded-xl border border-zinc-800/50">
-            <Activity className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
-            <p className="text-xs text-zinc-400 font-medium">No recorded sessions yet.</p>
-            <p className="text-[11px] text-zinc-500 mt-1">
-              Start a live detection session or upload an image to begin tracking predictions.
-            </p>
+          <div className="py-10 text-center text-[#666666] font-mono text-xs uppercase tracking-[2px] flex flex-col items-center justify-center gap-2">
+            <Camera className="w-5 h-5 text-[#444444]" />
+            <span>No sessions recorded for your account yet</span>
+            <span className="text-[10px] lowercase text-[#555555] tracking-normal font-sans">
+              start a live camera session to record your detection history
+            </span>
           </div>
         )}
       </div>

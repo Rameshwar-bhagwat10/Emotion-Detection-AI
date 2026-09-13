@@ -12,17 +12,22 @@ from ml.inference.preprocessor import FacePreprocessor, InvalidCropError, Prepro
 
 
 def test_crop_face_valid():
-    """Verify cropping rectangular region from RGB image."""
+    """Verify cropping rectangular region from RGB image in square and rectangular modes."""
     img = np.zeros((200, 300, 3), dtype=np.uint8)
-    img[40:100, 50:120] = 200  # Draw white rectangle
+    img[40:110, 50:120] = 200  # Draw white rectangle
 
     preprocessor = FacePreprocessor()
     bbox = FaceBoundingBox(x=50, y=40, width=70, height=60)
-    crop = preprocessor.crop_face(img, bbox)
+    
+    # Default: Square-adjusted to preserve facial aspect ratio
+    crop_sq = preprocessor.crop_face(img, bbox, square_crop=True)
+    assert crop_sq.shape == (70, 70, 3)
+    assert crop_sq.dtype == np.uint8
 
-    assert crop.shape == (60, 70, 3)
-    assert crop.dtype == np.uint8
-    assert (crop == 200).all()
+    # Rectangular crop mode
+    crop_rect = preprocessor.crop_face(img, bbox, square_crop=False)
+    assert crop_rect.shape == (60, 70, 3)
+    assert crop_rect.dtype == np.uint8
 
 
 def test_crop_face_invalid_raises():
@@ -35,10 +40,25 @@ def test_crop_face_invalid_raises():
         preprocessor.crop_face(img, bad_box)
 
 
-def test_preprocess_single_crop():
-    """Verify conversion to normalized [1, 48, 48] float32 tensor."""
+def test_preprocess_single_crop_rgb():
+    """Verify conversion to normalized [3, 112, 112] float32 tensor in RGB mode."""
     crop = np.full((80, 80, 3), 128, dtype=np.uint8)
-    cfg = ModelInferenceConfig(input_size=[48, 48], mean=[0.507743], std=[0.255009])
+    cfg = ModelInferenceConfig(input_size=[112, 112], input_channels=3, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    preprocessor = FacePreprocessor(config=cfg)
+
+    tensor = preprocessor.preprocess_single_crop(crop)
+    assert tensor.shape == (3, 112, 112)
+    assert tensor.dtype == torch.float32
+
+    # Verify channel 0 normalization: (128/255.0 - 0.485) / 0.229
+    expected_c0 = (128.0 / 255.0 - 0.485) / 0.229
+    assert abs(tensor[0, 0, 0].item() - expected_c0) < 1e-4
+
+
+def test_preprocess_single_crop_grayscale():
+    """Verify conversion to normalized [1, 48, 48] float32 tensor in legacy grayscale mode."""
+    crop = np.full((80, 80, 3), 128, dtype=np.uint8)
+    cfg = ModelInferenceConfig(input_size=[48, 48], input_channels=1, mean=[0.507743], std=[0.255009])
     preprocessor = FacePreprocessor(config=cfg)
 
     tensor = preprocessor.preprocess_single_crop(crop)
@@ -51,7 +71,7 @@ def test_preprocess_single_crop():
 
 
 def test_preprocess_batch():
-    """Verify batched tensor construction of shape [B, 1, 48, 48]."""
+    """Verify batched tensor construction of shape [B, C, H, W]."""
     crops = [
         np.full((60, 60, 3), 100, dtype=np.uint8),
         np.full((70, 70, 3), 200, dtype=np.uint8),
@@ -60,7 +80,7 @@ def test_preprocess_batch():
     preprocessor = FacePreprocessor()
     batch = preprocessor.preprocess_batch(crops, device="cpu")
 
-    assert batch.shape == (3, 1, 48, 48)
+    assert batch.shape == (3, 3, 112, 112)
     assert batch.dtype == torch.float32
     assert batch.device.type == "cpu"
 

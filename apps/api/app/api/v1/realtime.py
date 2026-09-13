@@ -103,7 +103,6 @@ async def _run_frame_worker(
     stop_event: asyncio.Event,
     frame_queue: asyncio.Queue[tuple[bytes, int, float | None, float]],
     realtime_service: RealTimeService,
-    db: AsyncSession,
     active_session_id: uuid.UUID | None,
     websocket: WebSocket,
 ) -> None:
@@ -127,7 +126,6 @@ async def _run_frame_worker(
                 raw_bytes=raw_bytes,
                 frame_id=f_id,
                 client_timestamp=client_ts,
-                db=db,
                 session_id=active_session_id,
             )
             await websocket.send_text(response.model_dump_json())
@@ -155,7 +153,6 @@ async def realtime_emotion_stream(  # noqa: C901
     session_name: str | None = Query(
         default=None, description="Optional label for auto-created session"
     ),
-    db: AsyncSession = Depends(get_db),
 ) -> None:
     """Real-time bidirectional WebSocket endpoint for webcam & video emotion detection."""
     await websocket.accept()
@@ -184,10 +181,13 @@ async def realtime_emotion_stream(  # noqa: C901
 
     try:
         if active_session_id is None:
-            active_session_id = await realtime_service.initialize_session(
-                db=db,
-                session_name=session_name or "Real-Time Webcam Session",
-            )
+            from app.db.session import get_session_factory
+            factory = get_session_factory()
+            async with factory() as session_db:
+                active_session_id = await realtime_service.initialize_session(
+                    db=session_db,
+                    session_name=session_name or "Real-Time Webcam Session",
+                )
     except Exception as exc:
         logger.warning(f"Could not initialize database session for WebSocket: {exc}")
 
@@ -218,7 +218,6 @@ async def realtime_emotion_stream(  # noqa: C901
             stop_event=stop_event,
             frame_queue=frame_queue,
             realtime_service=realtime_service,
-            db=db,
             active_session_id=active_session_id,
             websocket=websocket,
         )
@@ -298,7 +297,10 @@ async def realtime_emotion_stream(  # noqa: C901
 
         if active_session_id is not None:
             try:
-                await realtime_service.finalize_session(db=db, session_id=active_session_id)
+                from app.db.session import get_session_factory
+                factory = get_session_factory()
+                async with factory() as session_db:
+                    await realtime_service.finalize_session(db=session_db, session_id=active_session_id)
             except Exception as exc:
                 logger.warning(f"Error finalizing session during teardown: {exc}")
 

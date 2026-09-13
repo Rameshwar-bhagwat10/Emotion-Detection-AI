@@ -13,9 +13,8 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-import { EMOTIONS, PredictionEmotion } from "@/types/emotion";
 import { ExpressionDistribution } from "@/types/analytics";
-import { PieChart as PieIcon, BarChart2 } from "lucide-react";
+import { EMOTIONS, EmotionType } from "@/types/emotion";
 
 export interface EmotionDistributionChartProps {
   distribution: ExpressionDistribution;
@@ -26,7 +25,7 @@ export interface EmotionDistributionChartProps {
 export function EmotionDistributionChart({
   distribution,
   className = "",
-  title = "Predicted Expression Distribution",
+  title = "Emotion Distribution",
 }: EmotionDistributionChartProps) {
   const [viewMode, setViewMode] = useState<"donut" | "bar">("donut");
 
@@ -34,83 +33,73 @@ export function EmotionDistributionChart({
   const items = distribution.items || [];
 
   const chartData = items.map((item) => {
-    const emotionKey = (item.emotion.toLowerCase() in EMOTIONS
-      ? item.emotion.toLowerCase()
-      : "uncertain") as PredictionEmotion;
-    const meta = EMOTIONS[emotionKey];
+    const emoKey = item.emotion.toLowerCase() as EmotionType;
+    const meta = EMOTIONS[emoKey];
     return {
-      name: meta.label,
+      name: meta ? `${meta.emoji} ${meta.label}` : item.emotion.toUpperCase(),
+      label: meta ? meta.label : item.emotion,
+      emoji: meta?.emoji || "",
       emotionKey: item.emotion,
       count: item.count,
       percentage: item.percentage,
-      color: meta.color,
-      emoji: meta.emoji,
+      color: meta?.color || "rgb(56, 189, 248)",
     };
   });
-
-  const dominantKey = (distribution.dominant_emotion?.toLowerCase() || "neutral") as PredictionEmotion;
-  const dominantMeta = EMOTIONS[dominantKey] || EMOTIONS.neutral;
 
   if (total === 0) {
     return (
       <div
-        className={`p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col items-center justify-center min-h-[320px] text-center ${className}`}
+        className={`p-6 bg-[#0d0d0d] border border-[#262626] flex flex-col items-center justify-center min-h-[320px] text-center ${className}`}
       >
-        <div className="w-12 h-12 rounded-xl bg-zinc-800/50 flex items-center justify-center text-zinc-500 mb-3">
-          <PieIcon className="w-6 h-6" />
-        </div>
-        <h3 className="text-base font-semibold text-zinc-300">No Predictions Available</h3>
-        <p className="text-sm text-zinc-500 max-w-sm mt-1">
-          Perform image analysis or start a live webcam detection session to generate expression distribution data.
+        <div className="font-mono text-xs text-[#666666] mb-2">[NO DATA]</div>
+        <h3 className="font-display text-lg uppercase tracking-[2px] text-white">No Predictions Yet</h3>
+        <p className="font-serif text-sm text-[#999999] max-w-sm mt-1">
+          Start a live camera session or analyze an image/video to see the breakdown of detected emotions.
         </p>
       </div>
     );
   }
 
   return (
-    <div className={`p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 ${className}`}>
+    <div className={`p-6 bg-[#0d0d0d] border border-[#262626] ${className}`}>
       {/* Header & View Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-zinc-800/60">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#262626]">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-zinc-100">{title}</h3>
+          <div className="flex items-center gap-3">
+            <h3 className="font-display text-lg uppercase tracking-[2px] text-white">{title}</h3>
             {distribution.dominant_emotion && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
-                <span>Dominant:</span>
-                <span>{dominantMeta.emoji}</span>
-                <span className="capitalize">{dominantMeta.label}</span>
+              <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-emerald-400 bg-[#141414] px-2 py-0.5 border border-emerald-500/30">
+                Dominant: {EMOTIONS[distribution.dominant_emotion.toLowerCase() as EmotionType]?.emoji || ""} {distribution.dominant_emotion.toUpperCase()}
               </span>
             )}
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
-            Proportional frequency across {total.toLocaleString()} valid face detection events.
+          <p className="font-serif text-xs text-[#999999] mt-1">
+            Breakdown across {total.toLocaleString()} detected emotion events.
           </p>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-zinc-950 border border-zinc-800 self-start sm:self-auto">
+        <div className="flex items-center gap-1 p-1 bg-[#141414] border border-[#262626] self-start sm:self-auto font-mono text-[10px]">
           <button
+            type="button"
             onClick={() => setViewMode("donut")}
-            className={`p-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-1 transition-colors cursor-pointer ${
               viewMode === "donut"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#1f1f1f] text-white border border-white"
+                : "text-[#666666] hover:text-white"
             }`}
-            title="Donut Chart"
           >
-            <PieIcon className="w-4 h-4" />
-            <span className="hidden md:inline">Donut</span>
+            Donut
           </button>
           <button
+            type="button"
             onClick={() => setViewMode("bar")}
-            className={`p-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-1 transition-colors cursor-pointer ${
               viewMode === "bar"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#1f1f1f] text-white border border-white"
+                : "text-[#666666] hover:text-white"
             }`}
-            title="Bar Chart"
           >
-            <BarChart2 className="w-4 h-4" />
-            <span className="hidden md:inline">Bar</span>
+            Bar
           </button>
         </div>
       </div>
@@ -126,12 +115,12 @@ export function EmotionDistributionChart({
                   cx="50%"
                   cy="50%"
                   innerRadius={55}
-                  outerRadius={95}
-                  paddingAngle={3}
+                  outerRadius={90}
+                  paddingAngle={2}
                   dataKey="count"
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} stroke="rgba(24, 24, 27, 0.8)" strokeWidth={2} />
+                    <Cell key={`cell-${index}`} fill={entry.color} stroke="#000000" strokeWidth={1.5} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -139,15 +128,10 @@ export function EmotionDistributionChart({
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="p-3 rounded-xl bg-zinc-950/95 border border-zinc-800 shadow-xl text-xs">
-                          <div className="flex items-center gap-2 font-semibold text-zinc-200">
-                            <span>{data.emoji}</span>
-                            <span>{data.name}</span>
-                          </div>
-                          <div className="mt-1.5 space-y-0.5 text-zinc-400">
-                            <div>Count: <span className="text-zinc-200 font-mono font-medium">{data.count.toLocaleString()}</span></div>
-                            <div>Share: <span className="text-zinc-200 font-mono font-medium">{data.percentage}%</span></div>
-                          </div>
+                        <div className="p-3 bg-black border border-[#3a3a3a] text-xs font-mono space-y-1">
+                          <div className="text-white tracking-wider font-bold">{data.name}</div>
+                          <div className="text-[#999999]">COUNT: <span className="text-white">{data.count.toLocaleString()}</span></div>
+                          <div className="text-[#c3d9f3]">SHARE: <span className="text-white">{data.percentage}%</span></div>
                         </div>
                       );
                     }
@@ -157,41 +141,38 @@ export function EmotionDistributionChart({
               </PieChart>
             ) : (
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                <CartesianGrid strokeDasharray="2 2" stroke="#262626" vertical={false} />
                 <XAxis
                   dataKey="name"
-                  stroke="#71717a"
-                  fontSize={11}
+                  stroke="#666666"
+                  fontSize={10}
+                  fontFamily="monospace"
                   tickLine={false}
-                  axisLine={{ stroke: "#3f3f46" }}
+                  axisLine={{ stroke: "#262626" }}
                 />
                 <YAxis
-                  stroke="#71717a"
-                  fontSize={11}
+                  stroke="#666666"
+                  fontSize={10}
+                  fontFamily="monospace"
                   tickLine={false}
-                  axisLine={{ stroke: "#3f3f46" }}
+                  axisLine={{ stroke: "#262626" }}
                 />
                 <Tooltip
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="p-3 rounded-xl bg-zinc-950/95 border border-zinc-800 shadow-xl text-xs">
-                          <div className="flex items-center gap-2 font-semibold text-zinc-200">
-                            <span>{data.emoji}</span>
-                            <span>{data.name}</span>
-                          </div>
-                          <div className="mt-1.5 space-y-0.5 text-zinc-400">
-                            <div>Count: <span className="text-zinc-200 font-mono font-medium">{data.count.toLocaleString()}</span></div>
-                            <div>Share: <span className="text-zinc-200 font-mono font-medium">{data.percentage}%</span></div>
-                          </div>
+                        <div className="p-3 bg-black border border-[#3a3a3a] text-xs font-mono space-y-1">
+                          <div className="text-white tracking-wider font-bold">{data.name}</div>
+                          <div className="text-[#999999]">COUNT: <span className="text-white">{data.count.toLocaleString()}</span></div>
+                          <div className="text-[#c3d9f3]">SHARE: <span className="text-white">{data.percentage}%</span></div>
                         </div>
                       );
                     }
                     return null;
                   }}
                 />
-                <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                <Bar dataKey="count">
                   {chartData.map((entry, index) => (
                     <Cell key={`bar-${index}`} fill={entry.color} />
                   ))}
@@ -202,22 +183,21 @@ export function EmotionDistributionChart({
         </div>
 
         {/* Breakdown List */}
-        <div className="lg:col-span-5 space-y-2 max-h-64 overflow-y-auto pr-1">
+        <div className="lg:col-span-5 space-y-1.5 max-h-64 overflow-y-auto pr-1">
           {chartData.map((entry) => (
             <div
               key={entry.emotionKey}
-              className="flex items-center justify-between p-2 rounded-xl bg-zinc-950/40 border border-zinc-800/40 hover:border-zinc-700 transition-colors"
+              className="flex items-center justify-between p-2 bg-[#141414] border border-[#262626] font-mono text-xs"
             >
               <div className="flex items-center gap-2.5">
-                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-                <span className="text-base">{entry.emoji}</span>
-                <span className="text-xs font-medium text-zinc-300">{entry.name}</span>
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: entry.color }} />
+                <span className="text-white font-medium">{entry.name}</span>
               </div>
               <div className="text-right flex items-center gap-3">
-                <span className="text-xs text-zinc-400 font-mono">
+                <span className="text-[#666666]">
                   {entry.count.toLocaleString()}
                 </span>
-                <span className="text-xs font-semibold text-zinc-200 font-mono w-12 text-right">
+                <span className="font-bold w-12 text-right" style={{ color: entry.color }}>
                   {entry.percentage.toFixed(1)}%
                 </span>
               </div>

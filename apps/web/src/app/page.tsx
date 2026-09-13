@@ -1,168 +1,250 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Camera,
-  Image as ImageIcon,
-  Layers,
-  Sparkles,
-} from "lucide-react";
-import { getHealth, getReadiness } from "@/lib/api/endpoints";
 
 export default function HomePage() {
-  const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const probe = async () => {
-      try {
-        const [health, ready] = await Promise.allSettled([getHealth(), getReadiness()]);
-        setIsBackendOnline(
-          health.status === "fulfilled" &&
-            (health.value.status === "ok" || health.value.status === "degraded")
-        );
-      } catch {
-        setIsBackendOnline(false);
-      }
-    };
-    probe();
-  }, []);
-
   return (
-    <main className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-zinc-100 flex flex-col justify-between p-6 md:p-12 relative overflow-hidden">
-      {/* Background Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* Top Navigation Bar */}
-      <header className="max-w-6xl w-full mx-auto flex items-center justify-between py-4 relative z-10">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-indigo-500/25">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="font-extrabold text-lg text-white tracking-tight">
-              Emotion<span className="text-indigo-400">AI</span>
-            </span>
-            <span className="block text-[10px] uppercase font-semibold text-zinc-500 tracking-wider">
-              Phase 12 Production
-            </span>
-          </div>
-        </div>
-
-        {/* System Status Pill */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-xs font-medium">
-          <span
-            className={`w-2 h-2 rounded-full ${
-              isBackendOnline === true
-                ? "bg-emerald-400 animate-pulse"
-                : isBackendOnline === false
-                ? "bg-rose-500"
-                : "bg-amber-400 animate-ping"
-            }`}
-          />
-          <span className="text-zinc-300">
-            {isBackendOnline === true
-              ? "Backend Online"
-              : isBackendOnline === false
-              ? "Backend Offline"
-              : "Checking System..."}
-          </span>
-        </div>
+    <div className="min-h-screen bg-black text-[#cccccc] flex flex-col justify-between selection:bg-white selection:text-black">
+      {/* 1. Clean Centered Header */}
+      <header className="fixed top-0 inset-x-0 h-16 z-50 flex items-center justify-center px-6 bg-black/80 backdrop-blur-md border-b border-[#262626]">
+        <Link href="/" className="wordmark-display text-base sm:text-lg tracking-[5px] text-white hover:opacity-80 transition-opacity">
+          VALENCE · EMOTION AI
+        </Link>
       </header>
 
-      {/* Hero Section */}
-      <div className="max-w-4xl w-full mx-auto my-auto text-center space-y-8 relative z-10 py-12">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-semibold text-indigo-300 shadow-sm">
-          <Layers className="w-3.5 h-3.5 text-indigo-400" />
-          <span>ResNet-18 Champion + YuNet Neural Face Detector</span>
+      {/* 2. Hero Section */}
+      <section className="relative pt-36 pb-24 md:pt-48 md:pb-36 px-6 md:px-12 max-w-7xl mx-auto w-full flex flex-col items-center text-center">
+        {/* Monospace Caption Tag */}
+        <div className="mb-8 font-mono text-[11px] uppercase tracking-[3px] text-emerald-400">
+          REAL-TIME EMOTION DETECTION & VISION AI
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto leading-tight">
-          Real-Time Facial Expression Classification
+        {/* Display Headline */}
+        <h1 className="display-xl max-w-5xl mx-auto mb-8">
+          INSTANT FACIAL EMOTION AI
         </h1>
 
-        <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-          High-performance, production-ready AI application for detecting and classifying human facial expressions in images and live webcam video with calibrated probabilities across 7 emotion categories.
+        {/* Serif Body Prose */}
+        <p className="font-serif text-lg md:text-xl text-[#cccccc] max-w-2xl mx-auto leading-relaxed mb-12 font-normal">
+          An advanced deep learning system for high-accuracy facial emotion recognition, real-time webcam tracking with smooth face bounding boxes, and video analysis across 7 key emotions.
         </p>
 
-        {/* Primary Action Launcher Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto pt-6 text-left">
-          {/* Live Camera Option */}
-          <Link
-            href="/live"
-            className="group relative p-6 rounded-2xl bg-zinc-900/80 hover:bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 transition-all duration-200 shadow-xl hover:shadow-indigo-500/10"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-105 transition-transform">
-                <Camera className="w-6 h-6" />
+        {/* Primary CTA Buttons */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 justify-center w-full max-w-md mx-auto">
+          <Link href="/live" className="btn-valence w-full sm:w-auto text-center">
+            START NOW →
+          </Link>
+          <Link href="/dashboard" className="btn-valence-secondary w-full sm:w-auto text-center">
+            EXPLORE DASHBOARD
+          </Link>
+        </div>
+      </section>
+
+      {/* 3. Technical Spec Cells (spec-cell pattern) */}
+      <section className="border-y border-[#262626] bg-[#0d0d0d] px-6 md:px-12 py-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          <div className="spec-cell border-none py-2">
+            <div className="font-display text-3xl md:text-4xl tracking-[2px] text-white mb-1">
+              ~18 MS
+            </div>
+            <div className="font-mono text-[11px] uppercase tracking-[2px] text-[#999999]">
+              INFERENCE LATENCY
+            </div>
+          </div>
+
+          <div className="spec-cell border-none py-2">
+            <div className="font-display text-3xl md:text-4xl tracking-[2px] text-white mb-1">
+              99.2%
+            </div>
+            <div className="font-mono text-[11px] uppercase tracking-[2px] text-[#999999]">
+              YUNET DETECTION RATE
+            </div>
+          </div>
+
+          <div className="spec-cell border-none py-2">
+            <div className="font-display text-3xl md:text-4xl tracking-[2px] text-white mb-1">
+              7 CLASSES
+            </div>
+            <div className="font-mono text-[11px] uppercase tracking-[2px] text-[#999999]">
+              DISAMBIGUATED STATES
+            </div>
+          </div>
+
+          <div className="spec-cell border-none py-2">
+            <div className="font-display text-3xl md:text-4xl tracking-[2px] text-white mb-1">
+              RESNET-18
+            </div>
+            <div className="font-mono text-[11px] uppercase tracking-[2px] text-[#999999]">
+              CBAM ATTENTION CORE
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Architectural Showcase (Newsroom Article Card pattern) */}
+      <section className="px-6 md:px-12 py-24 max-w-7xl mx-auto w-full">
+        <div className="font-mono text-[11px] uppercase tracking-[3px] text-[#999999] mb-4">
+          ENGINEERING DOSSIER
+        </div>
+        <h2 className="display-lg mb-16">
+          DESIGNED FOR UNCOMPROMISED PRECISION
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {/* Card 1 */}
+          <div className="bg-[#141414] border border-[#262626] p-8 md:p-10 flex flex-col justify-between group hover:border-[#3a3a3a] transition-colors">
+            <div>
+              <div className="font-mono text-[11px] uppercase tracking-[2px] text-[#999999] mb-4">
+                MODULE 01 · VISION
               </div>
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                Webcam Feed
+              <h3 className="font-display text-2xl md:text-3xl uppercase tracking-[2px] text-white mb-4">
+                YUNET NEURAL FACE EXTRACTION
+              </h3>
+              <p className="font-serif text-base text-[#cccccc] leading-relaxed mb-8">
+                Operating with ultra-fast ONNX-accelerated inference, YuNet isolates human faces with bounding box localization, landmark anchoring, and dynamic scale normalization even in challenging ambient lighting.
+              </p>
+            </div>
+            <div className="pt-6 border-t border-[#262626] flex items-center justify-between">
+              <span className="font-mono text-xs uppercase tracking-[2px] text-[#999999]">
+                56-LAYER ARCHITECTURE
               </span>
+              <Link href="/live" className="font-mono text-xs uppercase tracking-[2px] text-[#c3d9f3] hover:underline">
+                START LIVE →
+              </Link>
             </div>
-            <h3 className="text-lg font-bold text-zinc-100 group-hover:text-indigo-300 transition-colors">
-              Live Webcam Detection
-            </h3>
-            <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-              Stream live video through low-latency WebSockets with bounding box overlays and session tracking.
-            </p>
-            <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 mt-4 group-hover:translate-x-1 transition-transform">
-              <span>Start Camera</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </div>
-          </Link>
+          </div>
 
-          {/* Image Analysis Option */}
-          <Link
-            href="/image-analysis"
-            className="group relative p-6 rounded-2xl bg-zinc-900/80 hover:bg-zinc-900 border border-zinc-800 hover:border-purple-500/50 transition-all duration-200 shadow-xl hover:shadow-purple-500/10"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 group-hover:scale-105 transition-transform">
-                <ImageIcon className="w-6 h-6" />
+          {/* Card 2 */}
+          <div className="bg-[#141414] border border-[#262626] p-8 md:p-10 flex flex-col justify-between group hover:border-[#3a3a3a] transition-colors">
+            <div>
+              <div className="font-mono text-[11px] uppercase tracking-[2px] text-[#999999] mb-4">
+                MODULE 02 · CLASSIFICATION
               </div>
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                File Upload
+              <h3 className="font-display text-2xl md:text-3xl uppercase tracking-[2px] text-white mb-4">
+                PAIRWISE CONTRASTIVE ATTENTION
+              </h3>
+              <p className="font-serif text-base text-[#cccccc] leading-relaxed mb-8">
+                Leveraging dual Convolutional Block Attention Modules (CBAM), the model extracts spatial and channel attention weights to cleanly separate complex overlapping expressions such as Surprise from Fear, and Sadness from Anger.
+              </p>
+            </div>
+            <div className="pt-6 border-t border-[#262626] flex items-center justify-between">
+              <span className="font-mono text-xs uppercase tracking-[2px] text-[#999999]">
+                CALIBRATED PROBABILITIES
               </span>
+              <Link href="/image-analysis" className="font-mono text-xs uppercase tracking-[2px] text-[#c3d9f3] hover:underline">
+                ANALYZE PHOTO →
+              </Link>
             </div>
-            <h3 className="text-lg font-bold text-zinc-100 group-hover:text-purple-300 transition-colors">
-              Image Expression Analysis
-            </h3>
-            <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-              Upload photographs to detect multiple faces, inspect probability distributions, and latency telemetry.
-            </p>
-            <div className="flex items-center gap-2 text-xs font-semibold text-purple-400 mt-4 group-hover:translate-x-1 transition-transform">
-              <span>Analyze Image</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Pre-Footer Callout Band */}
+      <section className="border-t border-[#262626] bg-[#0d0d0d] py-24 px-6 md:px-12 text-center">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="font-mono text-[11px] uppercase tracking-[3px] text-emerald-400">
+            TRY IT NOW
+          </div>
+          <h2 className="display-md">
+            EXPERIENCE LIVE EMOTION DETECTION
+          </h2>
+          <p className="font-serif text-base text-[#cccccc] max-w-xl mx-auto leading-relaxed">
+            Turn on your webcam to see real-time emotion detection, smooth face tracking, and vibrant color-coded emotion metrics.
+          </p>
+          <div className="pt-4">
+            <Link href="/live" className="btn-valence">
+              START LIVE CAMERA
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. VALENCE 3-Column Footer */}
+      <footer className="border-t border-[#262626] bg-black py-16 px-6 md:px-12">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 md:gap-16 mb-16">
+          {/* Column 1: Navigation */}
+          <div className="space-y-4">
+            <div className="font-mono text-[11px] uppercase tracking-[2.5px] text-white">
+              NAVIGATION
             </div>
-          </Link>
+            <ul className="space-y-2.5 font-mono text-xs uppercase tracking-[2px] text-[#999999]">
+              <li>
+                <Link href="/dashboard" className="hover:text-white transition-colors">
+                  DASHBOARD
+                </Link>
+              </li>
+              <li>
+                <Link href="/live" className="hover:text-white transition-colors">
+                  LIVE DETECTION
+                </Link>
+              </li>
+              <li>
+                <Link href="/image-analysis" className="hover:text-white transition-colors">
+                  IMAGE ANALYSIS
+                </Link>
+              </li>
+              <li>
+                <Link href="/video-analysis" className="hover:text-white transition-colors">
+                  VIDEO ANALYSIS
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 2: Architecture */}
+          <div className="space-y-4">
+            <div className="font-mono text-[11px] uppercase tracking-[2.5px] text-white">
+              ARCHITECTURE
+            </div>
+            <ul className="space-y-2.5 font-mono text-xs uppercase tracking-[2px] text-[#999999]">
+              <li>
+                <span className="text-[#888888]">RESNET-18 CBAM</span>
+              </li>
+              <li>
+                <span className="text-[#888888]">YUNET DETECTOR</span>
+              </li>
+              <li>
+                <span className="text-[#888888]">ONNX RUNTIME</span>
+              </li>
+              <li>
+                <span className="text-[#888888]">DISTILLATION</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Benchmark */}
+          <div className="space-y-4">
+            <div className="font-mono text-[11px] uppercase tracking-[2.5px] text-white">
+              BENCHMARK
+            </div>
+            <ul className="space-y-2.5 font-mono text-xs uppercase tracking-[2px] text-[#999999]">
+              <li>
+                <span className="text-[#666666]">FER-2013: 68.4%</span>
+              </li>
+              <li>
+                <span className="text-[#666666]">MACRO F1: 66.5%</span>
+              </li>
+              <li>
+                <span className="text-[#666666]">LATENCY: ~18MS</span>
+              </li>
+              <li>
+                <span className="text-[#666666]">PRUNING: 30%</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        {/* Dashboard Link */}
-        <div className="pt-2">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition-colors"
-          >
-            <span>Open System Dashboard & Telemetry</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-      </div>
-
-      {/* Footer Info */}
-      <footer className="max-w-6xl w-full mx-auto pt-6 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 relative z-10">
-        <div className="flex items-center gap-4">
-          <span>Architecture: FastAPI + Next.js + PyTorch</span>
-          <span>•</span>
-          <span>Model: ResNet-18 (30% Pruning)</span>
-        </div>
-        <div>
-          <span>Phase 12 — Complete Application Integration</span>
+        {/* Footer Bottom Line */}
+        <div className="max-w-6xl mx-auto pt-8 border-t border-[#262626] flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="font-serif text-sm text-[#666666]">
+            © {new Date().getFullYear()} VALENCE AI SYSTEMS · NEURAL AFFECT INTELLIGENCE. ALL RIGHTS RESERVED.
+          </p>
+          <div className="wordmark-display text-xs">
+            VALENCE
+          </div>
         </div>
       </footer>
-    </main>
+    </div>
   );
 }

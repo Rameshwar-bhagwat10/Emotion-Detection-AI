@@ -60,19 +60,31 @@ export async function getPrediction(predictionId: string): Promise<StoredPredict
 /**
  * Create a new analysis session.
  */
-export async function createSession(name?: string): Promise<SessionResponse> {
-  const res = await apiClient.post<SessionResponse>("/sessions", {
+export async function createSession(name?: string, userId?: string): Promise<SessionResponse> {
+  const payload: { name: string; user_id?: string } = {
     name: name || `Session ${new Date().toLocaleTimeString()}`,
-  });
+  };
+  if (userId) {
+    payload.user_id = userId;
+  }
+  const res = await apiClient.post<SessionResponse>("/sessions", payload);
   return res.data;
 }
 
 /**
- * List recent analysis sessions with pagination.
+ * List recent analysis sessions with pagination and optional user isolation filter.
  */
-export async function listSessions(limit: number = 20, offset: number = 0): Promise<SessionListResponse> {
+export async function listSessions(
+  limit: number = 20,
+  offset: number = 0,
+  userId?: string
+): Promise<SessionListResponse> {
+  const params: Record<string, unknown> = { limit, offset };
+  if (userId) {
+    params.user_id = userId;
+  }
   const res = await apiClient.get<SessionListResponse>("/sessions", {
-    params: { limit, offset },
+    params,
   });
   return res.data;
 }

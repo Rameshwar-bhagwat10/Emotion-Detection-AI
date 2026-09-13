@@ -217,8 +217,7 @@ class RealTimeService:
         # Stage 5: Controlled Periodic Persistence (e.g. 1 sample / second)
         now_mono = time.perf_counter()
         if (
-            db is not None
-            and session_id is not None
+            session_id is not None
             and (now_mono - self.last_persist_time >= settings.REALTIME_PERSISTENCE_INTERVAL_SEC)
         ):
             self.last_persist_time = now_mono
@@ -238,22 +237,24 @@ class RealTimeService:
                     }
                     for f in detected_faces_realtime
                 ]
-                await self.prediction_repo.create_prediction_with_faces(
-                    session=db,
-                    prediction_id=uuid.uuid4(),
-                    request_id=f"rt-{session_id}-{frame_id}",
-                    model_version=settings.MODEL_VERSION,
-                    status=inference_result.status.value,
-                    faces_detected=len(detected_faces_realtime),
-                    processing_time_ms=t_infer_ms,
-                    image_width=img_w,
-                    image_height=img_h,
-                    session_id=session_id,
-                    faces_data=faces_data,
-                )
-                await db.commit()
+                from app.db.session import get_session_factory
+                factory = get_session_factory()
+                async with factory() as persist_session:
+                    await self.prediction_repo.create_prediction_with_faces(
+                        session=persist_session,
+                        prediction_id=uuid.uuid4(),
+                        request_id=f"rt-{session_id}-{frame_id}",
+                        model_version=settings.MODEL_VERSION,
+                        status=inference_result.status.value,
+                        faces_detected=len(detected_faces_realtime),
+                        processing_time_ms=t_infer_ms,
+                        image_width=img_w,
+                        image_height=img_h,
+                        session_id=session_id,
+                        faces_data=faces_data,
+                    )
+                    await persist_session.commit()
             except Exception as exc:
-                await db.rollback()
                 logger.warning(f"Error persisting real-time frame sample: {exc}")
 
         # Stage 6: Telemetry & FPS updates

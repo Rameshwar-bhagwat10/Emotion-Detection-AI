@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { Camera, Activity } from "lucide-react";
 import { CameraPermission } from "@/components/live-detection/camera-permission";
 import { CameraView } from "@/components/live-detection/camera-view";
 import { DetectionControls } from "@/components/live-detection/detection-controls";
 import { DetectionResult } from "@/components/live-detection/detection-result";
 import { useRealtimeEmotion } from "@/hooks/useRealtimeEmotion";
-import { Activity, Clock, Sparkles, Users } from "lucide-react";
 
 export default function LiveEmotionDetectionPage() {
   const {
@@ -16,23 +16,47 @@ export default function LiveEmotionDetectionPage() {
     sessionState,
     isStreaming,
     predictions,
-    sessionId,
     sessionDuration,
     totalPredictions,
     metrics,
     error,
     config,
     setConfig,
+    processedFrameDims,
     start,
     stop,
   } = useRealtimeEmotion({
     targetFps: 10,
     jpegQuality: 0.8,
     processingWidth: 640,
-    processingHeight: 480,
+    processingHeight: 360,
     smoothingEnabled: true,
     isMirrored: true,
   });
+
+  const cameraContainerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    if (!cameraContainerRef.current) return;
+    try {
+      if (!document.fullscreenElement) {
+        await cameraContainerRef.current.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.error("Fullscreen error:", err);
+    }
+  };
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -42,112 +66,40 @@ export default function LiveEmotionDetectionPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-6">
+      {/* 1. Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#222222]">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
-              Real-Time Webcam Emotion Detection
-            </h1>
-            <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              Phase 12
-            </span>
+          <div className="font-mono text-xs uppercase tracking-[2px] text-[#888888] mb-1 flex items-center gap-2">
+            <Camera className="w-3.5 h-3.5 text-emerald-400" />
+            <span>LIVE DETECTION</span>
+            <span className="text-[#3a3a3a]">/</span>
+            <span className="text-[#c3d9f3]">WEBCAM FEED</span>
           </div>
-          <p className="text-sm text-zinc-400 mt-1">
-            Low-latency bidirectional WebSocket streaming powered by ResNet-18 Champion and YuNet neural face detection.
+          <h1 className="font-display text-2xl sm:text-3xl uppercase tracking-[2px] text-white">
+            Real-Time Emotion Recognition
+          </h1>
+          <p className="font-sans text-xs text-[#888888] mt-1">
+            Real-time face tracking and 7-class emotion probability analysis with instant visual feedback.
           </p>
         </div>
 
-        {/* Status Badges */}
-        <div className="flex items-center gap-2">
-          {/* Session Lifecycle Badge */}
+        {/* Status Indicators */}
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
           {sessionState === "ACTIVE" && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/25 text-xs font-semibold text-indigo-300">
-              <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-              <span>Session: Active</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 border border-emerald-500/40 bg-emerald-950/20 font-mono text-[11px] uppercase tracking-[1.5px] text-emerald-400 rounded-none">
+              <span className="w-2 h-2 rounded-none bg-emerald-400 animate-pulse" />
+              <span>LIVE ACTIVE</span>
             </div>
           )}
 
-          {/* Connection State Badge */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-semibold">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                connectionState === "connected"
-                  ? "bg-emerald-400 animate-pulse"
-                  : connectionState === "connecting"
-                  ? "bg-amber-400 animate-ping"
-                  : "bg-zinc-600"
-              }`}
-            />
-            <span className="capitalize text-zinc-300">
-              WebSocket: {connectionState}
-            </span>
+          <div className="flex items-center gap-2 px-3 py-1.5 border border-[#262626] bg-[#0d0d0d] font-mono text-[11px] uppercase tracking-[1.5px] text-[#cccccc] rounded-none">
+            <Activity className="w-3 h-3 text-[#c3d9f3]" />
+            <span>SERVER: {connectionState === "connected" ? "ONLINE" : connectionState.toUpperCase()}</span>
           </div>
         </div>
       </div>
 
-      {/* Active Session Telemetry HUD Banner (if streaming) */}
-      {isStreaming && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-zinc-800/80 text-zinc-400">
-              <Clock className="w-4 h-4 text-indigo-400" />
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-semibold text-zinc-500 block">
-                Session Duration
-              </span>
-              <span className="text-base font-bold font-mono text-zinc-100">
-                {formatDuration(sessionDuration)}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-zinc-800/80 text-zinc-400">
-              <Activity className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-semibold text-zinc-500 block">
-                Frames Inferred
-              </span>
-              <span className="text-base font-bold font-mono text-zinc-100">
-                {totalPredictions}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-zinc-800/80 text-zinc-400">
-              <Users className="w-4 h-4 text-sky-400" />
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-semibold text-zinc-500 block">
-                Faces Tracked
-              </span>
-              <span className="text-base font-bold font-mono text-zinc-100">
-                {predictions.length}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-zinc-800/80 text-zinc-400">
-              <Sparkles className="w-4 h-4 text-purple-400" />
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-semibold text-zinc-500 block">
-                Active Session UUID
-              </span>
-              <span className="text-[11px] font-mono text-zinc-300 truncate max-w-[120px] block" title={sessionId || "Auto Session"}>
-                {sessionId ? sessionId.slice(0, 8) + "..." : "Auto"}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Permission Alert (if applicable) */}
+      {/* 2. Permission Alert (if applicable) */}
       {cameraState !== "idle" && cameraState !== "granted" && (
         <CameraPermission
           cameraState={cameraState}
@@ -156,28 +108,30 @@ export default function LiveEmotionDetectionPage() {
         />
       )}
 
-      {/* Main Interface Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Video Viewport & Controls (7 cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="relative">
+      {/* 3. Main Interface Grid - Sized and Perfectly Aligned */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Left Column: Enlarged Video Viewport & Single-Row Controls (8 cols on XL, 7 on LG) */}
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-between gap-3.5">
+          {/* Camera Viewport Container */}
+          <div
+            ref={cameraContainerRef}
+            className="relative border border-[#262626] bg-black rounded-none flex-1 overflow-hidden"
+          >
             <CameraView
               videoRef={videoRef}
               isStreaming={isStreaming}
               isMirrored={config.isMirrored}
               predictions={predictions}
-              className="w-full aspect-[4/3]"
+              frameWidth={processedFrameDims.width}
+              frameHeight={processedFrameDims.height}
+              smoothingEnabled={config.smoothingEnabled}
+              onToggleFullscreen={toggleFullscreen}
+              isFullscreen={isFullscreen}
+              className="w-full h-full"
             />
-
-            {/* No Face Detected Floating Alert Overlay */}
-            {isStreaming && predictions.length === 0 && (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/70 backdrop-blur-md border border-zinc-700/60 text-xs font-medium text-amber-300 shadow-xl flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                <span>No face detected — Position your face inside camera frame</span>
-              </div>
-            )}
           </div>
 
+          {/* Single-Row Controls Bar */}
           <DetectionControls
             isStreaming={isStreaming}
             cameraState={cameraState}
@@ -186,18 +140,62 @@ export default function LiveEmotionDetectionPage() {
             onConfigChange={(newConfig) => setConfig((prev) => ({ ...prev, ...newConfig }))}
             onStart={start}
             onStop={stop}
+            onToggleFullscreen={toggleFullscreen}
+            isFullscreen={isFullscreen}
           />
         </div>
 
-        {/* Right Column: Telemetry & Emotion Predictions (5 cols) */}
-        <div className="lg:col-span-5">
+        {/* Right Column: Emotion Analysis Box - Perfectly Aligned Height (4 cols on XL, 5 on LG) */}
+        <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
           <DetectionResult
             predictions={predictions}
             metrics={metrics}
             isStreaming={isStreaming}
+            className="h-full"
           />
         </div>
       </div>
+
+      {/* 4. Active Streaming Session Footer Info (if streaming) */}
+      {isStreaming && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[#222222] border border-[#222222] rounded-none">
+          <div className="p-3 bg-[#0c0c0c]">
+            <span className="font-mono text-[9px] uppercase tracking-[2px] text-[#666666] block mb-0.5">
+              SESSION TIME
+            </span>
+            <span className="font-mono text-base text-white">
+              {formatDuration(sessionDuration)}
+            </span>
+          </div>
+
+          <div className="p-3 bg-[#0c0c0c]">
+            <span className="font-mono text-[9px] uppercase tracking-[2px] text-[#666666] block mb-0.5">
+              FRAMES PROCESSED
+            </span>
+            <span className="font-mono text-base text-white">
+              {totalPredictions.toLocaleString()}
+            </span>
+          </div>
+
+          <div className="p-3 bg-[#0c0c0c]">
+            <span className="font-mono text-[9px] uppercase tracking-[2px] text-[#666666] block mb-0.5">
+              FACES IN FRAME
+            </span>
+            <span className="font-mono text-base text-[#c3d9f3]">
+              {predictions.length}
+            </span>
+          </div>
+
+          <div className="p-3 bg-[#0c0c0c]">
+            <span className="font-mono text-[9px] uppercase tracking-[2px] text-[#666666] block mb-0.5">
+              TRACKING PIPELINE
+            </span>
+            <span className="font-mono text-xs text-emerald-400 truncate block mt-1">
+              {predictions.length > 0 ? "LOCK ACTIVE" : "SCANNING..."}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

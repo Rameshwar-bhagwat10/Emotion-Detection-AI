@@ -1,22 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Sparkles,
-  User,
-  Clock,
-  ArrowLeft,
-  Activity,
-  Layers,
-  BarChart3,
-  Eye,
-  CheckCircle2,
-  HelpCircle,
-} from "lucide-react";
+import { ArrowLeft, Eye, Clock, Users, Zap, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
 import { VideoPlayer } from "./video-player";
 import { EmotionTimeline } from "./emotion-timeline";
 import { PredictionInspectModal } from "@/components/history/prediction-inspect-modal";
-import { EMOTIONS, PredictionEmotion } from "@/types/emotion";
 import { HistoricalPrediction } from "@/types/analytics";
 import {
   VideoAnalysisDetail,
@@ -24,6 +12,7 @@ import {
   VideoTimelineResponse,
 } from "@/types/video-analysis";
 import { getVideoStreamUrl, getVideoPredictions } from "@/lib/api/endpoints";
+import { EMOTIONS, PredictionEmotion } from "@/types/emotion";
 
 export interface VideoAnalysisResultProps {
   detail: VideoAnalysisDetail;
@@ -49,7 +38,9 @@ export function VideoAnalysisResult({
   const streamUrl = getVideoStreamUrl(videoId);
   const analytics = detail.analytics;
 
-  // Load initial batch of sampled predictions for overlay and inspection
+  const dominantEmotionKey = analytics?.dominant_expression?.toLowerCase() || "neutral";
+  const dominantMeta = EMOTIONS[dominantEmotionKey as PredictionEmotion] || EMOTIONS.neutral;
+
   useEffect(() => {
     async function loadPreds() {
       setIsLoadingPredictions(true);
@@ -68,7 +59,6 @@ export function VideoAnalysisResult({
   const handleSeek = (seconds: number) => {
     setSeekToTime(seconds);
     setCurrentTime(seconds);
-    // Reset seekToTime after a tick so subsequent seeks to same timestamp trigger
     setTimeout(() => setSeekToTime(null), 50);
   };
 
@@ -85,7 +75,7 @@ export function VideoAnalysisResult({
       session_id: detail.session_id,
       request_id: `frame-${p.frame_index}`,
       timestamp: new Date().toISOString(),
-      model_version: "champion-pruning-30",
+      model_version: "champion-resnet18-cbam",
       face_id: p.track_id,
       emotion: p.smoothed_emotion,
       confidence: p.smoothed_confidence,
@@ -97,26 +87,20 @@ export function VideoAnalysisResult({
     setInspectedPrediction(histPred);
   };
 
-  const dominantMeta = analytics
-    ? EMOTIONS[analytics.dominant_expression as PredictionEmotion] || EMOTIONS.neutral
-    : EMOTIONS.neutral;
-
   return (
-    <div className={`space-y-8 ${className}`}>
+    <div className={`space-y-6 ${className}`}>
       {/* Top Banner & Actions */}
-      <div className="bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="p-6 bg-[#0d0d0d] border border-[#262626] rounded-none flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              Analysis Completed
-            </span>
-            <span className="text-xs text-muted-foreground">•</span>
-            <span className="text-xs text-muted-foreground font-mono">
-              {detail.metadata.frames_analyzed} sampled frames @ {detail.metadata.analysis_fps} FPS
+          <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[2px] text-emerald-400">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>ANALYSIS COMPLETE</span>
+            <span className="text-[#3a3a3a]">/</span>
+            <span className="text-[#999999]">
+              {detail.metadata.frames_analyzed} Frames Processed
             </span>
           </div>
-          <h2 className="text-2xl font-extrabold tracking-tight text-foreground mt-1.5 truncate max-w-xl">
+          <h2 className="font-display text-2xl md:text-3xl uppercase tracking-[2px] text-white mt-1 truncate max-w-xl">
             {detail.metadata.filename}
           </h2>
         </div>
@@ -124,90 +108,95 @@ export function VideoAnalysisResult({
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/80 hover:bg-muted text-foreground text-sm font-semibold border border-border transition-colors shadow-sm"
+          className="btn-valence flex items-center gap-2 cursor-pointer rounded-none"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Analyze Another Video
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>ANALYZE ANOTHER VIDEO</span>
         </button>
       </div>
 
-      {/* KPI Metrics Summary Grid */}
+      {/* KPI Metrics Summary Grid (6 Spec Cells) - Zero-Overflow Numbers */}
       {analytics && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          <div className="bg-card/60 backdrop-blur-sm border border-border/60 rounded-xl p-4 shadow-sm">
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-primary" /> Duration
-            </span>
-            <p className="text-xl font-bold font-mono text-foreground mt-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-[#262626] border border-[#262626] rounded-none">
+          <div className="p-4 bg-[#0d0d0d]">
+            <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.5px] text-[#666666] whitespace-nowrap truncate">
+              <Clock className="w-3 h-3 text-[#c3d9f3] shrink-0" />
+              <span>DURATION</span>
+            </div>
+            <p className="font-mono text-xl text-white mt-1 truncate">
               {formatTimestamp(analytics.duration_seconds)}
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              {detail.metadata.source_fps} FPS container
+            <p className="font-sans text-[11px] text-[#666666] mt-0.5 truncate">
+              {detail.metadata.source_fps} FPS video
             </p>
           </div>
 
-          <div className="bg-card/60 backdrop-blur-sm border border-border/60 rounded-xl p-4 shadow-sm">
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-primary" /> Tracked Faces
-            </span>
-            <p className="text-xl font-bold font-mono text-foreground mt-1">
+          <div className="p-4 bg-[#0d0d0d]">
+            <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.5px] text-[#666666] whitespace-nowrap truncate">
+              <Users className="w-3 h-3 text-[#c3d9f3] shrink-0" />
+              <span>FACES TRACKED</span>
+            </div>
+            <p className="font-mono text-xl text-[#c3d9f3] mt-1 truncate">
               {analytics.tracked_faces_count}
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Spatial trajectories</p>
+            <p className="font-sans text-[11px] text-[#666666] mt-0.5 truncate">Persons identified</p>
           </div>
 
-          <div className="bg-card/60 backdrop-blur-sm border border-border/60 rounded-xl p-4 shadow-sm">
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-primary" /> Predictions
-            </span>
-            <p className="text-xl font-bold font-mono text-foreground mt-1">
+          <div className="p-4 bg-[#0d0d0d]">
+            <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.5px] text-[#666666] whitespace-nowrap truncate">
+              <Zap className="w-3 h-3 text-[#c3d9f3] shrink-0" />
+              <span>DETECTIONS</span>
+            </div>
+            <p className="font-mono text-xl text-white mt-1 truncate">
               {analytics.total_predictions_count.toLocaleString()}
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Model evaluations</p>
+            <p className="font-sans text-[11px] text-[#666666] mt-0.5 truncate">Total face frames</p>
           </div>
 
-          <div className="bg-card/60 backdrop-blur-sm border border-border/60 rounded-xl p-4 shadow-sm">
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5 text-primary" /> Transitions
-            </span>
-            <p className="text-xl font-bold font-mono text-foreground mt-1">
+          <div className="p-4 bg-[#0d0d0d]">
+            <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.5px] text-[#666666] whitespace-nowrap truncate">
+              <TrendingUp className="w-3 h-3 text-[#c3d9f3] shrink-0" />
+              <span>EMOTION SHIFTS</span>
+            </div>
+            <p className="font-mono text-xl text-white mt-1 truncate">
               {analytics.total_transitions_count}
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Confirmed shifts</p>
+            <p className="font-sans text-[11px] text-[#666666] mt-0.5 truncate">Expression changes</p>
           </div>
 
-          <div className="bg-card/60 backdrop-blur-sm border border-border/60 rounded-xl p-4 shadow-sm">
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-primary" /> Dominant
-            </span>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-xl">{dominantMeta.emoji}</span>
-              <p className="text-base font-bold text-foreground capitalize truncate">
-                {analytics.dominant_expression}
+          <div className="p-4 bg-[#0d0d0d] relative overflow-hidden">
+            <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.5px] text-[#666666] whitespace-nowrap truncate">
+              <Sparkles className="w-3 h-3 shrink-0" style={{ color: dominantMeta.color }} />
+              <span>DOMINANT EMOTION</span>
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xl select-none">{dominantMeta.emoji}</span>
+              <p className="font-display text-xl uppercase tracking-[1.5px] truncate font-normal" style={{ color: dominantMeta.color }}>
+                {dominantMeta.label}
               </p>
             </div>
-            <p className="text-[11px] text-emerald-500 font-semibold mt-0.5">
-              {analytics.dominant_expression_time_share.toFixed(1)}% time share
+            <p className="font-mono text-[11px] text-[#999999] mt-0.5 truncate">
+              {analytics.dominant_expression_time_share.toFixed(1)}% of duration
             </p>
           </div>
 
-          <div className="bg-card/60 backdrop-blur-sm border border-border/60 rounded-xl p-4 shadow-sm">
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase flex items-center gap-1.5">
-              <BarChart3 className="w-3.5 h-3.5 text-primary" /> Avg Confidence
+          <div className="p-4 bg-[#0d0d0d]">
+            <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#666666] block whitespace-nowrap truncate">
+              AVG CONFIDENCE
             </span>
-            <p className="text-xl font-bold font-mono text-emerald-500 mt-1">
+            <p className="font-mono text-xl text-white mt-1 truncate">
               {(analytics.average_confidence * 100).toFixed(1)}%
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              {analytics.processing_ratio}x realtime speed
+            <p className="font-sans text-[11px] text-[#666666] mt-0.5 truncate">
+              {analytics.processing_ratio}x real-time speed
             </p>
           </div>
         </div>
       )}
 
-      {/* Main Interactive Stage: Video Player + Synchronized Timeline */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-6 flex flex-col justify-start">
+      {/* Main Interactive Stage: Video Player + Synchronized Timeline (Symmetrical Alignment) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div className="lg:col-span-6 flex flex-col justify-between">
           <VideoPlayer
             streamUrl={streamUrl}
             metadata={detail.metadata}
@@ -218,7 +207,7 @@ export function VideoAnalysisResult({
           />
         </div>
 
-        <div className="lg:col-span-6 flex flex-col justify-start">
+        <div className="lg:col-span-6 flex flex-col justify-between">
           <EmotionTimeline
             durationSeconds={detail.metadata.duration_seconds}
             segments={timeline.segments || []}
@@ -230,49 +219,48 @@ export function VideoAnalysisResult({
         </div>
       </div>
 
-      {/* Secondary Tabs: Transition Events, Distribution Analytics, Prediction Log */}
-      <div className="bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-6 shadow-xl space-y-6">
-        <div className="flex items-center justify-between border-b border-border/60 pb-4">
-          <div className="flex items-center gap-2">
+      {/* Secondary Tabs */}
+      <div className="p-6 bg-[#0d0d0d] border border-[#262626] rounded-none space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-[#262626]">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setActiveTab("transitions")}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-4 py-1.5 font-mono text-xs uppercase tracking-[1.5px] transition-all cursor-pointer rounded-none ${
                 activeTab === "transitions"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted/60 text-muted-foreground hover:text-foreground"
+                  ? "bg-[#1f1f1f] text-white border border-white"
+                  : "bg-[#141414] text-[#666666] border border-[#262626] hover:text-white"
               }`}
             >
-              Expression Transitions ({timeline.events?.length || 0})
+              EMOTION CHANGES ({timeline.events?.length || 0})
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("distribution")}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-4 py-1.5 font-mono text-xs uppercase tracking-[1.5px] transition-all cursor-pointer rounded-none ${
                 activeTab === "distribution"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted/60 text-muted-foreground hover:text-foreground"
+                  ? "bg-[#1f1f1f] text-white border border-white"
+                  : "bg-[#141414] text-[#666666] border border-[#262626] hover:text-white"
               }`}
             >
-              Time vs Prediction Share
+              TIME PER EMOTION
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("predictions")}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-4 py-1.5 font-mono text-xs uppercase tracking-[1.5px] transition-all cursor-pointer rounded-none ${
                 activeTab === "predictions"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted/60 text-muted-foreground hover:text-foreground"
+                  ? "bg-[#1f1f1f] text-white border border-white"
+                  : "bg-[#141414] text-[#666666] border border-[#262626] hover:text-white"
               }`}
             >
-              Sampled Predictions Log ({predictions.length})
+              DETECTION LOGS ({predictions.length})
             </button>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Click any item to seek video</span>
-          </div>
+          <span className="font-mono text-[10px] uppercase tracking-[1.5px] text-[#666666]">
+            CLICK ANY ROW TO JUMP TO THAT TIMESTAMP
+          </span>
         </div>
 
         {/* Tab 1: Expression Transition Events */}
@@ -281,40 +269,39 @@ export function VideoAnalysisResult({
             {timeline.events && timeline.events.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {timeline.events.map((ev, idx) => {
-                  const fromMeta = EMOTIONS[ev.from_emotion] || EMOTIONS.neutral;
-                  const toMeta = EMOTIONS[ev.to_emotion] || EMOTIONS.neutral;
+                  const fromMeta = EMOTIONS[ev.from_emotion?.toLowerCase() as PredictionEmotion] || EMOTIONS.neutral;
+                  const toMeta = EMOTIONS[ev.to_emotion?.toLowerCase() as PredictionEmotion] || EMOTIONS.neutral;
 
                   return (
                     <div
                       key={idx}
                       onClick={() => handleSeek(ev.timestamp)}
-                      className="group p-3.5 rounded-xl bg-muted/40 border border-border/60 hover:border-primary/50 hover:bg-muted/60 cursor-pointer transition-all shadow-sm"
+                      className="p-4 bg-[#141414] border border-[#262626] hover:border-white cursor-pointer transition-colors rounded-none"
                     >
-                      <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="font-mono font-bold text-primary flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
+                      <div className="flex items-center justify-between font-mono text-xs mb-2">
+                        <span className="text-[#c3d9f3]">
                           {formatTimestamp(ev.timestamp)}
                         </span>
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-muted text-muted-foreground border border-border/40">
-                          Track {ev.track_id}
+                        <span className="text-[10px] text-[#666666]">
+                          FACE #{ev.track_id}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 text-sm font-semibold">
-                        <span className="flex items-center gap-1 text-muted-foreground">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="flex items-center gap-1 font-mono uppercase" style={{ color: fromMeta.color }}>
                           <span>{fromMeta.emoji}</span>
-                          <span className="capitalize">{ev.from_emotion}</span>
+                          <span>{fromMeta.label}</span>
                         </span>
-                        <span className="text-muted-foreground/60">→</span>
-                        <span style={{ color: toMeta.color }} className="flex items-center gap-1 capitalize font-bold">
+                        <span className="text-[#666666]">→</span>
+                        <span className="flex items-center gap-1 font-mono uppercase font-bold" style={{ color: toMeta.color }}>
                           <span>{toMeta.emoji}</span>
-                          <span>{ev.to_emotion}</span>
+                          <span>{toMeta.label}</span>
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-2 pt-2 border-t border-border/30">
-                        <span>Transition Conf:</span>
-                        <span className="font-mono font-bold text-emerald-500">
+                      <div className="flex items-center justify-between font-mono text-[11px] text-[#666666] mt-3 pt-2 border-t border-[#262626]">
+                        <span>CONFIDENCE:</span>
+                        <span className="text-white">
                           {(ev.confidence * 100).toFixed(1)}%
                         </span>
                       </div>
@@ -323,109 +310,127 @@ export function VideoAnalysisResult({
                 })}
               </div>
             ) : (
-              <div className="text-center py-10 text-sm text-muted-foreground">
-                No expression transitions detected in this video. The facial expression remained stable throughout.
+              <div className="text-center py-10 font-sans text-xs text-[#666666]">
+                No emotion changes detected. The subject maintained a uniform expression throughout the video.
               </div>
             )}
           </div>
         )}
 
-        {/* Tab 2: Expression Distribution (Time Share vs Frame Share) */}
+        {/* Tab 2: Expression Distribution Table */}
         {activeTab === "distribution" && analytics && (
-          <div className="space-y-4">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-border/60 text-xs font-semibold text-muted-foreground uppercase">
-                    <th className="pb-3">Expression</th>
-                    <th className="pb-3 text-right">Time Duration</th>
-                    <th className="pb-3 text-right">Time Share (%)</th>
-                    <th className="pb-3 text-right">Frame Count</th>
-                    <th className="pb-3 text-right">Frame Share (%)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {analytics.expression_distribution.map((item) => {
-                    const meta = EMOTIONS[item.emotion] || EMOTIONS.neutral;
-                    return (
-                      <tr key={item.emotion} className="hover:bg-muted/20 transition-colors">
-                        <td className="py-3 font-medium flex items-center gap-2 text-foreground">
-                          <span className="text-base">{meta.emoji}</span>
-                          <span className="capitalize">{meta.label}</span>
-                        </td>
-                        <td className="py-3 text-right font-mono font-semibold text-foreground">
-                          {item.time_seconds.toFixed(1)}s
-                        </td>
-                        <td className="py-3 text-right font-mono text-emerald-500 font-bold">
-                          {item.time_share_percent.toFixed(1)}%
-                        </td>
-                        <td className="py-3 text-right font-mono text-foreground">
-                          {item.count}
-                        </td>
-                        <td className="py-3 text-right font-mono text-muted-foreground">
-                          {item.percentage.toFixed(1)}%
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-mono text-xs">
+              <thead>
+                <tr className="border-b border-[#262626] text-[#666666] uppercase tracking-[1.5px]">
+                  <th className="pb-3">EMOTION</th>
+                  <th className="pb-3 text-right">TOTAL TIME</th>
+                  <th className="pb-3 text-right">TIME SHARE</th>
+                  <th className="pb-3 text-right">FRAME COUNT</th>
+                  <th className="pb-3 text-right">FRAME SHARE</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#1f1f1f]">
+                {analytics.expression_distribution.map((item) => {
+                  const meta = EMOTIONS[item.emotion?.toLowerCase() as PredictionEmotion] || EMOTIONS.neutral;
+
+                  return (
+                    <tr key={item.emotion} className="hover:bg-[#141414] transition-colors">
+                      <td className="py-3 text-white">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="w-2 h-2 rounded-none inline-block"
+                            style={{ backgroundColor: meta.color }}
+                          />
+                          <span className="text-base select-none">{meta.emoji}</span>
+                          <span className="uppercase tracking-wider font-medium">{meta.label}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 text-right text-white">
+                        {item.time_seconds.toFixed(1)}s
+                      </td>
+                      <td className="py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="w-16 h-1.5 bg-[#1f1f1f] rounded-none overflow-hidden hidden sm:block">
+                            <div
+                              className="h-full rounded-none"
+                              style={{ width: `${item.time_share_percent}%`, backgroundColor: meta.color }}
+                            />
+                          </div>
+                          <span style={{ color: meta.color }} className="font-bold">
+                            {item.time_share_percent.toFixed(1)}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 text-right text-white">
+                        {item.count}
+                      </td>
+                      <td className="py-3 text-right text-[#666666]">
+                        {item.percentage.toFixed(1)}%
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
 
-        {/* Tab 3: Predictions Log with Inspect Modal */}
+        {/* Tab 3: Predictions Log */}
         {activeTab === "predictions" && (
           <div className="space-y-4">
             {isLoadingPredictions ? (
-              <div className="text-center py-10 text-sm text-muted-foreground">
-                Loading frame predictions...
+              <div className="text-center py-10 font-mono text-xs text-[#666666]">
+                Loading predictions...
               </div>
             ) : predictions.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
+                <table className="w-full text-left font-mono text-xs">
                   <thead>
-                    <tr className="border-b border-border/60 text-xs font-semibold text-muted-foreground uppercase">
-                      <th className="pb-3">Time</th>
-                      <th className="pb-3">Track</th>
-                      <th className="pb-3">Predicted Expression</th>
-                      <th className="pb-3 text-right">Confidence</th>
-                      <th className="pb-3 text-right">Bounding Box</th>
-                      <th className="pb-3 text-right">Action</th>
+                    <tr className="border-b border-[#262626] text-[#666666] uppercase tracking-[1.5px]">
+                      <th className="pb-3">TIMESTAMP</th>
+                      <th className="pb-3">FACE ID</th>
+                      <th className="pb-3">DETECTED EMOTION</th>
+                      <th className="pb-3 text-right">CONFIDENCE</th>
+                      <th className="pb-3 text-right">BOUNDING BOX</th>
+                      <th className="pb-3 text-right">DETAILS</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/40">
+                  <tbody className="divide-y divide-[#1f1f1f]">
                     {predictions.slice(0, 50).map((p) => {
-                      const meta = EMOTIONS[p.smoothed_emotion] || EMOTIONS.neutral;
+                      const meta = EMOTIONS[p.smoothed_emotion?.toLowerCase() as PredictionEmotion] || EMOTIONS.neutral;
+
                       return (
-                        <tr key={p.id} className="hover:bg-muted/20 transition-colors">
+                        <tr key={p.id} className="hover:bg-[#141414] transition-colors">
                           <td
                             onClick={() => handleSeek(p.timestamp)}
-                            className="py-2.5 font-mono text-xs font-bold text-primary hover:underline cursor-pointer"
+                            className="py-2.5 text-[#c3d9f3] hover:underline cursor-pointer"
                           >
                             {formatTimestamp(p.timestamp)}
                           </td>
-                          <td className="py-2.5 text-xs text-muted-foreground">
-                            Track {p.track_id}
+                          <td className="py-2.5 text-[#666666]">
+                            FACE #{p.track_id}
                           </td>
-                          <td className="py-2.5 font-medium flex items-center gap-1.5 text-foreground capitalize">
-                            <span>{meta.emoji}</span>
-                            <span>{p.smoothed_emotion}</span>
+                          <td className="py-2.5">
+                            <div className="flex items-center gap-1.5 uppercase tracking-wider" style={{ color: meta.color }}>
+                              <span>{meta.emoji}</span>
+                              <span className="font-medium">{meta.label}</span>
+                            </div>
                           </td>
-                          <td className="py-2.5 text-right font-mono text-xs text-emerald-500 font-bold">
+                          <td className="py-2.5 text-right text-white">
                             {(p.smoothed_confidence * 100).toFixed(1)}%
                           </td>
-                          <td className="py-2.5 text-right font-mono text-[11px] text-muted-foreground">
+                          <td className="py-2.5 text-right text-[#666666]">
                             [{p.bbox.x}, {p.bbox.y}, {p.bbox.width}×{p.bbox.height}]
                           </td>
                           <td className="py-2.5 text-right">
                             <button
                               type="button"
                               onClick={() => handleInspect(p)}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium transition-colors"
+                              className="px-2.5 py-1 border border-[#3a3a3a] text-white hover:border-white font-mono text-[10px] uppercase tracking-wider transition-colors cursor-pointer rounded-none"
                             >
-                              <Eye className="w-3.5 h-3.5" />
-                              Inspect
+                              <Eye className="w-3 h-3 inline mr-1" />
+                              INSPECT
                             </button>
                           </td>
                         </tr>
@@ -435,8 +440,8 @@ export function VideoAnalysisResult({
                 </table>
               </div>
             ) : (
-              <div className="text-center py-10 text-sm text-muted-foreground">
-                No sampled frame predictions found for this video.
+              <div className="text-center py-10 font-sans text-xs text-[#666666]">
+                No frame evaluations recorded for this video.
               </div>
             )}
           </div>
