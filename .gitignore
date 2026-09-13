@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 !.env.local.example
+!apps/web/.env.production
 
 # Node / Frontend
 node_modules/
