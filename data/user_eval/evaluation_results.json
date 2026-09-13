@@ -1,0 +1,117 @@
+[
+  {
+    "file": "Happy.jpg",
+    "expected": "happy",
+    "predicted": "uncertain",
+    "confidence": 0.3823963701725006,
+    "is_match": false,
+    "probs": {
+      "angry": 0.3486238121986389,
+      "disgust": 0.07036175578832626,
+      "fear": 0.055700771510601044,
+      "happy": 0.3823963701725006,
+      "sad": 0.03286493942141533,
+      "surprise": 0.010733493603765965,
+      "neutral": 0.09931883215904236
+    },
+    "timing_ms": 39.289699983783066,
+    "bbox": {
+      "x": 106,
+      "y": 57,
+      "width": 135,
+      "height": 185
+    }
+  },
+  {
+    "file": "Angry.jpg",
+    "expected": "angry",
+    "predicted": "angry",
+    "confidence": 0.9808319211006165,
+    "is_match": true,
+    "probs": {
+      "angry": 0.9808319211006165,
+      "disgust": 0.007313785143196583,
+      "fear": 0.005521424580365419,
+      "happy": 0.000946817162912339,
+      "sad": 0.0019090542336925864,
+      "surprise": 0.0008672641706652939,
+      "neutral": 0.002609861781820655
+    },
+    "timing_ms": 19.31719994172454,
+    "bbox": {
+      "x": 194,
+      "y": 54,
+      "width": 133,
+      "height": 193
+    }
+  },
+  {
+    "file": "Fear.jpg",
+    "expected": "fear",
+    "predicted": "fear",
+    "confidence": 0.8103740215301514,
+    "is_match": true,
+    "probs": {
+      "angry": 0.004188890568912029,
+      "disgust": 0.012765171006321907,
+      "fear": 0.8103740215301514,
+      "happy": 0.0019926188979297876,
+      "sad": 0.00197659176774323,
+      "surprise": 0.16706259548664093,
+      "neutral": 0.0016400342574343085
+    },
+    "timing_ms": 26.451800018548965,
+    "bbox": {
+      "x": 207,
+      "y": 90,
+      "width": 124,
+      "height": 180
+    }
+  },
+  {
+    "file": "Surprise.jpg",
+    "expected": "surprise",
+    "predicted": "surprise",
+    "confidence": 0.4536946415901184,
+    "is_match": true,
+    "probs": {
+      "angry": 0.03902706876397133,
+      "disgust": 0.03437172248959541,
+      "fear": 0.2623600363731384,
+      "happy": 0.19523432850837708,
+      "sad": 0.007279415614902973,
+      "surprise": 0.4536946415901184,
+      "neutral": 0.008032704703509808
+    },
+    "timing_ms": 14.792700065299869,
+    "bbox": {
+      "x": 165,
+      "y": 30,
+      "width": 58,
+      "height": 94
+    }
+  },
+  {
+    "file": "sad.jpg",
+    "expected": "sad",
+    "predicted": "angry",
+    "confidence": 0.7627424001693726,
+    "is_match": false,
+    "probs": {
+      "angry": 0.7627424001693726,
+      "disgust": 0.031888991594314575,
+      "fear": 0.126630961894989,
+      "happy": 0.007534571923315525,
+      "sad": 0.03072570078074932,
+      "surprise": 0.011328755877912045,
+      "neutral": 0.02914859913289547
+    },
+    "timing_ms": 18.667700001969934,
+    "bbox": {
+      "x": 280,
+      "y": 77,
+      "width": 145,
+      "height": 201
+    }
+  }
+]

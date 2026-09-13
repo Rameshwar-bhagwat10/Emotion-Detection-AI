@@ -1,0 +1,408 @@
+[
+  {
+    "image": "WIN_20260912_13_27_45_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_27_45_Pro_face0.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_27_45_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_27_45_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_27_45_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_27_45_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_27_46_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_27_46_Pro_face0.jpg",
+    "true_label": "neutral",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_27_46_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_27_46_Pro_face1.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_27_46_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_27_46_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_27_48_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_27_48_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_27_48_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_27_48_Pro_face1.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_27_48_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_27_48_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_04_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_29_04_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_04_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_04_Pro_face1.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_04_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_04_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_16_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_29_16_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_29_16_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_16_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_29_16_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_16_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_29_16_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_16_Pro_face3.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_17_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_29_17_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_17_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_17_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_29_17_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_17_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_17_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_17_Pro_face3.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_29_47_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_29_47_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_47_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_47_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_29_47_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_47_Pro_face2.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_47_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_47_Pro_face3.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_49_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_29_49_Pro_face0.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_49_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_49_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "uncertain"
+  },
+  {
+    "image": "WIN_20260912_13_29_49_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_49_Pro_face2.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_49_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_49_Pro_face3.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_51_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_29_51_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_51_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_51_Pro_face1.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_51_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_51_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_29_54_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_54_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_54_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_54_Pro_face3.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_29_54_Pro_face4.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_30_12_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_30_12_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_30_12_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_12_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_30_12_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_12_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_30_12_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_12_Pro_face3.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_30_14_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_30_14_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_30_14_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_14_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_30_14_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_14_Pro_face2.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_30_14_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_14_Pro_face3.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_30_18_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_18_Pro_face1.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_18_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_18_Pro_face3.jpg",
+    "true_label": "neutral",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_30_18_Pro_face4.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_30_20_Pro_face0.jpg",
+    "true_label": "happy",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_20_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_20_Pro_face2.jpg",
+    "true_label": "happy",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_20_Pro_face3.jpg",
+    "true_label": "happy",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_30_20_Pro_face4.jpg",
+    "true_label": "happy",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_30_21_Pro.jpg",
+    "face_id": 0,
+    "crop_file": "WIN_20260912_13_30_21_Pro_face0.jpg",
+    "true_label": "neutral",
+    "current_predicted": "sad"
+  },
+  {
+    "image": "WIN_20260912_13_30_21_Pro.jpg",
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_21_Pro_face1.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  },
+  {
+    "image": "WIN_20260912_13_30_21_Pro.jpg",
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_21_Pro_face2.jpg",
+    "true_label": "neutral",
+    "current_predicted": "neutral"
+  },
+  {
+    "image": "WIN_20260912_13_30_21_Pro.jpg",
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_21_Pro_face3.jpg",
+    "true_label": "happy",
+    "current_predicted": "happy"
+  }
+]

@@ -1,0 +1,756 @@
+[
+  {
+    "image": "WIN_20260912_13_27_45_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_27_45_Pro_crop_0.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1191,
+      259,
+      294,
+      386
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_27_45_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_27_45_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      724,
+      450,
+      211,
+      253
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_27_45_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_27_45_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      509,
+      538,
+      164,
+      224
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_27_46_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_27_46_Pro_crop_0.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1190,
+      262,
+      294,
+      381
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_27_46_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_27_46_Pro_crop_1.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      725,
+      460,
+      215,
+      250
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_27_46_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_27_46_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      478,
+      551,
+      172,
+      221
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_27_48_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_27_48_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1189,
+      263,
+      299,
+      389
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_27_48_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_27_48_Pro_crop_1.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      726,
+      475,
+      211,
+      263
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_27_48_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_27_48_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      482,
+      546,
+      171,
+      230
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_04_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_04_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1277,
+      137,
+      355,
+      430
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_04_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_04_Pro_crop_1.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      795,
+      363,
+      235,
+      272
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_04_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_04_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      478,
+      464,
+      205,
+      258
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_16_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_16_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      39,
+      362,
+      287,
+      314
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_16_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_16_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1133,
+      359,
+      225,
+      255
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_16_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_16_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      507,
+      382,
+      215,
+      262
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_16_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_29_16_Pro_crop_3.jpg",
+    "true_label": "happy",
+    "bbox": [
+      822,
+      468,
+      176,
+      247
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_17_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_17_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1489,
+      158,
+      385,
+      463
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_17_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_17_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      33,
+      374,
+      296,
+      311
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_17_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_17_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1138,
+      363,
+      221,
+      257
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_17_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_29_17_Pro_crop_3.jpg",
+    "true_label": "happy",
+    "bbox": [
+      828,
+      460,
+      171,
+      243
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_47_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_47_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1291,
+      295,
+      257,
+      311
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_47_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_47_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      344,
+      371,
+      163,
+      204
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_47_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_47_Pro_crop_2.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1050,
+      446,
+      166,
+      193
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_47_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_29_47_Pro_crop_3.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      690,
+      439,
+      141,
+      174
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_49_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_49_Pro_crop_0.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1298,
+      290,
+      254,
+      322
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_49_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_49_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      358,
+      381,
+      170,
+      208
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_49_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_49_Pro_crop_2.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1066,
+      436,
+      159,
+      193
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_49_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_29_49_Pro_crop_3.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      690,
+      437,
+      139,
+      178
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_51_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_51_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1296,
+      298,
+      255,
+      307
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_51_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_51_Pro_crop_1.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1069,
+      438,
+      171,
+      192
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_51_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_51_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      736,
+      438,
+      145,
+      176
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_29_54_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1303,
+      296,
+      256,
+      312
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_29_54_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1077,
+      445,
+      162,
+      195
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_29_54_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      743,
+      439,
+      144,
+      180
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_29_54_Pro_crop_3.jpg",
+    "true_label": "happy",
+    "bbox": [
+      909,
+      533,
+      138,
+      176
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_29_54_Pro.jpg",
+    "face_index": 4,
+    "face_id": 5,
+    "crop_file": "WIN_20260912_13_29_54_Pro_crop_4.jpg",
+    "true_label": "happy",
+    "bbox": [
+      534,
+      475,
+      116,
+      140
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_12_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_12_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1273,
+      306,
+      250,
+      309
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_12_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_12_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1069,
+      455,
+      165,
+      204
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_12_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_12_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      692,
+      453,
+      146,
+      195
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_12_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_30_12_Pro_crop_3.jpg",
+    "true_label": "happy",
+    "bbox": [
+      892,
+      494,
+      135,
+      187
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_14_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_14_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1276,
+      300,
+      254,
+      314
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_14_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_14_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      345,
+      346,
+      186,
+      227
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_14_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_14_Pro_crop_2.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1097,
+      447,
+      178,
+      209
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_14_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_30_14_Pro_crop_3.jpg",
+    "true_label": "happy",
+    "bbox": [
+      724,
+      440,
+      141,
+      184
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_18_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1281,
+      300,
+      257,
+      311
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_18_Pro_crop_1.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1072,
+      450,
+      177,
+      206
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_18_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      884,
+      482,
+      145,
+      195
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_30_18_Pro_crop_3.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      722,
+      442,
+      133,
+      175
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_18_Pro.jpg",
+    "face_index": 4,
+    "face_id": 5,
+    "crop_file": "WIN_20260912_13_30_18_Pro_crop_4.jpg",
+    "true_label": "happy",
+    "bbox": [
+      536,
+      480,
+      128,
+      148
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_20_Pro_crop_0.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1284,
+      297,
+      254,
+      318
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_20_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      330,
+      325,
+      207,
+      226
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_20_Pro_crop_2.jpg",
+    "true_label": "happy",
+    "bbox": [
+      1059,
+      451,
+      184,
+      209
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_30_20_Pro_crop_3.jpg",
+    "true_label": "happy",
+    "bbox": [
+      732,
+      440,
+      144,
+      190
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_20_Pro.jpg",
+    "face_index": 4,
+    "face_id": 5,
+    "crop_file": "WIN_20260912_13_30_20_Pro_crop_4.jpg",
+    "true_label": "happy",
+    "bbox": [
+      885,
+      504,
+      146,
+      180
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_21_Pro.jpg",
+    "face_index": 0,
+    "face_id": 1,
+    "crop_file": "WIN_20260912_13_30_21_Pro_crop_0.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      1291,
+      298,
+      255,
+      309
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_21_Pro.jpg",
+    "face_index": 1,
+    "face_id": 2,
+    "crop_file": "WIN_20260912_13_30_21_Pro_crop_1.jpg",
+    "true_label": "happy",
+    "bbox": [
+      350,
+      338,
+      174,
+      218
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_21_Pro.jpg",
+    "face_index": 2,
+    "face_id": 3,
+    "crop_file": "WIN_20260912_13_30_21_Pro_crop_2.jpg",
+    "true_label": "neutral",
+    "bbox": [
+      905,
+      498,
+      143,
+      186
+    ]
+  },
+  {
+    "image": "WIN_20260912_13_30_21_Pro.jpg",
+    "face_index": 3,
+    "face_id": 4,
+    "crop_file": "WIN_20260912_13_30_21_Pro_crop_3.jpg",
+    "true_label": "happy",
+    "bbox": [
+      745,
+      441,
+      135,
+      173
+    ]
+  }
+]
