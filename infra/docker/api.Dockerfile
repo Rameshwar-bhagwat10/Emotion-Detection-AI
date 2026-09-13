@@ -1,12 +1,13 @@
 # Production Dockerfile for Emotion Detection AI Backend (FastAPI + CPU PyTorch)
 FROM python:3.11-slim
 
-# Set environment variables
+# Set environment variables (crucial: PYTHONPATH enables ml and app imports)
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONIOENCODING=utf-8 \
     PORT=8000 \
-    APP_ENV=production
+    APP_ENV=production \
+    PYTHONPATH="/app:/app/apps/api"
 
 # Install system utilities & ffmpeg for video stream processing
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -20,19 +21,22 @@ WORKDIR /app
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
-# Copy project specification and install remaining dependencies
+# Copy project specification
 COPY pyproject.toml README.md ./
-RUN pip install --no-cache-dir -e .
 
-# Copy application and model directories
-COPY apps/api/ apps/api/
+# Copy packages and code before pip install so setuptools discovers ml and apps packages
+COPY apps/ apps/
 COPY ml/ ml/
 COPY artifacts/ artifacts/
+
+# Install dependencies and editable project package
+RUN pip install --no-cache-dir -e .
 
 # Create directory for persistent local data/uploads/db
 RUN mkdir -p /app/data /app/data/videos /app/data/processed
 
-WORKDIR /app/apps/api
+# Ensure working directory remains /app so relative paths (artifacts/..., data/...) resolve cleanly
+WORKDIR /app
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
@@ -40,5 +44,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 
 EXPOSE 8000
 
-# Start Uvicorn binding to Render/Railway dynamic $PORT or default 8000
+# Start Uvicorn binding to Render/Railway dynamic $PORT from /app
 CMD sh -c "python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"
+

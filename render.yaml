@@ -17,3 +17,6 @@ services:
         generateValue: true
       - key: LOG_LEVEL
         value: INFO
+      - key: PYTHONPATH
+        value: "/app:/app/apps/api"
+
