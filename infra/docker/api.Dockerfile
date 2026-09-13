@@ -1,13 +1,17 @@
 # Production Dockerfile for Emotion Detection AI Backend (FastAPI + CPU PyTorch)
 FROM python:3.11-slim
 
-# Set environment variables (crucial: PYTHONPATH enables ml and app imports)
+# Set environment variables (crucial: PYTHONPATH enables ml and app imports, thread limits eliminate CPU CFS throttling)
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONIOENCODING=utf-8 \
     PORT=8000 \
     APP_ENV=production \
-    PYTHONPATH="/app:/app/apps/api"
+    PYTHONPATH="/app:/app/apps/api" \
+    OMP_NUM_THREADS=2 \
+    MKL_NUM_THREADS=2 \
+    OPENBLAS_NUM_THREADS=2 \
+    TORCH_NUM_THREADS=2
 
 # Install system utilities & ffmpeg for video stream processing
 RUN apt-get update && apt-get install -y --no-install-recommends \

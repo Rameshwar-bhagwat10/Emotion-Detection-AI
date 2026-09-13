@@ -84,8 +84,14 @@ class EmotionInferenceEngine:
             self.model_manager.warmup(self.config.warmup_iterations)
 
     def warmup(self, num_warmup_passes: int = 3) -> None:
-        """Execute non-gradient warm-up passes."""
+        """Execute non-gradient warm-up passes for both emotion model and face detector."""
         self.model_manager.warmup(num_warmup_passes)
+        # Prime face detector buffers
+        try:
+            dummy_img = np.zeros((320, 320, 3), dtype=np.uint8)
+            self.detector.detect(dummy_img)
+        except Exception as e:
+            logging.debug(f"Detector warmup notice: {e}")
 
     def warm_up(self, num_warmup_passes: int = 3) -> None:
         """Alias for warmup."""

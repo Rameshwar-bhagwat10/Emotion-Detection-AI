@@ -21,6 +21,13 @@ from app.integrations.redis import close_redis_client
 from ml.inference.config import InferencePipelineConfig
 from ml.inference.engine import EmotionInferenceEngine
 
+import torch
+
+# Optimize CPU threads for container deployment to eliminate CFS scheduling bottlenecks
+torch.set_num_threads(2)
+torch.set_num_interop_threads(1)
+torch.set_grad_enabled(False)
+
 # Initialize structured logging
 setup_logging(log_level=settings.LOG_LEVEL)
 logger = get_logger("emotion-api")

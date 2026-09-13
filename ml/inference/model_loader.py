@@ -125,9 +125,13 @@ class ModelManager:
         model.to(device=self.device)
         model.eval()
 
+        if self.device.type == "cpu":
+            torch.set_num_threads(2)
+            torch.set_num_interop_threads(1)
+
         self.model = model
         logging.info(
-            f"Loaded Optimized Champion '{self.metadata.get('model_name')}' ({base_arch}) onto device '{self.device}'."
+            f"Loaded Optimized Champion '{self.metadata.get('model_name')}' ({base_arch}) onto device '{self.device}' (threads={torch.get_num_threads()})."
         )
         return self.model, self.metadata
 

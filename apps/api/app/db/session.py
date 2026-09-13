@@ -106,9 +106,18 @@ async def init_db() -> None:
     if _sqlite_fallback_initialized:
         return
     try:
+        from app.db.base import Base
+        import app.db.models  # noqa: F401
+
         async with AsyncSessionLocal() as session:
             await session.execute(text("SELECT 1"))
             logger.info(f"Connected to primary database ({active_db_type}).")
+
+        # In SQLite, always guarantee all tables (predictions, faces, sessions) exist
+        if active_db_type == "sqlite":
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            logger.info("SQLite database schema verified and initialized.")
     except Exception as exc:
         logger.warning(f"Primary database connection failed ({exc}). Initializing local SQLite fallback...")
         await _init_sqlite_fallback()
